@@ -1,6 +1,5 @@
 # Rotor.ai Command Line ESC Interface
 # Copyright 2020 Robbie and Stu
-
 from vehicleLight import VehicleLight
 
 headlights = VehicleLight(2)

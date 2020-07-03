@@ -1,1 +1,1 @@
-scp -r ~/projects/rtrcmd scp://pi@rc//home/pi/
+scp -r ~/projects/rtrcmd/src scp://pi@rc//home/pi/rtrcmd
