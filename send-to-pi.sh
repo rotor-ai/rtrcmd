@@ -1,0 +1,1 @@
+scp -r ~/projects/rtrcmd scp://pi@rc//home/pi/
