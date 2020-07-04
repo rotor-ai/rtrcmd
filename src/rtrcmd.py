@@ -9,7 +9,7 @@ passengerSideTailLight = VehicleLight(4)
 items = [headlights, driverSideTailLight, passengerSideTailLight]
 
 headlights.bright()
-driverSideTailLight.dim()
+driverSideTailLight.setDim()
 passengerSideTailLight.blink()
 
 
