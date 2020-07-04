@@ -1,5 +1,4 @@
 from time import time_ns
-from gpiozero import PWMLED
 from constants import Constants
 
 
@@ -22,16 +21,13 @@ class VehicleLight:
     def start_blinking(self):
         self.blinking = True
         self.nextBlinkTime = self.now_wrapper() + Constants.LIGHT_BLINK_DURATION_NS
+        self.ledRef.value = Constants.LIGHT_BRIGHT_PWM_VAL
 
     # THIS METHOD IS NOT UNDER TEST
     def now_wrapper(self):
         return time_ns()
 
-    # def update(self):
-    #     now = time_ns()
-    #     if self.blinking and now > self.nextBlinkTime:
-    #         if self.ledRef.value == Constants.LIGHT_DIM_PWM_VAL:
-    #             self.ledRef.value = Constants.LIGHT_BRIGHT_PWM_VAL
-    #         else:
-    #             self.ledRef.value = Constants.LIGHT_DIM_PWM_VAL
-    #         self.nextBlinkTime = now + Constants.LIGHT_BLINK_DURATION_NS
+    def update(self):
+        if self.blinking and self.now_wrapper() >= self.nextBlinkTime:
+            self.ledRef.value = Constants.LIGHT_BRIGHT_PWM_VAL if self.ledRef.value == Constants.LIGHT_DIM_PWM_VAL else Constants.LIGHT_DIM_PWM_VAL
+            self.nextBlinkTime = self.now_wrapper() + Constants.LIGHT_BLINK_DURATION_NS

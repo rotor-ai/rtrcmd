@@ -47,3 +47,40 @@ class VehicleLightTest(unittest.TestCase):
 
         self.assertEqual(True, self.test_obj.blinking)
         self.assertEqual(600000000, self.test_obj.nextBlinkTime)
+        self.assertEqual(Constants.LIGHT_BRIGHT_PWM_VAL, self.test_obj.ledRef.value)
+
+    def test_should_update_blinker(self):
+        self.test_obj.now_wrapper = lambda: 100000000
+        self.test_obj.start_blinking()
+
+        self.test_obj.now_wrapper = lambda: 600000000
+        self.test_obj.update()
+
+        self.assertEqual(Constants.LIGHT_DIM_PWM_VAL, self.test_obj.ledRef.value)
+        self.assertEqual(1100000000, self.test_obj.nextBlinkTime)
+
+        self.test_obj.now_wrapper = lambda: 1100000001
+        self.test_obj.update()
+
+        self.assertEqual(Constants.LIGHT_BRIGHT_PWM_VAL, self.test_obj.ledRef.value)
+        self.assertEqual(1600000001, self.test_obj.nextBlinkTime)
+
+    def test_should_not_update_blinker_if_duration_has_not_elapsed(self):
+        self.test_obj.now_wrapper = lambda: 100000000
+        self.test_obj.start_blinking()
+
+        self.test_obj.now_wrapper = lambda: 599999999
+        self.test_obj.update()
+
+        self.assertEqual(Constants.LIGHT_BRIGHT_PWM_VAL, self.test_obj.ledRef.value)
+        self.assertEqual(600000000, self.test_obj.nextBlinkTime)
+
+    def test_should_not_update_blinker_if_bool_is_false(self):
+        self.test_obj.set_bright()
+        self.test_obj.blinking = False
+        self.test_obj.nextBlinkTime = 123
+
+        self.test_obj.now_wrapper = lambda : 123
+        self.test_obj.update()
+
+        self.assertEqual(Constants.LIGHT_BRIGHT_PWM_VAL, self.test_obj.ledRef.value)
