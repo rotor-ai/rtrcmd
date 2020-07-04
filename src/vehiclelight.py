@@ -10,19 +10,20 @@ class VehicleLight:
         self.blinking = False
         self.nextBlinkTime = 0
 
-    def setOff(self):
+    def set_off(self):
         self.ledRef.value = Constants.LIGHT_OFF_PWM_VAL
 
-    def setDim(self):
+    def set_dim(self):
         self.ledRef.value = Constants.LIGHT_DIM_PWM_VAL
 
-    def setBright(self):
+    def set_bright(self):
         self.ledRef.value = Constants.LIGHT_BRIGHT_PWM_VAL
 
-    def startBlinking(self):
+    def start_blinking(self):
         self.blinking = True
         self.nextBlinkTime = self.now_wrapper() + Constants.LIGHT_BLINK_DURATION_NS
 
+    # THIS METHOD IS NOT UNDER TEST
     def now_wrapper(self):
         return time_ns()
 
