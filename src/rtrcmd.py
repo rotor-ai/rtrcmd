@@ -1,16 +1,18 @@
 # Rotor.ai Command Line ESC Interface
 # Copyright 2020 Robbie and Stu
+from gpiozero import PWMLED
+
 from vehiclelight import VehicleLight
 
-headlights = VehicleLight(2)
-driverSideTailLight = VehicleLight(3)
-passengerSideTailLight = VehicleLight(4)
+headlights = VehicleLight(PWMLED(2))
+driverSideTailLight = VehicleLight(PWMLED(3))
+passengerSideTailLight = VehicleLight(PWMLED(4))
 
 items = [headlights, driverSideTailLight, passengerSideTailLight]
 
-headlights.bright()
-driverSideTailLight.set_dim()
-passengerSideTailLight.blink()
+headlights.set_bright()
+driverSideTailLight.start_blinking()
+passengerSideTailLight.start_blinking()
 
 
 while True:
