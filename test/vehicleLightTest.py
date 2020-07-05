@@ -1,16 +1,15 @@
 import unittest
-from unittest.mock import MagicMock, Mock
 
+from gpiozero.pins.mock import MockFactory
 from constants import Constants
 from vehiclelight import VehicleLight
 
 
 class VehicleLightTest(unittest.TestCase):
-    SOME_PIN_ID = 123
+    SOME_PIN_ID = 12
 
     def setUp(self) -> None:
-        self.mock_pwmLed = Mock()
-        self.mock_pwmLed.value = 0
+        self.mock_pwmLed = MockFactory(pin_class="mockpwmpin").pin(self.SOME_PIN_ID)
 
         self.test_obj = VehicleLight(self.mock_pwmLed)
 
