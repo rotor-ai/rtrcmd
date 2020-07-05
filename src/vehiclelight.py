@@ -1,8 +1,9 @@
 from time import time_ns
 from constants import Constants
+from vehicledevice import VehicleDevice
 
 
-class VehicleLight:
+class VehicleLight(VehicleDevice):
 
     def __init__(self, ledRef):
         self.ledRef = ledRef
