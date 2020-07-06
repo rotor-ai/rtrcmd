@@ -1,6 +1,7 @@
 import unittest
 
 from gpiozero.pins.mock import MockFactory
+from parameterized import parameterized
 
 from constants import Constants
 from steeringwheel import SteeringWheel
@@ -19,19 +20,16 @@ class SteeringWheelTest(unittest.TestCase):
         self.assertIs(self.test_obj.servo_ref, self.mock_servo)
         self.assertEqual(Constants.SERVO_CENTER_PWM_VALUE, self.test_obj.servo_ref.value)
 
-    def test_can_map_direction_to_servo_value(self):
+    @parameterized.expand([
+        ('N000', Constants.SERVO_CENTER_PWM_VALUE)
+        ,('L100', 1)
+        ,('R100', -1)
+    ])
+    def test_can_map_direction_to_servo_value(self, cmd, expected_value):
 
-        self.test_obj.set_heading('N000')
+        self.test_obj.set_heading(cmd)
 
-        self.assertEqual(Constants.SERVO_CENTER_PWM_VALUE, self.test_obj.servo_ref.value)
-
-        self.test_obj.set_heading('L100')
-
-        self.assertEqual(1, self.test_obj.servo_ref.value)
-
-        self.test_obj.set_heading('R100')
-
-        self.assertEqual(-1, self.test_obj.servo_ref.value)
+        self.assertEqual(expected_value, self.test_obj.servo_ref.value)
 
     def test_can_interpolate_values_based_on_configured_servo_center(self):
 
@@ -47,3 +45,17 @@ class SteeringWheelTest(unittest.TestCase):
 
         self.test_obj.set_heading('N100')
         self.assertEqual(Constants.SERVO_CENTER_PWM_VALUE, self.test_obj.servo_ref.value)
+
+    @parameterized.expand([
+        "Z000"
+        ,"N99"
+    ])
+    def test_should_ignore_malformed_command(self, cmd):
+        some_random_preexisting_value = 0.45
+        self.test_obj.servo_ref.value = some_random_preexisting_value
+
+        self.test_obj.set_heading(cmd)
+
+        self.assertEqual(0.45, self.test_obj.servo_ref.value)
+
+
