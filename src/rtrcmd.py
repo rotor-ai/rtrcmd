@@ -1,6 +1,5 @@
 # Rotor.ai Command Line ESC Interface
 # Copyright 2020 Robbie and Stu
-import time
 
 from gpiozero import PWMLED, Servo
 
