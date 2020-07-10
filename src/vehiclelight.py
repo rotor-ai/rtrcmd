@@ -7,6 +7,7 @@ class VehicleLight(VehicleDevice):
 
     def __init__(self, ledRef):
         self.ledRef = ledRef
+        self.ledRef.value = 0
         self.blinking = False
         self.nextBlinkTime = 0
 

@@ -10,6 +10,7 @@ class VehicleLightTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.mock_pwmLed = MockFactory(pin_class="mockpwmpin").pin(self.SOME_PIN_ID)
+        self.mock_pwmLed.value = 0.5
 
         self.test_obj = VehicleLight(self.mock_pwmLed)
 
@@ -17,6 +18,7 @@ class VehicleLightTest(unittest.TestCase):
         self.assertIs(self.mock_pwmLed, self.test_obj.ledRef)
         self.assertFalse(self.test_obj.blinking)
         self.assertEqual(0, self.test_obj.nextBlinkTime)
+        self.assertEqual(0, self.test_obj.ledRef.value)
 
     def test_should_set_ledRef_value_to_zero(self):
         self.test_obj.ledRef.value = 999

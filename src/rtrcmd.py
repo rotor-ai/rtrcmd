@@ -9,31 +9,29 @@ from motor import Motor
 from steeringwheel import SteeringWheel
 from vehiclelight import VehicleLight
 
-headlights = VehicleLight(PWMLED(Constants.GPIO_PIN_HEADLIGHTS))
-driverSideTailLight = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TAILLIGHT))
-passengerSideTailLight = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
+head_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_HEADLIGHTS))
+fog_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_FOGLIGHTS))
+turn_signal_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TURNSIGNAL))
+turn_signal_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TURNSIGNAL))
+reverse_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_REVERSE_LIGHTS))
+tail_light_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TAILLIGHT))
+tail_light_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
+
 steeringWheel = SteeringWheel(Servo(Constants.GPIO_PIN_STEERING_SERVO))
 motor = Motor(Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER))
 
-items = [headlights, driverSideTailLight, passengerSideTailLight, steeringWheel, motor]
+items = [head_lights, fog_lights,turn_signal_left, turn_signal_right, reverse_lights, tail_light_left, tail_light_right, steeringWheel, motor]
 
-headlights.set_off()
-driverSideTailLight.set_off()
-steeringWheel.set_heading('N000')
-motor.set_throttle('N000')
-time.sleep(1)
-steeringWheel.set_heading('L100')
-time.sleep(1)
-steeringWheel.set_heading('R100')
-time.sleep(1)
-steeringWheel.set_heading('N000')
-time.sleep(1)
-motor.set_throttle('F100')
-time.sleep(5)
-motor.servo_ref.setOff()
-motor.set_throttle('N000')
-time.sleep(5)
-motor.set_throttle('R100')
-time.sleep(5)
-motor.set_throttle('N000')
+
+#head_lights.start_blinking()
+# turn_signal_left.start_blinking()
+# turn_signal_right.start_blinking()
+#tail_light_left.start_blinking()
+# tail_light_right.start_blinking()
+# reverse_lights.start_blinking()
+fog_lights.start_blinking()
+while True:
+    for item in items:
+        item.update()
+
 
