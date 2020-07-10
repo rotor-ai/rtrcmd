@@ -20,18 +20,20 @@ tail_light_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
 steeringWheel = SteeringWheel(Servo(Constants.GPIO_PIN_STEERING_SERVO))
 motor = Motor(Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER))
 
-items = [head_lights, fog_lights,turn_signal_left, turn_signal_right, reverse_lights, tail_light_left, tail_light_right, steeringWheel, motor]
+lights = [head_lights, fog_lights,turn_signal_left, turn_signal_right, reverse_lights, tail_light_left, tail_light_right]
 
+time_to_shift_to_next_item = time.time() + 2
+active_item = 0
+lights[active_item].start_blinking()
 
-#head_lights.start_blinking()
-# turn_signal_left.start_blinking()
-# turn_signal_right.start_blinking()
-#tail_light_left.start_blinking()
-# tail_light_right.start_blinking()
-# reverse_lights.start_blinking()
-fog_lights.start_blinking()
 while True:
-    for item in items:
-        item.update()
+    for light in lights:
+        light.update()
 
+    if (time.time() > time_to_shift_to_next_item):
+        time_to_shift_to_next_item = time.time() + 2
+        lights[active_item].set_off()
+        lights[active_item].blinking = False
+        active_item = (active_item + 1) % len(lights)
+        lights[active_item].start_blinking()
 
