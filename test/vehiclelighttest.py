@@ -20,26 +20,32 @@ class VehicleLightTest(unittest.TestCase):
         self.assertEqual(0, self.test_obj.nextBlinkTime)
         self.assertEqual(0, self.test_obj.ledRef.value)
 
-    def test_should_set_ledRef_value_to_zero(self):
+    def test_set_off(self):
+        self.test_obj.blinking = True
         self.test_obj.ledRef.value = 999
 
         self.test_obj.set_off()
 
         self.assertEqual(0, self.test_obj.ledRef.value)
+        self.assertFalse(self.test_obj.blinking)
 
-    def test_should_set_ledRef_value_to_dim(self):
+    def test_set_dim(self):
+        self.test_obj.blinking = True
         self.test_obj.ledRef.value = 999
 
         self.test_obj.set_dim()
 
         self.assertEqual(Constants.LIGHT_DIM_PWM_VAL, self.test_obj.ledRef.value)
+        self.assertFalse(self.test_obj.blinking)
 
-    def test_should_set_ledRef_value_to_bright(self):
+    def test_set_bright(self):
+        self.test_obj.blinking = True
         self.test_obj.ledRef.value = 999
 
         self.test_obj.set_bright()
 
         self.assertEqual(Constants.LIGHT_BRIGHT_PWM_VAL, self.test_obj.ledRef.value)
+        self.assertFalse(self.test_obj.blinking)
 
     def test_should_start_blinking(self):
         self.test_obj.now_wrapper = lambda: 100000000

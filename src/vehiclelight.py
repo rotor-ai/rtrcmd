@@ -13,15 +13,15 @@ class VehicleLight(VehicleDevice):
 
     def set_off(self):
         self.ledRef.value = Constants.LIGHT_OFF_PWM_VAL
-        #TODO should disable blinking
+        self.blinking = False
 
     def set_dim(self):
         self.ledRef.value = Constants.LIGHT_DIM_PWM_VAL
-        #TODO should disable blinking
+        self.blinking = False
 
     def set_bright(self):
         self.ledRef.value = Constants.LIGHT_BRIGHT_PWM_VAL
-        #TODO should disable blinking
+        self.blinking = False
 
     def start_blinking(self):
         self.blinking = True
