@@ -9,6 +9,10 @@ from motor import Motor
 from steeringwheel import SteeringWheel
 from vehiclelight import VehicleLight
 
+motorPeriod_ms = 19.8   #unit in milliseconds
+minDuty_pct = 4.5    #unit in percentage
+maxDuty_pct = 10.5   #unit in percentage
+
 head_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_HEADLIGHTS))
 fog_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_FOGLIGHTS))
 turn_signal_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TURNSIGNAL))
@@ -18,22 +22,39 @@ tail_light_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TAILLIGHT))
 tail_light_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
 
 steeringWheel = SteeringWheel(Servo(Constants.GPIO_PIN_STEERING_SERVO))
-motor = Motor(Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER))
+min_pulse = ((minDuty_pct*0.01)*motorPeriod_ms)/1000
+max_pulse = ((maxDuty_pct*0.01)*motorPeriod_ms)/1000
+motor = Motor(Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER, min_pulse_width=min_pulse, max_pulse_width=max_pulse , frame_width=motorPeriod_ms/1000))
 
 lights = [head_lights, fog_lights,turn_signal_left, turn_signal_right, reverse_lights, tail_light_left, tail_light_right]
 
-time_to_shift_to_next_item = time.time() + 2
-active_item = 0
-lights[active_item].start_blinking()
+throttle_delay = 0.15
 
-while True:
-    for light in lights:
-        light.update()
 
-    if (time.time() > time_to_shift_to_next_item):
-        time_to_shift_to_next_item = time.time() + 2
-        lights[active_item].set_off()
-        lights[active_item].blinking = False
-        active_item = (active_item + 1) % len(lights)
-        lights[active_item].start_blinking()
+for i in range(0, 100, 2):
+    cmd = 'F'+ str(format(i, '0>3'))
+    print(cmd)
+    motor.set_throttle(cmd)
+    time.sleep(throttle_delay)
+
+for i in range(100, 0, -2):
+    cmd = 'F'+ str(format(i, '0>3'))
+    print(cmd)
+    motor.set_throttle(cmd)
+    time.sleep(throttle_delay)
+
+motor.set_throttle('N000')
+time.sleep(3)
+
+for i in range(0, 100, 2):
+    cmd = 'R'+ str(format(i, '0>3'))
+    print(cmd)
+    motor.set_throttle(cmd)
+    time.sleep(throttle_delay)
+
+for i in range(100, 0, -2):
+    cmd = 'R'+ str(format(i, '0>3'))
+    print(cmd)
+    motor.set_throttle(cmd)
+    time.sleep(throttle_delay)
 
