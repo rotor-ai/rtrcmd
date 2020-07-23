@@ -56,11 +56,8 @@ while True:
             waxwane *= -1
 
         if (currentValue == 0):
-            print("detaching...")
-            motor.servo_ref.detach()
-            time.sleep(1)
-            print("reattaching...")
             motor.set_throttle('N000')
+            print('N000')
             time.sleep(1)
             if (waxwane == -1):
                 print("fake reverse for a moment...")
