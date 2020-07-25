@@ -14,9 +14,9 @@ class Motor(VehicleDevice):
 
         magnatude = int(command[1:])
         if(command[0] == 'F'):
-            self.servo_ref.value = (magnatude/100) * Constants.MOTOR_FWD_THROTTLE_LIMIT
+            self.servo_ref.value = (magnatude/100) * (Constants.MOTOR_FWD_THROTTLE_MAX - Constants.MOTOR_FWD_THROTTLE_MIN) + Constants.MOTOR_FWD_THROTTLE_MIN
         elif(command[0] == 'R'):
-            self.servo_ref.value = (magnatude/100) * Constants.MOTOR_REV_THROTTLE_LIMIT
+            self.servo_ref.value = (magnatude/100) * (Constants.MOTOR_REV_THROTTLE_MAX - Constants.MOTOR_REV_THROTTLE_MIN) + Constants.MOTOR_REV_THROTTLE_MIN
         elif(command[0] == 'N'):
             self.servo_ref.value = 0.0
 

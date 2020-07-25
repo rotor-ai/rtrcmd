@@ -19,16 +19,15 @@ class MotorTest(unittest.TestCase):
 
     def test_should_construct(self):
 
-        self.assertIsInstance(self.test_obj, VehicleDevice)
         self.assertIs(self.mock_servo, self.test_obj.servo_ref)
         self.assertEqual(MotorTest.NEUTRAL, self.test_obj.servo_ref.value)
 
     @parameterized.expand([
         ("N000", 0.0)
-        ,("F100", Constants.MOTOR_FWD_THROTTLE_LIMIT)
-        ,("R100", Constants.MOTOR_REV_THROTTLE_LIMIT)
-        ,("F050", Constants.MOTOR_FWD_THROTTLE_LIMIT/2)
-        ,("R025", Constants.MOTOR_REV_THROTTLE_LIMIT/4)
+        ,("F100", Constants.MOTOR_FWD_THROTTLE_MAX)
+        ,("R100", Constants.MOTOR_REV_THROTTLE_MAX)
+        ,("F050", Constants.MOTOR_FWD_THROTTLE_MIN + ((Constants.MOTOR_FWD_THROTTLE_MAX - Constants.MOTOR_FWD_THROTTLE_MIN)/2))
+        ,("R025", Constants.MOTOR_REV_THROTTLE_MIN + ((Constants.MOTOR_REV_THROTTLE_MAX - Constants.MOTOR_REV_THROTTLE_MIN)/4))
     ])
     def test_should_set_throttle(self, cmd, expected_value):
         some_random_preexisting_value = 45
