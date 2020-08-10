@@ -4,9 +4,10 @@ from vehicledevice import VehicleDevice
 
 class SteeringWheel(VehicleDevice):
 
-    def __init__(self, servo):
+    def __init__(self, servo, logger):
         self.servo_ref = servo
         self.servo_ref.value = Constants.SERVO_CENTER_PWM_VALUE
+        self.logger = logger
 
     def set_heading(self, command):
         if (not len(command)==4):
@@ -14,10 +15,13 @@ class SteeringWheel(VehicleDevice):
 
         if (command[0] == 'L'):
             servo_limit = 1
+            self.logger.info("Setting heading to " + command)
         elif(command[0] == 'R'):
             servo_limit = -1
+            self.logger.info("Setting heading to " + command)
         elif(command[0] == 'N'):
             self.servo_ref.value = Constants.SERVO_CENTER_PWM_VALUE
+            self.logger.info("Setting heading to " + command)
             return
         else:
             return
