@@ -15,7 +15,7 @@ class SteeringWheelTest(unittest.TestCase):
     def setUp(self) -> None:
         self.mock_servo = MockFactory(pin_class="mockpwmpin").pin(SteeringWheelTest.SOME_PIN_ID)
         self.logger = logging.Logger("some name")
-        self.test_obj = SteeringWheel(self.mock_servo, self.logger)
+        self.test_obj = SteeringWheel(self.logger, self.mock_servo)
 
     def test_can_construct(self):
 

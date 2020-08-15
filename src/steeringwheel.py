@@ -4,10 +4,12 @@ from vehicledevice import VehicleDevice
 
 class SteeringWheel(VehicleDevice):
 
-    def __init__(self, servo, logger):
+
+
+    def __init__(self, logger, servo) -> None:
+        super().__init__(logger)
         self.servo_ref = servo
         self.servo_ref.value = Constants.SERVO_CENTER_PWM_VALUE
-        self.logger = logger
 
     def set_heading(self, command):
         if (not len(command)==4):
