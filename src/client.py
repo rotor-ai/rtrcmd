@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton
 from PyQt5.QtCore import QSize
 from command import Command
+import requests
 
 
 class Arrows(QMainWindow):
@@ -16,8 +17,7 @@ class Arrows(QMainWindow):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        grid_layout = QGridLayout(self)
-        central_widget.setLayout(grid_layout)
+        grid_layout = QGridLayout(central_widget)
 
         self.up_btn = QPushButton("FWD", self)
         self.down_btn = QPushButton("REV", self)
@@ -30,6 +30,7 @@ class Arrows(QMainWindow):
         grid_layout.addWidget(self.right_btn, 1, 2)
 
         self.command = Command()
+        self.ip = "http://127.0.0.1:5000/api"
 
     def keyPressEvent(self, e):
         down = True
@@ -82,7 +83,12 @@ class Arrows(QMainWindow):
         return super().keyReleaseEvent(e)
 
     def send_updated_command(self):
-        print("Updating command: {}".format(self.command.to_json_string()))
+        try:
+            r = requests.post(self.ip, None, self.command.to_json_string())
+            if r.status_code != 200:
+                print(r.text)
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
