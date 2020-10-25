@@ -3,6 +3,7 @@
 import time
 from signal import pause
 
+import logging
 from gpiozero import PWMLED, Servo, LED
 from gpiozero.pins.rpigpio import RPiGPIOFactory
 from gpiozero.pins.pigpio import PiGPIOFactory
@@ -17,16 +18,17 @@ from vehiclelight import VehicleLight
 
 motorPeriod_ms = 20   #unit in milliseconds
 
-head_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_HEADLIGHTS))
-fog_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_FOGLIGHTS))
-turn_signal_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TURNSIGNAL))
-turn_signal_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TURNSIGNAL))
-reverse_lights = VehicleLight(PWMLED(Constants.GPIO_PIN_REVERSE_LIGHTS))
-tail_light_left = VehicleLight(PWMLED(Constants.GPIO_PIN_LEFT_TAILLIGHT))
-tail_light_right = VehicleLight(PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
+logger = logging.getLogger()
+head_lights = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_HEADLIGHTS))
+fog_lights = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_FOGLIGHTS))
+turn_signal_left = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_LEFT_TURNSIGNAL))
+turn_signal_right = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_RIGHT_TURNSIGNAL))
+reverse_lights = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_REVERSE_LIGHTS))
+tail_light_left = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_LEFT_TAILLIGHT))
+tail_light_right = VehicleLight(logger, PWMLED(Constants.GPIO_PIN_RIGHT_TAILLIGHT))
 
 
-steeringWheel = SteeringWheel(Servo(Constants.GPIO_PIN_STEERING_SERVO))
+steeringWheel = SteeringWheel(logger, Servo(Constants.GPIO_PIN_STEERING_SERVO))
 min_pulse = 1/1000
 max_pulse = 2/1000
 motor = Motor(Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER, min_pulse_width=min_pulse, max_pulse_width=max_pulse , frame_width=motorPeriod_ms/1000, pin_factory=pigpiofactory))
