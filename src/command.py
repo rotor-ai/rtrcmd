@@ -21,23 +21,21 @@ class Command(object):
             raise Exception("Heading value outside bounds")
         self.heading = heading
 
-    def to_json_string(self):
+    def to_json(self):
 
-        json_command = {
-            'throttle' : self.throttle,
-            'heading' : self.heading
+        json_cmd = {
+            'throttle': self.throttle,
+            'heading': self.heading
         }
 
-        return json.dumps(json_command)
+        return json_cmd
 
-    def load_json_string(self, json_string):
+    def from_json(self, json_cmd):
 
-        json_command = json.loads(json_string)
-
-        if json_command['throttle'] is None:
+        if 'throttle' not in json_cmd:
             raise Exception("No throttle command in json")
-        self.set_throttle(json_command['throttle'])
+        self.set_throttle(json_cmd['throttle'])
 
-        if json_command['heading'] is None:
+        if 'heading' not in json_cmd:
             raise Exception("No heading command in json")
-        self.set_heading(json_command['heading'])
+        self.set_heading(json_cmd['heading'])
