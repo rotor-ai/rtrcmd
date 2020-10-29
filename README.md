@@ -4,7 +4,7 @@
 * Right click `src` folder and mark as `Sources Root`
 * Go to `File > Settings` and setup a virtual Python 3.8 interpreter for the project.
     
-    ⚠ On Ubuntu, the [`python3-distutils`](https://packages.ubuntu.com/focal/python3-distutils) 
+    ⚠ On Ubuntu, the [`python3-distutils`](https://packages.ubuntu.com/focal/python3-distutils) package 
     is required to setup a virtual Python Interpreter in PyCharm.
     
     ⚠ On Ubuntu, PyQt5 will require the [libxcb-xinerama0](https://packages.ubuntu.com/focal/libxcb-xinerama0) library, as noted in [this forum post](https://forum.qt.io/topic/93247/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it-was-found/4).
