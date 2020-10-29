@@ -1,13 +1,16 @@
-import json
 
-"""
-Command class used to set vehicle settings
-"""
 class Command(object):
+    """ Command class used to set vehicle settings """
 
     def __init__(self):
         self.throttle = 0.0
         self.heading = 0.0
+
+    def get_throttle(self):
+        return self.throttle
+
+    def get_heading(self):
+        return self.heading
 
     def set_throttle(self, throttle):
 

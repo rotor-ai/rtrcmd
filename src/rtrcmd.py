@@ -12,7 +12,7 @@ from gpiozero.pins.native import NativeFactory
 pigpiofactory = PiGPIOFactory('localhost', 8888)
 
 from constants import Constants
-from motor import Motor
+from throttle import Motor
 from steeringwheel import SteeringWheel
 from vehiclelight import VehicleLight
 

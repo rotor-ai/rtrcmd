@@ -2,13 +2,14 @@ from flask import Flask, jsonify, Response, request, make_response
 from flask.views import MethodView
 import threading
 from werkzeug.serving import make_server
+import logging
 
 
 class ServerThread(threading.Thread):
 
-    def __init__(self, app):
+    def __init__(self, app, port):
         threading.Thread.__init__(self)
-        self.srv = make_server('127.0.0.1', 5000, app)
+        self.srv = make_server('0.0.0.0', port, app)
         self.ctx = app.app_context()
         self.ctx.push()
 
@@ -54,35 +55,33 @@ class Endpoint(MethodView):
 
 class Server(object):
 
-    def __init__(self, name, url):
+    def __init__(self, name, url, port):
         self.name = name
+        self.port = port
         self.app = Flask(name)
-        self.srv = ServerThread(self.app)
+        self.srv = ServerThread(self.app, port)
         self.url = url
         self.post_func = None
         self.get_func = None
 
-    # Add a function to the post endpoint. Values returned from the function will be the response to the post endpoint
     def add_post_method(self, post_func):
         self.post_func = post_func
 
-    # Add a function to the get endpoint. Values returned from the function will be the response to the get endpoint
     def add_get_method(self, get_func):
         self.get_func = get_func
 
-    # Start running the server
     def run(self, debug=False):
         if self.post_func is not None and self.get_func is not None:
             self.app.add_url_rule(self.url, view_func=Endpoint.as_view(self.name, get_func=self.get_func,
                                                                        post_func=self.post_func))
-            print("Starting server")
+            logging.info("Starting server on port {}".format(self.port))
             self.srv.start()
 
         else:
             raise Exception("No post or get functions provided")
 
     def stop(self):
-        print("Shutting down server")
+        logging.info("Shutting down server")
         self.srv.shutdown()
 
 
@@ -95,7 +94,7 @@ if __name__ == '__main__':
         print(json_in)
         return "This is the post function"
 
-    server = Server('Test Name', '/api')
+    server = Server('Test Name', '/api', 5000)
     server.add_get_method(get)
     server.add_post_method(post)
     server.run()

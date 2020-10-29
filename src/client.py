@@ -84,7 +84,7 @@ class Arrows(QMainWindow):
 
     def send_updated_command(self):
         try:
-            r = requests.post(self.ip, None, self.command.to_json_string())
+            r = requests.post(self.ip, None, self.command.to_json())
             if r.status_code != 200:
                 print(r.text)
         except Exception as e:
