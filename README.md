@@ -24,7 +24,7 @@
 
 #### Starting the program:
 1) Turn on the ESC
-2) Start the pigpio damean
+2) Start the pigpio daemon
 3) Start the rtrcmd program
     ```
     $ python3 rtrcmd/rtrcmd.py
