@@ -10,20 +10,25 @@ class Heading(object):
         self.servo = Servo(Constants.GPIO_PIN_STEERING_SERVO)
         self.command = Command()
 
-    def set_heading(self, heading):
+    def update_command(self, command):
 
         # If this is not a new command, ignore it
-        if heading == self.command.get_heading():
+        if (command.get_heading() == self.command.get_heading()) and \
+           (command.get_heading_trim() == self.command.get_heading_trim()) and \
+           (command.get_heading_max() == self.command.get_heading_max()) and \
+           (command.get_heading_min() == self.command.get_heading_min()):
             return
 
-        # Set the heading
-        logging.debug(f"Setting heading to {heading}")
-        if heading < 0.0:
-            self.servo.min()
-        elif heading > 0.0:
-            self.servo.max()
-        else:
-            self.servo.value = 0
-
         # Update our current command
-        self.command.set_heading(heading)
+        self.command = command
+
+        # Process the new heading and check bounds
+        trimmed_heading = self.command.get_heading() + self.command.get_heading_trim()
+        if trimmed_heading > self.command.get_heading_max():
+            trimmed_heading = self.command.get_heading_max()
+        elif trimmed_heading < self.command.get_heading_min():
+            trimmed_heading = self.command.get_heading_min()
+
+        # Set the new heading
+        logging.debug(f"Setting heading to {trimmed_heading}")
+        self.servo.value = trimmed_heading

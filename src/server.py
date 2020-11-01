@@ -7,9 +7,9 @@ import logging
 
 class ServerThread(threading.Thread):
 
-    def __init__(self, app, port):
+    def __init__(self, app, host_ip, port):
         threading.Thread.__init__(self)
-        self.srv = make_server('0.0.0.0', port, app)
+        self.srv = make_server(host_ip, port, app)
         self.ctx = app.app_context()
         self.ctx.push()
 
@@ -55,30 +55,20 @@ class Endpoint(MethodView):
 
 class Server(object):
 
-    def __init__(self, name, url, port):
+    def __init__(self, name, host_ip, port):
         self.name = name
         self.port = port
+        self.host_ip = host_ip
         self.app = Flask(name)
-        self.srv = ServerThread(self.app, port)
-        self.url = url
-        self.post_func = None
-        self.get_func = None
+        self.srv = ServerThread(self.app, self.host_ip, self.port)
 
-    def add_post_method(self, post_func):
-        self.post_func = post_func
-
-    def add_get_method(self, get_func):
-        self.get_func = get_func
+    def add_endpoint(self, url, get_func=None, post_func=None):
+        self.app.add_url_rule(url, view_func=Endpoint.as_view(self.name, get_func=get_func, post_func=post_func))
 
     def run(self, debug=False):
-        if self.post_func is not None and self.get_func is not None:
-            self.app.add_url_rule(self.url, view_func=Endpoint.as_view(self.name, get_func=self.get_func,
-                                                                       post_func=self.post_func))
-            logging.info("Starting server on port {}".format(self.port))
-            self.srv.start()
 
-        else:
-            raise Exception("No post or get functions provided")
+        logging.info("Starting server on port {}".format(self.port))
+        self.srv.start()
 
     def stop(self):
         logging.info("Shutting down server")

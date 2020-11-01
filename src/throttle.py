@@ -10,20 +10,30 @@ class Throttle(object):
         self.servo = Servo(Constants.GPIO_PIN_ELECTRONIC_SPEED_CONTROLLER)
         self.command = Command()
 
-    def set_throttle(self, throttle):
+    def update_command(self, command):
 
         # If this is not a new command, ignore it
-        if throttle == self.command.get_throttle():
+        if (command.get_throttle() == self.command.get_throttle()) and \
+           (command.get_throttle_fwd_min() == self.command.get_throttle_fwd_min()) and \
+           (command.get_throttle_rev_max() == self.command.get_throttle_rev_max()) and \
+           (command.get_throttle_fwd_max() == self.command.get_throttle_fwd_max()) and \
+           (command.get_throttle_rev_min() == self.command.get_throttle_rev_min()):
             return
 
-        # Set the throttle
-        logging.debug(f"Setting throttle to {throttle}")
-        if throttle < 0.0:
-            self.servo.min()
-        elif throttle > 0.0:
-            self.servo.max()
-        else:
-            self.servo.value = 0
-
         # Update our current command
-        self.command.set_throttle(throttle)
+        self.command = command
+
+        # Process the new heading and check bounds
+        trimmed_throttle = self.command.get_throttle()
+        if 0.0 < trimmed_throttle < self.command.get_throttle_fwd_min():
+            trimmed_throttle = self.command.get_throttle_fwd_min()
+        elif trimmed_throttle > self.command.get_throttle_fwd_max():
+            trimmed_throttle = self.command.get_throttle_fwd_max()
+        elif self.command.get_throttle_rev_min() < trimmed_throttle > 0.0:
+            trimmed_throttle = self.command.get_throttle_rev_min()
+        elif trimmed_throttle < self.command.get_throttle_rev_max():
+            trimmed_throttle = self.command.get_throttle_rev_max()
+
+        # Set the new heading
+        logging.debug(f"Setting throttle to {trimmed_throttle}")
+        self.servo.value = trimmed_throttle

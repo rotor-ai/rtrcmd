@@ -4,6 +4,7 @@ import time
 import logging
 from throttle import Throttle
 from heading import Heading
+import os
 
 
 class CommandThread(threading.Thread):
@@ -14,7 +15,11 @@ class CommandThread(threading.Thread):
         self._stop_event = threading.Event()
         self.command = Command()
 
-        self.is_vehicle = False  # Flag to set for testing, TODO: Figure out a better way to do this
+        # Flag noting whether this is the vehicle or if it's a test server
+        self.is_vehicle = False
+        if 'VEHICLE' in os.environ:
+            self.is_vehicle = True
+
         if self.is_vehicle:
             self.throttle = Throttle()
             self.heading = Heading()
@@ -45,8 +50,8 @@ class CommandThread(threading.Thread):
     def execute_command(self, command):
 
         if self.is_vehicle:
-            self.throttle.set_throttle(command.get_throttle())
-            self.heading.set_heading(command.get_heading())
+            self.throttle.update_command(command)
+            self.heading.update_command(command)
 
 
 class VehicleCtl(object):
