@@ -2,9 +2,9 @@ import sys
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLabel, QDoubleSpinBox
 from PyQt5.QtCore import QSize
-from command import Command
-from config_handler import ConfigHandler
-from command_handler import CommandHandler
+from common.command import Command
+from client.config_handler import ConfigHandler
+from client.command_handler import CommandHandler
 import logging
 
 
@@ -81,6 +81,7 @@ class TrimDialog(QWidget):
 
     def apply_clicked(self):
 
+        # Populate the current command
         self.command.set_heading_min(self.sb_heading_min.value())
         self.command.set_heading_max(self.sb_heading_max.value())
         self.command.set_heading_trim(self.sb_heading_trim.value())
@@ -89,6 +90,7 @@ class TrimDialog(QWidget):
         self.command.set_throttle_fwd_min(self.sb_throttle_fwd_min.value())
         self.command.set_throttle_fwd_max(self.sb_throttle_fwd_max.value())
 
+        # Send the command and update the config
         self.command_handler.send_command(self.command)
         self.config_handler.write_to_config(self.command)
 

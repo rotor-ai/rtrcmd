@@ -2,8 +2,8 @@ import logging
 import unittest
 
 from gpiozero.pins.mock import MockFactory
-from constants import Constants
-from vehiclelight import VehicleLight
+from vehicle.constants import Constants
+from vehicle.vehiclelight import VehicleLight
 
 
 class VehicleLightTest(unittest.TestCase):

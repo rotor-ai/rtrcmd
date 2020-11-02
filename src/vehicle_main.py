@@ -1,6 +1,6 @@
-from server import Server
-from vehicle_ctl import VehicleCtl
-from command import Command
+from vehicle.server import Server
+from vehicle.vehicle_ctl import VehicleCtl
+from common.command import Command
 import time
 import logging
 import os

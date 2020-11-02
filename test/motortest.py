@@ -3,9 +3,8 @@ import unittest
 from gpiozero.pins.mock import MockFactory
 from parameterized import parameterized
 
-from src.constants import Constants
-from src.throttle import Motor
-from src.vehicledevice import VehicleDevice
+from vehicle.constants import Constants
+from vehicle.throttle import Motor
 
 
 class MotorTest(unittest.TestCase):

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import json
-from command import Command
+from common.command import Command
 import logging
 
 

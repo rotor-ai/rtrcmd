@@ -1,6 +1,6 @@
 from time import time_ns
-from constants import Constants
-from vehicledevice import VehicleDevice
+from vehicle.constants import Constants
+from vehicle.vehicledevice import VehicleDevice
 
 
 class VehicleLight(VehicleDevice):

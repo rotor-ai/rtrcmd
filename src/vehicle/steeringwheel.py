@@ -1,5 +1,5 @@
-from constants import Constants
-from vehicledevice import VehicleDevice
+from vehicle.constants import Constants
+from vehicle.vehicledevice import VehicleDevice
 
 
 class SteeringWheel(VehicleDevice):

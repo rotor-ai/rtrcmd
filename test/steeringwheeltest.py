@@ -4,8 +4,8 @@ import unittest
 from gpiozero.pins.mock import MockFactory
 from parameterized import parameterized
 
-from constants import Constants
-from steeringwheel import SteeringWheel
+from vehicle.constants import Constants
+from vehicle.steeringwheel import SteeringWheel
 
 
 class SteeringWheelTest(unittest.TestCase):

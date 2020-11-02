@@ -1,9 +1,9 @@
-from command import Command
+from common.command import Command
 import threading
 import time
 import logging
-from throttle import Throttle
-from heading import Heading
+from vehicle.throttle import Throttle
+from vehicle.heading import Heading
 import os
 
 
