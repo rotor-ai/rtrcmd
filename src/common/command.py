@@ -1,6 +1,8 @@
 
 class Command(object):
-    """ Command class used to set vehicle settings """
+    """
+    Command class used to set vehicle settings
+    """
 
     def __init__(self):
 

@@ -7,9 +7,9 @@ import logging
 
 class ServerThread(threading.Thread):
 
-    def __init__(self, app, host_ip, port):
+    def __init__(self, app, server_addr, port):
         threading.Thread.__init__(self)
-        self.srv = make_server(host_ip, port, app)
+        self.srv = make_server(server_addr, port, app)
         self.ctx = app.app_context()
         self.ctx.push()
 
@@ -55,12 +55,12 @@ class Endpoint(MethodView):
 
 class Server(object):
 
-    def __init__(self, name, host_ip, port):
+    def __init__(self, name, server_addr, port):
         self.name = name
         self.port = port
-        self.host_ip = host_ip
+        self.server_addr = server_addr
         self.app = Flask(name)
-        self.srv = ServerThread(self.app, self.host_ip, self.port)
+        self.srv = ServerThread(self.app, self.server_addr, self.port)
 
     def add_endpoint(self, url, get_func=None, post_func=None):
         self.app.add_url_rule(url, view_func=Endpoint.as_view(self.name, get_func=get_func, post_func=post_func))

@@ -3,8 +3,14 @@ import logging
 
 
 class CommandHandler(object):
+    """
+    Class to handle sending commands to the vehicle from the client
+    """
 
-    def __init__(self, endpoint):
+    def __init__(self):
+        self.endpoint = ""
+
+    def set_endpoint(self, endpoint):
         self.endpoint = endpoint
 
     def send_command(self, command):

@@ -27,12 +27,14 @@ if __name__ == '__main__':
             # Pass the new command to the vehicle
             vehicle_ctl.set_cmd(cmd)
 
-
-        host_ip = '127.0.0.1'
+        # Default to using the internal loopback address
+        server_addr = '127.0.0.1'
         if 'VEHICLE' in os.environ:
-            host_ip = '0.0.0.0'
 
-        server = Server('Vehicle', host_ip, 5000)
+            # If this is the vehicle, listen on all addresses
+            server_addr = '0.0.0.0'
+
+        server = Server('Vehicle', server_addr, 5000)
         server.add_endpoint('/command', get_func=handle_get, post_func=handle_post)
         server.run()
 
