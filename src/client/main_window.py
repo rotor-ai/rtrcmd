@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self.right_btn, 1, 2)
         grid_layout.addWidget(self.trim_btn, 0, 2)
         grid_layout.addWidget(self.lbl_endpoint, 2, 0)
-        grid_layout.addWidget(self.le_endpoint, 2, 1, 1, 2)
+        grid_layout.addWidget(self.le_endpoint, 2, 1, 1, 2)  # Stretch the line edit into two cells
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
