@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel
+from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox
 from PyQt5.QtCore import QSize
 from common.command import Command
 from client.command_handler import CommandHandler
@@ -16,7 +16,8 @@ class MainWindow(QMainWindow):
 
         self.command = Command()
         self.command_handler = CommandHandler()
-        self.command_handler.set_endpoint(self.config_handler.get_config_endpoint())
+        self.command_handler.set_endpoint(self.config_handler.get_config_vehicle_ip(),
+                                          self.config_handler.get_config_vehicle_port())
 
         # Our popup window for setting trim
         self.trim_window = None
@@ -37,9 +38,14 @@ class MainWindow(QMainWindow):
         self.right_btn = QPushButton("RIGHT", self)
         self.trim_btn = QPushButton("Set Trim", self)
         self.trim_btn.clicked.connect(self.show_trim_window)
-        self.le_endpoint = QLineEdit(self.config_handler.get_config_endpoint(), self)
-        self.le_endpoint.textChanged.connect(self.endpoint_changed)
-        self.lbl_endpoint = QLabel("Endpoint:")
+        self.le_ip = QLineEdit(self.config_handler.get_config_vehicle_ip(), self)
+        self.le_ip.textChanged.connect(self.ip_changed)
+        self.lbl_ip = QLabel("Ip:")
+        self.sb_port = QSpinBox(self)
+        self.sb_port.setMaximum(99999)
+        self.sb_port.setValue(self.config_handler.get_config_vehicle_port())
+        self.sb_port.valueChanged.connect(self.port_changed)
+        self.lbl_port = QLabel("Port:")
 
         # Set the widgets in the grid layout
         grid_layout = QGridLayout(central_widget)
@@ -48,8 +54,10 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self.down_btn, 1, 1)
         grid_layout.addWidget(self.right_btn, 1, 2)
         grid_layout.addWidget(self.trim_btn, 0, 2)
-        grid_layout.addWidget(self.lbl_endpoint, 2, 0)
-        grid_layout.addWidget(self.le_endpoint, 2, 1, 1, 2)  # Stretch the line edit into two cells
+        grid_layout.addWidget(self.lbl_ip, 2, 0)
+        grid_layout.addWidget(self.le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
+        grid_layout.addWidget(self.lbl_port, 3, 0)
+        grid_layout.addWidget(self.sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
@@ -60,10 +68,17 @@ class MainWindow(QMainWindow):
         self.trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
         self.trim_window.show()
 
-    def endpoint_changed(self, endpoint):
+    def ip_changed(self, ip):
 
-        self.command_handler.set_endpoint(endpoint)
-        self.config_handler.write_endpoint_to_config(endpoint)
+        port = self.sb_port.value()
+        self.command_handler.set_endpoint(ip, port)
+        self.config_handler.write_vehicle_ip_to_config(ip)
+
+    def port_changed(self, port):
+
+        ip = self.le_ip.text()
+        self.command_handler.set_endpoint(ip, port)
+        self.config_handler.write_vehicle_port_to_config(port)
 
     def keyPressEvent(self, e):
         down = True

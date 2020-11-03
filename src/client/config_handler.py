@@ -15,7 +15,8 @@ class ConfigHandler(object):
         # Flag to indicate that the config file has been setup correctly
         self.ok = False
         self.command = Command()
-        self.endpoint = "http://127.0.0.1:5000"
+        self.ip = "127.0.0.1"
+        self.port = 5000
 
         # Check if there is a rotor directory defined
         self.cfg_filepath = Path()
@@ -35,8 +36,10 @@ class ConfigHandler(object):
                 config_json = json.load(in_file)
                 if 'trim_command' in config_json:
                     self.command.from_json(config_json['trim_command'])
-                if 'vehicle_endpoint' in config_json:
-                    self.endpoint = config_json['vehicle_endpoint']
+                if 'vehicle_ip' in config_json:
+                    self.ip = config_json['vehicle_ip']
+                if 'vehicle_port' in config_json:
+                    self.port = config_json['vehicle_port']
             self.ok = True
 
         except FileNotFoundError as e:
@@ -55,8 +58,13 @@ class ConfigHandler(object):
         if self.ok:
             self.update_config()
 
-    def write_endpoint_to_config(self, endpoint):
-        self.endpoint = endpoint
+    def write_vehicle_ip_to_config(self, ip):
+        self.ip = ip
+        if self.ok:
+            self.update_config()
+
+    def write_vehicle_port_to_config(self, port):
+        self.port = port
         if self.ok:
             self.update_config()
 
@@ -64,7 +72,8 @@ class ConfigHandler(object):
         try:
             with open(self.cfg_filepath, 'w') as config_file:
                 config_json = {'trim_command': self.command.to_json(),
-                               'vehicle_endpoint': self.endpoint}
+                               'vehicle_ip': self.ip,
+                               'vehicle_port': self.port}
                 json.dump(config_json, config_file, indent=4)
 
         except Exception as e:
@@ -73,5 +82,8 @@ class ConfigHandler(object):
     def get_config_command(self):
         return self.command
 
-    def get_config_endpoint(self):
-        return self.endpoint
+    def get_config_vehicle_ip(self):
+        return self.ip
+
+    def get_config_vehicle_port(self):
+        return self.port
