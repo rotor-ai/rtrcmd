@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLin
 from PyQt5.QtCore import QSize
 from common.command import Command
 from client.command_handler import CommandHandler
-from client.config_handler import ConfigHandler
+from common.config_handler import ConfigHandler
 from client.trim_dialog import TrimDialog
 
 
