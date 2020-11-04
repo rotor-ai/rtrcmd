@@ -16,8 +16,9 @@ class MainWindow(QMainWindow):
 
         self.command = Command()
         self.command_handler = CommandHandler()
-        self.command_handler.set_endpoint(self.config_handler.get_config_vehicle_ip(),
-                                          self.config_handler.get_config_vehicle_port())
+        ip = self.config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
+        port = self.config_handler.get_config_value_or('vehicle_port', 5000)
+        self.command_handler.set_endpoint(ip, port)
 
         # Our popup window for setting trim
         self.trim_window = None
@@ -38,12 +39,12 @@ class MainWindow(QMainWindow):
         self.right_btn = QPushButton("RIGHT", self)
         self.trim_btn = QPushButton("Set Trim", self)
         self.trim_btn.clicked.connect(self.show_trim_window)
-        self.le_ip = QLineEdit(self.config_handler.get_config_vehicle_ip(), self)
+        self.le_ip = QLineEdit(ip, self)
         self.le_ip.textChanged.connect(self.ip_changed)
         self.lbl_ip = QLabel("Ip:")
         self.sb_port = QSpinBox(self)
         self.sb_port.setMaximum(99999)
-        self.sb_port.setValue(self.config_handler.get_config_vehicle_port())
+        self.sb_port.setValue(port)
         self.sb_port.valueChanged.connect(self.port_changed)
         self.lbl_port = QLabel("Port:")
 
@@ -72,13 +73,13 @@ class MainWindow(QMainWindow):
 
         port = self.sb_port.value()
         self.command_handler.set_endpoint(ip, port)
-        self.config_handler.write_vehicle_ip_to_config(ip)
+        self.config_handler.set_config_value('vehicle_ip', ip)
 
     def port_changed(self, port):
 
         ip = self.le_ip.text()
         self.command_handler.set_endpoint(ip, port)
-        self.config_handler.write_vehicle_port_to_config(port)
+        self.config_handler.set_config_value('vehicle_port', port)
 
     def keyPressEvent(self, e):
         down = True

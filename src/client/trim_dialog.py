@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel, QDoubleSpinBox
-from client.config_handler import ConfigHandler
+from common.command import Command
+import logging
 
 
 class TrimDialog(QWidget):
@@ -11,8 +12,18 @@ class TrimDialog(QWidget):
         QWidget.__init__(self)
         self.setWindowTitle("Set Trim")
         self.config_handler = config_handler
-        self.command = self.config_handler.get_config_command()
         self.command_handler = command_handler
+
+        # Try to create the initial trim command from the config file
+        self.command = Command()
+        command_json = self.config_handler.get_config_value_or('trim_command', self.command.to_json())
+        try:
+            self.command.from_json(command_json)
+        except Exception as e:
+            logging.error("Unable to load trim command from config file")
+
+            # Override the bad config value
+            self.config_handler.set_config_value('trim_command', self.command.to_json())
 
         grid_layout = QGridLayout(self)
         self.lbl_heading_trim = QLabel("Heading Trim:", self)
@@ -89,4 +100,4 @@ class TrimDialog(QWidget):
 
         # Send the command and update the config
         self.command_handler.send_command(self.command)
-        self.config_handler.write_trim_to_config(self.command)
+        self.config_handler.set_config_value('trim_command', self.command.to_json())
