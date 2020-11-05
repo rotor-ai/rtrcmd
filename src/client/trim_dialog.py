@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel, QDoubleSpinBox
+from PyQt5.QtCore import pyqtSignal
 from common.command import Command
 import logging
 
@@ -7,6 +8,8 @@ class TrimDialog(QWidget):
     """
     Custom widget to edit trim values on the client
     """
+
+    trim_changed = pyqtSignal()
 
     def __init__(self, config_handler, command_handler):
         QWidget.__init__(self)
@@ -108,3 +111,5 @@ class TrimDialog(QWidget):
         # Send the command and update the config
         self.command_handler.send_command(self.command)
         self.config_handler.set_config_value('trim_command', self.command.to_json())
+
+        self.trim_changed.emit()

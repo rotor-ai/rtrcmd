@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 import json
-from common.command import Command
 import logging
+from multiprocessing import Lock
 
 
 class ConfigHandler(object):
@@ -14,6 +14,7 @@ class ConfigHandler(object):
 
         # Flag to indicate that the config file has been setup correctly
         self.ok = False
+        self.lock = Lock()  # Mutex lock so the config can be edited by multiple threads at the same time
         self.config = {}
 
         # Check if there is a rotor directory defined
@@ -31,7 +32,8 @@ class ConfigHandler(object):
         # Try to read the initial configuration from the config file
         try:
             with open(self.cfg_filepath) as in_file:
-                self.config = json.load(in_file)
+                with self.lock:
+                    self.config = json.load(in_file)
             self.ok = True
 
         except FileNotFoundError as e:
@@ -48,18 +50,22 @@ class ConfigHandler(object):
     def _update_config(self):
         try:
             with open(self.cfg_filepath, 'w') as config_file:
-                json.dump(self.config, config_file, indent=4)
+                with self.lock:
+                    json.dump(self.config, config_file, indent=4)
 
         except Exception as e:
             logging.error(e)
 
     def set_config_value(self, key, value):
-        self.config[key] = value
+        with self.lock:
+            self.config[key] = value
+
         if self.ok:
             self._update_config()
 
     def get_config_value_or(self, key, default):
-        if key in self.config:
-            return self.config[key]
-        else:
-            return default
+        with self.lock:
+            if key in self.config:
+                return self.config[key]
+            else:
+                return default

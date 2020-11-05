@@ -1,4 +1,3 @@
-from vehicle.constants import Constants
 from gpiozero import Servo
 import logging
 from common.command import Command
@@ -6,9 +5,15 @@ from common.command import Command
 
 class Heading(object):
 
-    def __init__(self):
-        self.servo = Servo(Constants.GPIO_PIN_STEERING_SERVO)
+    def __init__(self, config_handler):
         self.command = Command()
+        self.config_handler = config_handler
+
+        # Get the config value, then re-write it to the config. We do this so in the case that there is no config file
+        # yet, it will create one with the default value
+        steering_pin = self.config_handler.get_config_value_or('steering_pin', 13)
+        self.config_handler.set_config_value('steering_pin', steering_pin)
+        self.servo = Servo(steering_pin)
 
     def update_command(self, command):
 

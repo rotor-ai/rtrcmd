@@ -12,9 +12,10 @@ To use this script, you should define at least three fields in your config file:
 if __name__ == '__main__':
     config_handler = ConfigHandler()
     ip = config_handler.get_config_value_or('vehicle_ip', '127.0.0.1')
-    vehicle_src_dir = config_handler.get_config_value_or('vehicle_src_dir', '/home/pi')
+    vehicle_src_dir = config_handler.get_config_value_or('vehicle_src_dir', '/home/pi/src')
     user = config_handler.get_config_value_or('vehicle_user', 'pi')
     pwd = os.path.dirname(os.path.realpath(__file__))
 
-    command = f"scp -r {pwd} {user}@{ip}:{vehicle_src_dir}"
+    command = f"scp -r {pwd}/* {user}@{ip}:{vehicle_src_dir}"
+    print(command)
     subprocess.run(command, shell=True)

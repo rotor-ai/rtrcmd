@@ -4,6 +4,7 @@ import time
 import logging
 from vehicle.throttle import Throttle
 from vehicle.heading import Heading
+from common.config_handler import ConfigHandler
 import os
 
 
@@ -14,6 +15,7 @@ class CommandThread(threading.Thread):
         super(CommandThread, self).__init__(*args, **kwargs)
         self._stop_event = threading.Event()
         self.command = Command()
+        self.config_handler = ConfigHandler()
 
         # Flag noting whether this is the vehicle or if it's a test server
         self.is_vehicle = False
@@ -21,8 +23,8 @@ class CommandThread(threading.Thread):
             self.is_vehicle = True
 
         if self.is_vehicle:
-            self.throttle = Throttle()
-            self.heading = Heading()
+            self.throttle = Throttle(self.config_handler)
+            self.heading = Heading(self.config_handler)
 
         self.lock = threading.Lock()
         self.loop_delay = 0.01

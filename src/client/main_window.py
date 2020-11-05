@@ -14,11 +14,14 @@ class MainWindow(QMainWindow):
 
         self.config_handler = ConfigHandler()
 
-        self.command = Command()
         self.command_handler = CommandHandler()
         ip = self.config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
         port = self.config_handler.get_config_value_or('vehicle_port', 5000)
         self.command_handler.set_endpoint(ip, port)
+
+        # Get the initial command including trim values from the config handler
+        self.command = Command()
+        self.load_command_from_cfg()
 
         # Our popup window for setting trim
         self.trim_window = None
@@ -68,6 +71,13 @@ class MainWindow(QMainWindow):
         self.trim_window = TrimDialog(self.config_handler, self.command_handler)
         self.trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
         self.trim_window.show()
+
+        # After things have been trimmed, update our command so we can send updated trim values
+        self.trim_window.trim_changed.connect(self.load_command_from_cfg)
+
+    def load_command_from_cfg(self):
+        command_json = self.config_handler.get_config_value_or('trim_command', self.command.to_json())
+        self.command.from_json(command_json)
 
     def ip_changed(self, ip):
 

@@ -19,7 +19,7 @@ class CommandHandler(object):
         try:
             logging.info(f"Posting command: {command.to_json()}")
             endpoint = "http://" + self.ip + ":" + str(self.port) + "/command"
-            r = requests.post(endpoint, None, command.to_json(), timeout=.1)
+            r = requests.post(endpoint, None, command.to_json(), timeout=.5)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
