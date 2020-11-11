@@ -9,11 +9,14 @@ class ServerThread(threading.Thread):
 
     def __init__(self, app, server_addr, port):
         threading.Thread.__init__(self)
+        self.server_addr = server_addr
+        self.server_port = port
         self.srv = make_server(server_addr, port, app)
         self.ctx = app.app_context()
         self.ctx.push()
 
     def run(self):
+        logging.info(f"Serving on {self.server_addr}:{self.server_port}")
         self.srv.serve_forever()
 
     def shutdown(self):
@@ -67,7 +70,6 @@ class Server(object):
 
     def run(self, debug=False):
 
-        logging.info("Starting server on port {}".format(self.port))
         self.srv.start()
 
     def stop(self):

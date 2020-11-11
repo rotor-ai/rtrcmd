@@ -1,6 +1,7 @@
 from vehicle.server import Server
 from vehicle.vehicle_ctl import VehicleCtl
 from common.command import Command
+from common.config_handler import ConfigHandler
 import time
 import logging
 import os
@@ -10,6 +11,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     try:
+
         # Create the vehicle controller
         vehicle_ctl = VehicleCtl()
         vehicle_ctl.run()
@@ -27,17 +29,16 @@ if __name__ == '__main__':
             # Pass the new command to the vehicle
             vehicle_ctl.set_cmd(cmd)
 
-        # Default to using the internal loopback address
-        server_addr = '127.0.0.1'
-        if 'VEHICLE' in os.environ:
+        # Set the server address
+        config_handler = ConfigHandler.get_instance()
+        server_ip = config_handler.get_config_value_or('server_ip', '127.0.0.1')
+        server_port = config_handler.get_config_value_or('server_port', 5000)
 
-            # If this is the vehicle, listen on all addresses
-            server_addr = '0.0.0.0'
-
-        server = Server('Vehicle', server_addr, 5000)
+        server = Server('Vehicle', server_ip, server_port)
         server.add_endpoint('/command', get_func=handle_get, post_func=handle_post)
         server.run()
 
+        # Run forever
         while True:
             time.sleep(1)
 

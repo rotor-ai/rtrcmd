@@ -6,11 +6,23 @@ from multiprocessing import Lock
 
 
 class ConfigHandler(object):
-    """
-    Class to handle updating the configuration file on the client
-    """
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if ConfigHandler.__instance is None:
+            ConfigHandler()
+
+        return ConfigHandler.__instance
 
     def __init__(self):
+
+        # Verify that this is not being
+        if ConfigHandler.__instance is not None:
+            raise Exception("Config handler is a singleton, use the get_instance() method to retrieve the global "
+                            "config handler.")
+        else:
+            ConfigHandler.__instance = self
 
         # Flag to indicate that the config file has been setup correctly
         self.ok = False
@@ -23,8 +35,10 @@ class ConfigHandler(object):
             rotor_dir = os.getenv("ROTOR_DIR")
             self.cfg_filepath = Path(rotor_dir) / 'cfg.json'
         else:
-            home = Path.home()
-            self.cfg_filepath = home / 'rotor' / 'cfg.json'
+
+            # Use a global config filepath
+            self.cfg_filepath = '/etc/rotor/cfg.json'
+        logging.info(f"Using configuration file {self.cfg_filepath}")
 
         self._load_config()
 

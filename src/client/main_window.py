@@ -5,6 +5,7 @@ from common.command import Command
 from client.command_handler import CommandHandler
 from common.config_handler import ConfigHandler
 from client.trim_dialog import TrimDialog
+from client.trim import Trim
 
 
 class MainWindow(QMainWindow):
@@ -12,7 +13,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.config_handler = ConfigHandler()
+        self.config_handler = ConfigHandler.get_instance()
 
         self.command_handler = CommandHandler()
         ip = self.config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
@@ -21,7 +22,8 @@ class MainWindow(QMainWindow):
 
         # Get the initial command including trim values from the config handler
         self.command = Command()
-        self.load_command_from_cfg()
+        self.trim = Trim()
+        self.load_trim_from_cfg()
 
         # Our popup window for setting trim
         self.trim_window = None
@@ -68,16 +70,19 @@ class MainWindow(QMainWindow):
 
     def show_trim_window(self):
 
-        self.trim_window = TrimDialog(self.config_handler, self.command_handler)
+        self.trim_window = TrimDialog(self.trim)
         self.trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
         self.trim_window.show()
 
         # After things have been trimmed, update our command so we can send updated trim values
-        self.trim_window.trim_changed.connect(self.load_command_from_cfg)
+        self.trim_window.trim_changed.connect(self.load_trim_from_cfg)
 
-    def load_command_from_cfg(self):
-        command_json = self.config_handler.get_config_value_or('trim_command', self.command.to_json())
-        self.command.from_json(command_json)
+    def load_trim_from_cfg(self):
+        trim_json = self.config_handler.get_config_value_or('trim', self.trim.to_json())
+        self.trim.from_json(trim_json)
+
+        # Send a new trimmed command to show the new trim values on the vehicle
+        self.send_trimmed_command()
 
     def ip_changed(self, ip):
 
@@ -96,30 +101,30 @@ class MainWindow(QMainWindow):
         command_changed = False
         if e.key() == QtCore.Qt.Key_Up:
 
-            self.command.throttle = 1.0
+            self.command.set_throttle(1.0)
             self.up_btn.setDown(down)
             command_changed = True
 
         if e.key() == QtCore.Qt.Key_Left:
 
-            self.command.heading = -1.0
+            self.command.set_heading(-1.0)
             self.left_btn.setDown(down)
             command_changed = True
 
         if e.key() == QtCore.Qt.Key_Down:
 
-            self.command.throttle = -1.0
+            self.command.set_throttle(-1.0)
             self.down_btn.setDown(down)
             command_changed = True
 
         if e.key() == QtCore.Qt.Key_Right:
 
-            self.command.heading = 1.0
+            self.command.set_heading(1.0)
             self.right_btn.setDown(down)
             command_changed = True
 
         if command_changed:
-            self.command_handler.send_command(self.command)
+            self.send_trimmed_command()
 
         return super().keyPressEvent(e)
 
@@ -128,29 +133,42 @@ class MainWindow(QMainWindow):
         command_changed = False
         if e.key() == QtCore.Qt.Key_Up:
 
-            self.command.throttle = 0.0
+            self.command.set_throttle(0.0)
             self.up_btn.setDown(down)
             command_changed = True
 
         elif e.key() == QtCore.Qt.Key_Left:
 
-            self.command.heading = 0.0
+            self.command.set_heading(0.0)
             self.left_btn.setDown(down)
             command_changed = True
 
         elif e.key() == QtCore.Qt.Key_Down:
 
-            self.command.throttle = 0.0
+            self.command.set_throttle(0.0)
             self.down_btn.setDown(down)
             command_changed = True
 
         elif e.key() == QtCore.Qt.Key_Right:
 
-            self.command.heading = 0.0
+            self.command.set_heading(0.0)
             self.right_btn.setDown(down)
             command_changed = True
 
         if command_changed:
-            self.command_handler.send_command(self.command)
+            self.send_trimmed_command()
 
         return super().keyReleaseEvent(e)
+
+    def send_trimmed_command(self):
+
+        # Calculate trimmed values
+        trimmed_throttle = self.trim.get_trimmed_throttle(self.command.get_throttle())
+        trimmed_heading = self.trim.get_trimmed_heading(self.command.get_heading())
+
+        # Create a new command with trimmed values
+        command = Command()
+        command.set_throttle(trimmed_throttle)
+        command.set_heading(trimmed_heading)
+
+        self.command_handler.send_command(command)
