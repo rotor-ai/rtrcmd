@@ -13,6 +13,7 @@ class Trim(object):
         self.steering_reversed = False
 
         # Throttle trim
+        self.throttle_trim = 0.0
         self.throttle_fwd_min = 0.0
         self.throttle_fwd_max = 1.0
         self.throttle_rev_min = 0.0
@@ -29,6 +30,9 @@ class Trim(object):
 
     def get_steering_min(self):
         return self.steering_min
+
+    def get_throttle_trim(self):
+        return self.throttle_trim
 
     def get_throttle_fwd_min(self):
         return self.throttle_fwd_min
@@ -61,6 +65,11 @@ class Trim(object):
 
         self.steering_reversed = reverse
 
+    def set_throttle_trim(self, throttle_trim):
+
+        self.check_bounds(throttle_trim, "throttle trim", -1.0, 1.0)
+        self.throttle_trim = throttle_trim
+
     def set_throttle_fwd_max(self, throttle_fwd_max):
 
         self.check_bounds(throttle_fwd_max, "throttle fwd max", 0.0, 1.0)
@@ -88,7 +97,7 @@ class Trim(object):
 
     def get_trimmed_throttle(self, throttle):
 
-        trimmed_throttle = throttle
+        trimmed_throttle = throttle + self.throttle_trim
         if 0.0 < trimmed_throttle < self.throttle_fwd_min:
             trimmed_throttle = self.throttle_fwd_min
         elif trimmed_throttle > self.throttle_fwd_max:
@@ -120,6 +129,7 @@ class Trim(object):
             'steering_max': self.steering_max,
             'steering_min': self.steering_min,
             'steering_reversed': self.steering_reversed,
+            'throttle_trim': self.throttle_trim,
             'throttle_fwd_max': self.throttle_fwd_max,
             'throttle_fwd_min': self.throttle_fwd_min,
             'throttle_rev_max': self.throttle_rev_max,
@@ -138,6 +148,8 @@ class Trim(object):
             self.set_steering_min(json_cmd['steering_min'])
         if 'steering_reversed' in json_cmd:
             self.set_steering_reversed(json_cmd['steering_reversed'])
+        if 'throttle_trim' in json_cmd:
+            self.set_throttle_trim(json_cmd['throttle_trim'])
         if 'throttle_fwd_max' in json_cmd:
             self.set_throttle_fwd_max(json_cmd['throttle_fwd_max'])
         if 'throttle_fwd_min' in json_cmd:
