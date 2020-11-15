@@ -53,6 +53,16 @@ class MainWindow(QMainWindow):
         self.sb_port.valueChanged.connect(self.port_changed)
         self.lbl_port = QLabel("Port:")
 
+        # Connect all the push button signals
+        self.up_btn.pressed.connect(self.up_pressed)
+        self.up_btn.released.connect(self.up_released)
+        self.down_btn.pressed.connect(self.down_pressed)
+        self.down_btn.released.connect(self.down_released)
+        self.right_btn.pressed.connect(self.right_pressed)
+        self.right_btn.released.connect(self.right_released)
+        self.left_btn.pressed.connect(self.left_pressed)
+        self.left_btn.released.connect(self.left_released)
+
         # Set the widgets in the grid layout
         grid_layout = QGridLayout(central_widget)
         grid_layout.addWidget(self.up_btn, 0, 1)
@@ -67,6 +77,46 @@ class MainWindow(QMainWindow):
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
+
+    def up_pressed(self):
+        print("up pressed")
+        self.command.set_throttle(1.0)
+        self.send_trimmed_command()
+
+    def up_released(self):
+        print("up_released")
+        self.command.set_throttle(0.0)
+        self.send_trimmed_command()
+
+    def down_pressed(self):
+        print("down_pressed")
+        self.command.set_throttle(-1.0)
+        self.send_trimmed_command()
+
+    def down_released(self):
+        print("down_released")
+        self.command.set_throttle(0.0)
+        self.send_trimmed_command()
+
+    def right_pressed(self):
+        print("right_pressed")
+        self.command.set_steering(1.0)
+        self.send_trimmed_command()
+
+    def right_released(self):
+        print("right_released")
+        self.command.set_steering(0.0)
+        self.send_trimmed_command()
+
+    def left_pressed(self):
+        print("left_pressed")
+        self.command.set_steering(-1.0)
+        self.send_trimmed_command()
+
+    def left_released(self):
+        print("left_released")
+        self.command.set_steering(0.0)
+        self.send_trimmed_command()
 
     def show_trim_window(self):
 
@@ -97,66 +147,28 @@ class MainWindow(QMainWindow):
         self.config_handler.set_config_value('vehicle_port', port)
 
     def keyPressEvent(self, e):
-        down = True
-        command_changed = False
+
         if e.key() == QtCore.Qt.Key_Up:
-
-            self.command.set_throttle(1.0)
-            self.up_btn.setDown(down)
-            command_changed = True
-
+            self.up_pressed()
         if e.key() == QtCore.Qt.Key_Left:
-
-            self.command.set_steering(-1.0)
-            self.left_btn.setDown(down)
-            command_changed = True
-
+            self.left_pressed()
         if e.key() == QtCore.Qt.Key_Down:
-
-            self.command.set_throttle(-1.0)
-            self.down_btn.setDown(down)
-            command_changed = True
-
+            self.down_pressed()
         if e.key() == QtCore.Qt.Key_Right:
-
-            self.command.set_steering(1.0)
-            self.right_btn.setDown(down)
-            command_changed = True
-
-        if command_changed:
-            self.send_trimmed_command()
+            self.right_pressed()
 
         return super().keyPressEvent(e)
 
     def keyReleaseEvent(self, e):
-        down = False
-        command_changed = False
+
         if e.key() == QtCore.Qt.Key_Up:
-
-            self.command.set_throttle(0.0)
-            self.up_btn.setDown(down)
-            command_changed = True
-
+            self.up_released()
         elif e.key() == QtCore.Qt.Key_Left:
-
-            self.command.set_steering(0.0)
-            self.left_btn.setDown(down)
-            command_changed = True
-
+            self.left_released()
         elif e.key() == QtCore.Qt.Key_Down:
-
-            self.command.set_throttle(0.0)
-            self.down_btn.setDown(down)
-            command_changed = True
-
+            self.down_released()
         elif e.key() == QtCore.Qt.Key_Right:
-
-            self.command.set_steering(0.0)
-            self.right_btn.setDown(down)
-            command_changed = True
-
-        if command_changed:
-            self.send_trimmed_command()
+            self.right_released()
 
         return super().keyReleaseEvent(e)
 
