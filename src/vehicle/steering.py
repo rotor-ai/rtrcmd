@@ -4,7 +4,7 @@ from common.command import Command
 from common.config_handler import ConfigHandler
 
 
-class Heading(object):
+class Steering(object):
 
     def __init__(self):
         self.command = Command()
@@ -19,10 +19,10 @@ class Heading(object):
     def update_command(self, command):
 
         # If this is not a new command, ignore it
-        if command.get_heading() == self.command.get_heading():
+        if command.get_steering() == self.command.get_steering():
             return
 
-        # Set the new heading
+        # Set the new steering
         self.command = command
-        logging.debug(f"Setting heading to {self.command.get_heading()}")
-        self.servo.value = self.command.get_heading()
+        logging.debug(f"Setting steering to {self.command.get_steering()}")
+        self.servo.value = self.command.get_steering()

@@ -6,10 +6,11 @@ class Trim(object):
 
     def __init__(self):
 
-        # Heading trim
-        self.heading_trim = 0.0
-        self.heading_max = 1.0
-        self.heading_min = -1.0
+        # steering trim
+        self.steering_trim = 0.0
+        self.steering_max = 1.0
+        self.steering_min = -1.0
+        self.steering_reversed = False
 
         # Throttle trim
         self.throttle_fwd_min = 0.0
@@ -17,14 +18,17 @@ class Trim(object):
         self.throttle_rev_min = 0.0
         self.throttle_rev_max = -1.0
 
-    def get_heading_trim(self):
-        return self.heading_trim
+    def get_steering_trim(self):
+        return self.steering_trim
 
-    def get_heading_max(self):
-        return self.heading_max
+    def get_steering_reversed(self):
+        return self.steering_reversed
 
-    def get_heading_min(self):
-        return self.heading_min
+    def get_steering_max(self):
+        return self.steering_max
+
+    def get_steering_min(self):
+        return self.steering_min
 
     def get_throttle_fwd_min(self):
         return self.throttle_fwd_min
@@ -38,20 +42,24 @@ class Trim(object):
     def get_throttle_rev_max(self):
         return self.throttle_rev_max
 
-    def set_heading_trim(self, heading_trim):
+    def set_steering_trim(self, steering_trim):
 
-        self.check_bounds(heading_trim, "heading trim", -1.0, 1.0)
-        self.heading_trim = heading_trim
+        self.check_bounds(steering_trim, "steering trim", -1.0, 1.0)
+        self.steering_trim = steering_trim
 
-    def set_heading_max(self, heading_max):
+    def set_steering_max(self, steering_max):
 
-        self.check_bounds(heading_max, "heading max", 0.0, 1.0)
-        self.heading_max = heading_max
+        self.check_bounds(steering_max, "steering max", 0.0, 1.0)
+        self.steering_max = steering_max
 
-    def set_heading_min(self, heading_min):
+    def set_steering_min(self, steering_min):
 
-        self.check_bounds(heading_min, "heading min", -1.0, 0.0)
-        self.heading_min = heading_min
+        self.check_bounds(steering_min, "steering min", -1.0, 0.0)
+        self.steering_min = steering_min
+
+    def set_steering_reversed(self, reverse):
+
+        self.steering_reversed = reverse
 
     def set_throttle_fwd_max(self, throttle_fwd_max):
 
@@ -92,22 +100,26 @@ class Trim(object):
 
         return trimmed_throttle
 
-    def get_trimmed_heading(self, heading):
+    def get_trimmed_steering(self, steering):
 
-        trimmed_heading = heading + self.heading_trim
-        if trimmed_heading > self.heading_max:
-            trimmed_heading = self.heading_max
-        elif trimmed_heading < self.heading_min:
-            trimmed_heading = self.heading_min
+        if self.steering_reversed:
+            steering = -1 * steering
 
-        return trimmed_heading
+        trimmed_steering = steering + self.steering_trim
+        if trimmed_steering > self.steering_max:
+            trimmed_steering = self.steering_max
+        elif trimmed_steering < self.steering_min:
+            trimmed_steering = self.steering_min
+
+        return trimmed_steering
 
     def to_json(self):
 
         json_cmd = {
-            'heading_trim': self.heading_trim,
-            'heading_max': self.heading_max,
-            'heading_min': self.heading_min,
+            'steering_trim': self.steering_trim,
+            'steering_max': self.steering_max,
+            'steering_min': self.steering_min,
+            'steering_reversed': self.steering_reversed,
             'throttle_fwd_max': self.throttle_fwd_max,
             'throttle_fwd_min': self.throttle_fwd_min,
             'throttle_rev_max': self.throttle_rev_max,
@@ -118,12 +130,14 @@ class Trim(object):
 
     def from_json(self, json_cmd):
 
-        if 'heading_trim' in json_cmd:
-            self.set_heading_trim(json_cmd['heading_trim'])
-        if 'heading_max' in json_cmd:
-            self.set_heading_max(json_cmd['heading_max'])
-        if 'heading_min' in json_cmd:
-            self.set_heading_min(json_cmd['heading_min'])
+        if 'steering_trim' in json_cmd:
+            self.set_steering_trim(json_cmd['steering_trim'])
+        if 'steering_max' in json_cmd:
+            self.set_steering_max(json_cmd['steering_max'])
+        if 'steering_min' in json_cmd:
+            self.set_steering_min(json_cmd['steering_min'])
+        if 'steering_reversed' in json_cmd:
+            self.set_steering_reversed(json_cmd['steering_reversed'])
         if 'throttle_fwd_max' in json_cmd:
             self.set_throttle_fwd_max(json_cmd['throttle_fwd_max'])
         if 'throttle_fwd_min' in json_cmd:

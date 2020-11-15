@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
 
         if e.key() == QtCore.Qt.Key_Left:
 
-            self.command.set_heading(-1.0)
+            self.command.set_steering(-1.0)
             self.left_btn.setDown(down)
             command_changed = True
 
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
 
         if e.key() == QtCore.Qt.Key_Right:
 
-            self.command.set_heading(1.0)
+            self.command.set_steering(1.0)
             self.right_btn.setDown(down)
             command_changed = True
 
@@ -139,7 +139,7 @@ class MainWindow(QMainWindow):
 
         elif e.key() == QtCore.Qt.Key_Left:
 
-            self.command.set_heading(0.0)
+            self.command.set_steering(0.0)
             self.left_btn.setDown(down)
             command_changed = True
 
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
 
         elif e.key() == QtCore.Qt.Key_Right:
 
-            self.command.set_heading(0.0)
+            self.command.set_steering(0.0)
             self.right_btn.setDown(down)
             command_changed = True
 
@@ -164,11 +164,11 @@ class MainWindow(QMainWindow):
 
         # Calculate trimmed values
         trimmed_throttle = self.trim.get_trimmed_throttle(self.command.get_throttle())
-        trimmed_heading = self.trim.get_trimmed_heading(self.command.get_heading())
+        trimmed_steering = self.trim.get_trimmed_steering(self.command.get_steering())
 
         # Create a new command with trimmed values
         command = Command()
         command.set_throttle(trimmed_throttle)
-        command.set_heading(trimmed_heading)
+        command.set_steering(trimmed_steering)
 
         self.command_handler.send_command(command)

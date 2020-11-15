@@ -3,7 +3,7 @@ import threading
 import time
 import logging
 from vehicle.throttle import Throttle
-from vehicle.heading import Heading
+from vehicle.steering import Steering
 from common.config_handler import ConfigHandler
 
 
@@ -21,7 +21,7 @@ class CommandThread(threading.Thread):
 
         if self.is_vehicle:
             self.throttle = Throttle()
-            self.heading = Heading()
+            self.steering = Steering()
 
         self.lock = threading.Lock()
         self.loop_delay = 0.01
@@ -50,7 +50,7 @@ class CommandThread(threading.Thread):
 
         if self.is_vehicle:
             self.throttle.update_command(command)
-            self.heading.update_command(command)
+            self.steering.update_command(command)
 
 
 class VehicleCtl(object):

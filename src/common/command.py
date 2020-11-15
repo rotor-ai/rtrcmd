@@ -6,19 +6,19 @@ class Command(object):
 
     def __init__(self):
 
-        self.heading = 0.0
+        self.steering = 0.0
         self.throttle = 0.0
 
-    def get_heading(self):
-        return self.heading
+    def get_steering(self):
+        return self.steering
 
     def get_throttle(self):
         return self.throttle
 
-    def set_heading(self, heading):
+    def set_steering(self, steering):
 
-        self.check_bounds(heading, "heading", -1.0, 1.0)
-        self.heading = heading
+        self.check_bounds(steering, "steering", -1.0, 1.0)
+        self.steering = steering
 
     def set_throttle(self, throttle):
 
@@ -34,7 +34,7 @@ class Command(object):
 
         json_cmd = {
             'throttle': self.throttle,
-            'heading': self.heading,
+            'steering': self.steering,
         }
 
         return json_cmd
@@ -45,6 +45,6 @@ class Command(object):
             raise Exception("No throttle command in json")
         self.set_throttle(json_cmd['throttle'])
 
-        if 'heading' not in json_cmd:
-            raise Exception("No heading command in json")
-        self.set_heading(json_cmd['heading'])
+        if 'steering' not in json_cmd:
+            raise Exception("No steering command in json")
+        self.set_steering(json_cmd['steering'])

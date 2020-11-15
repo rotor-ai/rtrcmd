@@ -11,19 +11,19 @@ class SteeringWheel(VehicleDevice):
         self.servo_ref = servo
         self.servo_ref.value = Constants.SERVO_CENTER_PWM_VALUE
 
-    def set_heading(self, command):
+    def set_steering(self, command):
         if (not len(command)==4):
             return
 
         if (command[0] == 'L'):
             servo_limit = 1
-            self.logger.info("Setting heading to " + command)
+            self.logger.info("Setting steering to " + command)
         elif(command[0] == 'R'):
             servo_limit = -1
-            self.logger.info("Setting heading to " + command)
+            self.logger.info("Setting steering to " + command)
         elif(command[0] == 'N'):
             self.servo_ref.value = Constants.SERVO_CENTER_PWM_VALUE
-            self.logger.info("Setting heading to " + command)
+            self.logger.info("Setting steering to " + command)
             return
         else:
             return
