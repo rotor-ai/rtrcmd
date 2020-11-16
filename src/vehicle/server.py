@@ -45,7 +45,10 @@ class Endpoint(MethodView):
     def post(self):
         try:
 
-            response = self.post_func(request.get_json())
+            json_in = {}
+            if request.data:
+                json_in = request.get_json()
+            response = self.post_func(json_in)
             if response is not None:
                 return response
             else:
@@ -65,8 +68,8 @@ class Server(object):
         self.app = Flask(name)
         self.srv = ServerThread(self.app, self.server_addr, self.port)
 
-    def add_endpoint(self, url, get_func=None, post_func=None):
-        self.app.add_url_rule(url, view_func=Endpoint.as_view(self.name, get_func=get_func, post_func=post_func))
+    def add_endpoint(self, url, name, get_func=None, post_func=None):
+        self.app.add_url_rule(url, view_func=Endpoint.as_view(name, get_func=get_func, post_func=post_func))
 
     def run(self, debug=False):
 
@@ -75,18 +78,3 @@ class Server(object):
     def stop(self):
         logging.info("Shutting down server")
         self.srv.shutdown()
-
-
-if __name__ == '__main__':
-
-    def get():
-        return "This is the get function"
-
-    def post(json_in):
-        print(json_in)
-        return "This is the post function"
-
-    server = Server('Test Name', '/api', 5000)
-    server.add_get_method(get)
-    server.add_post_method(post)
-    server.run()
