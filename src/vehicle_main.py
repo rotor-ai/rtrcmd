@@ -2,6 +2,8 @@ from vehicle.server import Server
 from vehicle.vehicle_ctl import VehicleCtl
 from common.command import Command
 from common.config_handler import ConfigHandler
+from common.mode import Mode, ModeType
+from threading import Lock
 import time
 import logging
 import os
@@ -9,6 +11,8 @@ import os
 if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
+    mode = Mode()
+    mode_lock = Lock()  # Lock to guard against any threading weirdness when changing the mode
 
     try:
 
@@ -23,6 +27,7 @@ if __name__ == '__main__':
             return vehicle_ctl.get_cmd().to_json()
 
         def handle_command_post(json_in):
+
             cmd = Command()
             cmd.from_json(json_in)
 
@@ -30,10 +35,28 @@ if __name__ == '__main__':
             vehicle_ctl.set_cmd(cmd)
 
         def handle_mode_get():
-            print("Handling mode get")
+
+            with mode_lock:
+                return mode.to_json()
 
         def handle_mode_post(json_in):
-            print("Handling mode post")
+
+            with mode_lock:
+                mode.from_json(json_in)
+                if mode.get_mode() == ModeType.NORMAL:
+
+                    # TODO: Set to normal mode
+                    logging.info("Setting to normal mode")
+                elif mode.get_mode() == ModeType.TRAIN:
+
+                    # TODO: Set to training mode
+                    logging.info("Setting to training mode")
+                elif mode.get_mode() == ModeType.AUTO:
+
+                    # TODO: Set to auto mode
+                    logging.info("Setting to auto mode")
+
+            return mode.to_json()
 
         # Set the server address
         config_handler = ConfigHandler.get_instance()
