@@ -68,9 +68,29 @@ if __name__ == '__main__':
         server.add_endpoint('/mode', 'train', get_func=handle_mode_get, post_func=handle_mode_post)
         server.run()
 
-        # Collect images
+        loop_delay = config_handler.get_config_value_or('loop_delay', 0.1)
+
+        # Run forever
         while True:
-            time.sleep(1)
+
+            # Take a picture
+
+            with mode_lock:
+                if mode.get_mode() == ModeType.TRAIN:
+
+                    # Collect and label an image
+                    pass
+
+                elif mode.get_mode() == ModeType.AUTO:
+
+                    # Figure out what we should do
+                    pass
+
+                else:
+                    # Do nothing...
+                    pass
+
+            time.sleep(loop_delay)
 
     except KeyboardInterrupt:
         vehicle_ctl.stop()
