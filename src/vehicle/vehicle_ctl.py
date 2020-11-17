@@ -4,6 +4,7 @@ import time
 import logging
 from vehicle.throttle import Throttle
 from vehicle.steering import Steering
+from vehicle.vehicle_sensor import VehicleSensor
 from common.config_handler import ConfigHandler
 
 
@@ -53,8 +54,11 @@ class CommandThread(threading.Thread):
             self.steering.update_command(command)
 
 
-class VehicleCtl(object):
-    """ Control class for the vehicle """
+class VehicleCtl(VehicleSensor):
+    """
+    Control class for the vehicle. Implements VehicleSensor because we want to be able to pull the current command which
+    is dumped into the rest of the sensor data.
+    """
 
     def __init__(self):
         self.thread = CommandThread()
@@ -62,6 +66,12 @@ class VehicleCtl(object):
     def get_cmd(self):
         with self.thread.lock:
             return self.thread.command
+
+    def get_data(self) -> dict:
+        return {'command': self.get_cmd().to_json()}
+
+    def get_name(self) -> str:
+        return "vehicle_ctl"
 
     def set_cmd(self, command):
         with self.thread.lock:

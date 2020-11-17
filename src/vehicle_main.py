@@ -3,6 +3,8 @@ from vehicle.vehicle_ctl import VehicleCtl
 from common.command import Command
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
+from vehicle.sensor_data_collector import SensorDataCollector
+from vehicle.camera import Camera
 from threading import Lock
 import time
 import logging
@@ -13,12 +15,18 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     mode = Mode()
     mode_lock = Lock()  # Lock to guard against any threading weirdness when changing the mode
+    collector = SensorDataCollector()
 
     try:
 
         # Create the vehicle controller
         vehicle_ctl = VehicleCtl()
         vehicle_ctl.run()
+        collector.register_sensor(vehicle_ctl)
+
+        # Create the camera
+        camera = Camera()
+        collector.register_sensor(camera)
 
         # Create some functions to handle a GET and POST request
         def handle_command_get():
@@ -68,12 +76,10 @@ if __name__ == '__main__':
         server.add_endpoint('/mode', 'train', get_func=handle_mode_get, post_func=handle_mode_post)
         server.run()
 
-        loop_delay = config_handler.get_config_value_or('loop_delay', 0.1)
-
         # Run forever
         while True:
 
-            # Take a picture
+            data = collector.get_data()
 
             with mode_lock:
                 if mode.get_mode() == ModeType.TRAIN:
@@ -90,7 +96,7 @@ if __name__ == '__main__':
                     # Do nothing...
                     pass
 
-            time.sleep(loop_delay)
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         vehicle_ctl.stop()
