@@ -1,13 +1,12 @@
 from gpiozero import Servo
 import logging
-from common.command import Command
 from common.config_handler import ConfigHandler
 
 
 class Throttle(object):
 
     def __init__(self):
-        self.command = Command()
+        self.throttle = 0.0
         self.config_handler = ConfigHandler.get_instance()
 
         # Get the config value, then re-write it to the config. We do this so in the case that there is no config file
@@ -16,12 +15,12 @@ class Throttle(object):
         self.config_handler.set_config_value('speed_control_pin', speed_control_pin)
         self.servo = Servo(speed_control_pin)
 
-    def update_command(self, command):
+    def update_throttle(self, throttle):
 
-        if command.get_throttle() == self.command.get_throttle():
+        if throttle == self.throttle:
             return
 
         # Set the new throttle
-        self.command = command
-        logging.debug(f"Setting throttle to {self.command.get_throttle()}")
-        self.servo.value = self.command.get_throttle()
+        self.throttle = throttle
+        logging.debug(f"Setting throttle to {self.throttle}")
+        self.servo.value = self.throttle

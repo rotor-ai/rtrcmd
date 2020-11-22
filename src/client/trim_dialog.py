@@ -1,8 +1,5 @@
 from PyQt5.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel, QDoubleSpinBox, QCheckBox
 from PyQt5.QtCore import pyqtSignal
-from common.command import Command
-from common.config_handler import ConfigHandler
-import logging
 
 
 class TrimDialog(QWidget):
@@ -15,7 +12,6 @@ class TrimDialog(QWidget):
     def __init__(self, trim):
         QWidget.__init__(self)
         self.setWindowTitle("Set Trim")
-        self.config_handler = ConfigHandler.get_instance()
         self.trim = trim
 
         grid_layout = QGridLayout(self)
@@ -113,7 +109,7 @@ class TrimDialog(QWidget):
         self.trim.set_throttle_fwd_min(self.sb_throttle_fwd_min.value())
         self.trim.set_throttle_fwd_max(self.sb_throttle_fwd_max.value())
 
-        # Send the command and update the config
-        self.config_handler.set_config_value('trim', self.trim.to_json())
-
         self.trim_changed.emit()
+
+    def get_trim(self):
+        return self.trim

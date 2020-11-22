@@ -91,8 +91,8 @@ class DistanceSensor(VehicleSensor):
         with self.sensor_thread.lock:
             return {'distance': self.sensor_thread.distance}
 
-    def run(self):
-        self.sensor_thread.run()
+    def start(self):
+        self.sensor_thread.start()
 
     def stop(self):
         self.sensor_thread.stop()

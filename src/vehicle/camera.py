@@ -8,3 +8,9 @@ class Camera(VehicleSensor):
 
     def get_data(self) -> dict:
         return {'filepath': 'None'}
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass

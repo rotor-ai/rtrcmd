@@ -1,4 +1,5 @@
 from common.command import Command
+from common.trim import Trim
 import threading
 import time
 import logging
@@ -19,6 +20,10 @@ class CommandThread(threading.Thread):
 
         # Flag noting whether this is the vehicle or if it's a test server
         self.is_vehicle = self.config_handler.get_config_value_or('is_vehicle', False)
+
+        # Pull in the trim from the config file
+        self.trim = Trim()
+        self.trim.from_json(self.config_handler.get_config_value_or('trim', {}))
 
         if self.is_vehicle:
             self.throttle = Throttle()
@@ -42,16 +47,20 @@ class CommandThread(threading.Thread):
             command = Command()
             with self.lock:
                 command = self.command
-
-            self.execute_command(command)
+                self.execute_command(command)
 
             time.sleep(self.loop_delay)
 
     def execute_command(self, command):
 
         if self.is_vehicle:
-            self.throttle.update_command(command)
-            self.steering.update_command(command)
+
+            # Calculate trimmed values and update
+            trimmed_throttle = self.trim.get_trimmed_throttle(self.command.get_throttle())
+            trimmed_steering = self.trim.get_trimmed_steering(self.command.get_steering())
+
+            self.throttle.update_throttle(trimmed_throttle)
+            self.steering.update_steering(trimmed_steering)
 
 
 class VehicleCtl(VehicleSensor):
@@ -68,15 +77,24 @@ class VehicleCtl(VehicleSensor):
             return self.thread.command
 
     def get_data(self) -> dict:
-        with self.thread.lock:
-            return {'command': self.get_cmd().to_json()}
+        return {'command': self.get_cmd().to_json()}
 
     def set_cmd(self, command):
         with self.thread.lock:
             logging.debug(f"Received new command: {command.to_json()}")
             self.thread.command = command
 
-    def run(self):
+    def get_trim(self):
+        with self.thread.lock:
+            return self.thread.trim
+
+    def set_trim(self, trim):
+        with self.thread.lock:
+            logging.debug(f"Received new trim: {trim.to_json()}")
+            self.thread.config_handler.set_config_value('trim', trim.to_json())
+            self.thread.trim = trim
+
+    def start(self):
         self.thread.start()
 
     def stop(self):
