@@ -53,3 +53,13 @@ class CommandHandler(object):
 
         # Return a generic trim object
         return Trim()
+
+    def send_mode(self, mode):
+        try:
+            logging.info(f"Posting mode: {mode.to_json()}")
+            endpoint = "http://" + self.ip + ":" + str(self.port) + "/mode"
+            r = requests.post(endpoint, None, mode.to_json(), timeout=.5)
+            if r.status_code != 200:
+                logging.error(r.text)
+        except Exception as e:
+            logging.error(e)

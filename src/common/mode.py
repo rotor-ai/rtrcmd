@@ -5,6 +5,7 @@ class ModeType(IntEnum):
     NORMAL = 0
     TRAIN = 1
     AUTO = 2
+    ASSISTED = 3
 
 
 class Mode(object):
@@ -32,9 +33,9 @@ class Mode(object):
 
         return json_mode
 
-    def from_json(self, json_cmd):
+    def from_json(self, json_mode):
 
-        if 'mode' not in json_cmd:
+        if 'mode' not in json_mode:
             raise Exception("Cannot parse mode from json")
 
-        self.set_mode(json_cmd['mode'])
+        self.set_mode(json_mode['mode'])

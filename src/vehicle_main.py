@@ -50,17 +50,13 @@ if __name__ == '__main__':
             with mode_lock:
                 mode.from_json(json_in)
                 if mode.get_mode() == ModeType.NORMAL:
-
-                    # TODO: Set to normal mode
                     logging.info("Setting to normal mode")
                 elif mode.get_mode() == ModeType.TRAIN:
-
-                    # TODO: Set to training mode
                     logging.info("Setting to training mode")
                 elif mode.get_mode() == ModeType.AUTO:
-
-                    # TODO: Set to auto mode
                     logging.info("Setting to auto mode")
+                elif mode.get_mode() == ModeType.ASSISTED:
+                    logging.info("Setting to assisted mode")
 
             return mode.to_json()
 
@@ -93,6 +89,11 @@ if __name__ == '__main__':
                 elif mode.get_mode() == ModeType.AUTO:
 
                     # TODO: Figure out what we should do
+                    pass
+
+                elif mode.get_mode() == ModeType.ASSISTED:
+
+                    # TODO: Implement an assisted driving mode
                     pass
 
                 else:

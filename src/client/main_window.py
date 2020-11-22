@@ -1,11 +1,11 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox
+from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox
 from PyQt5.QtCore import QSize
 from common.command import Command
 from client.request_handler import CommandHandler
 from common.config_handler import ConfigHandler
 from client.trim_dialog import TrimDialog
-from common.trim import Trim
+from common.mode import Mode, ModeType
 
 
 class MainWindow(QMainWindow):
@@ -50,6 +50,12 @@ class MainWindow(QMainWindow):
         self.sb_port.setValue(port)
         self.sb_port.valueChanged.connect(self.port_changed)
         self.lbl_port = QLabel("Port:")
+        self.lbl_mode = QLabel("Mode:")
+        self.cbo_mode = QComboBox(self)
+        self.cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
+        self.cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
+        self.cbo_mode.addItem("AUTO", int(ModeType.AUTO))
+        self.cbo_mode.addItem("ASSISTED", int(ModeType.ASSISTED))
 
         # Connect all the push button signals
         self.up_btn.pressed.connect(self.up_pressed)
@@ -60,6 +66,7 @@ class MainWindow(QMainWindow):
         self.right_btn.released.connect(self.right_released)
         self.left_btn.pressed.connect(self.left_pressed)
         self.left_btn.released.connect(self.left_released)
+        self.cbo_mode.activated.connect(self.mode_changed)
 
         # Set the widgets in the grid layout
         grid_layout = QGridLayout(central_widget)
@@ -72,6 +79,8 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self.le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
         grid_layout.addWidget(self.lbl_port, 3, 0)
         grid_layout.addWidget(self.sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
+        grid_layout.addWidget(self.lbl_mode, 4, 0)
+        grid_layout.addWidget(self.cbo_mode, 4, 1, 1, 2)
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
@@ -142,6 +151,12 @@ class MainWindow(QMainWindow):
         ip = self.le_ip.text()
         self.request_handler.set_endpoint(ip, port)
         self.config_handler.set_config_value('vehicle_port', port)
+
+    def mode_changed(self, index):
+        mode_int = self.cbo_mode.currentData()
+        mode = Mode()
+        mode.set_mode(mode_int)
+        self.request_handler.send_mode(mode)
 
     def keyPressEvent(self, e):
 
