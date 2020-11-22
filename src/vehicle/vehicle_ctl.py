@@ -68,10 +68,8 @@ class VehicleCtl(VehicleSensor):
             return self.thread.command
 
     def get_data(self) -> dict:
-        return {'command': self.get_cmd().to_json()}
-
-    def get_name(self) -> str:
-        return "vehicle_ctl"
+        with self.thread.lock:
+            return {'command': self.get_cmd().to_json()}
 
     def set_cmd(self, command):
         with self.thread.lock:

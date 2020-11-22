@@ -4,31 +4,23 @@ from common.command import Command
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
 from vehicle.sensor_data_collector import SensorDataCollector
-from vehicle.camera import Camera
 from threading import Lock
 import time
 import logging
-import os
 
 if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     mode = Mode()
     mode_lock = Lock()  # Lock to guard against any threading weirdness when changing the mode
-    collector = SensorDataCollector()
 
     try:
 
         # Create the vehicle controller
         vehicle_ctl = VehicleCtl()
         vehicle_ctl.run()
-        collector.register_sensor(vehicle_ctl)
 
-        # Create the camera
-        camera = Camera()
-        collector.register_sensor(camera)
-
-        # Create some functions to handle a GET and POST request
+        # Create the server. This requires that we define some GET and POST request handlers for our endpoints.
         def handle_command_get():
 
             # Get the current command from the vehicle
@@ -76,20 +68,24 @@ if __name__ == '__main__':
         server.add_endpoint('/mode', 'train', get_func=handle_mode_get, post_func=handle_mode_post)
         server.run()
 
+        # Create the sensor data collector
+        collector = SensorDataCollector(vehicle_ctl)
+
         # Run forever
         while True:
 
             data = collector.get_data()
+            logging.debug(f"Collected data: {data}")
 
             with mode_lock:
                 if mode.get_mode() == ModeType.TRAIN:
 
-                    # Collect and label an image
+                    # TODO: Collect and label an image
                     pass
 
                 elif mode.get_mode() == ModeType.AUTO:
 
-                    # Figure out what we should do
+                    # TODO: Figure out what we should do
                     pass
 
                 else:

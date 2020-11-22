@@ -8,6 +8,3 @@ class Camera(VehicleSensor):
 
     def get_data(self) -> dict:
         return {'filepath': 'None'}
-
-    def get_name(self) -> str:
-        return "camera"
