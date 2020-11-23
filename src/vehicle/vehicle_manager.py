@@ -13,7 +13,7 @@ class VehicleManager(object):
     """
 
     def __init__(self):
-        self.auto_agent = AutoAgent()
+
         self.training_agent = TrainingAgent()
         self.driving_assist_agent = DrivingAssistAgent()
         self.mode = Mode()
@@ -25,6 +25,10 @@ class VehicleManager(object):
         # Create the vehicle controller and start it
         self.vehicle_ctl = VehicleCtl()
         self.vehicle_ctl.start()
+
+        # Create the auto agent and start
+        self.auto_agent = AutoAgent()
+        self.auto_agent.start()
 
     def update_sensor_data(self, data):
 
@@ -73,9 +77,16 @@ class VehicleManager(object):
         with self.lock:
             self.mode = mode
 
+            # Toggle the auto agent on or off if necessary
+            if self.mode.get_mode() == ModeType.AUTO:
+                self.auto_agent.set_processing(True)
+            else:
+                self.auto_agent.set_processing(False)
+
     def get_mode(self):
         with self.lock:
             return self.mode
 
     def stop(self):
         self.vehicle_ctl.stop()
+        self.auto_agent.stop()
