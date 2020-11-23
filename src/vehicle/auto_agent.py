@@ -57,12 +57,24 @@ class ProcessingThread(threading.Thread):
                 with self.lock:
                     self.command = command
 
-            time.sleep(1)
+            time.sleep(.05)
 
     def process_data(self, data) -> Command:
 
-        # This is where we actually process data and return a command
-        return Command()
+        ret_command = Command()
+
+        if 'distance_sensor' not in data:
+            return ret_command
+        distance_data = data['distance_sensor']
+
+        if 'distance' not in distance_data:
+            return ret_command
+        distance = distance_data['distance']
+
+        if distance > 50:
+            ret_command.set_throttle(1.0)
+
+        return ret_command
 
 
 class AutoAgent(object):

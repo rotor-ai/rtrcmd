@@ -22,7 +22,7 @@ class SensorThread(threading.Thread):
         self.echo_pin = self.config_handler.get_config_value_or('echo_pin', 24)
 
         self.lock = threading.Lock()
-        self.loop_delay = 0.5
+        self.loop_delay = 0.05
         self.timeout = 0.5
 
         # Setup GPIO
@@ -35,6 +35,10 @@ class SensorThread(threading.Thread):
 
     def stopped(self):
         return self._stop_event.is_set()
+
+    def get_distance(self):
+        with self.lock:
+            return self.distance
 
     def run(self):
 
@@ -74,7 +78,7 @@ class SensorThread(threading.Thread):
                 pulse_end = time.time()
 
             pulse_duration = pulse_end - pulse_start
-            distance = pulse_duration * 17150
+            distance = pulse_duration * 17150  # Speed of sound in cm/s divided by 2 for there and back
             distance = round(distance, 2)
 
             with self.lock:
@@ -89,8 +93,7 @@ class DistanceSensor(VehicleSensor):
         self.sensor_thread = SensorThread()
 
     def get_data(self) -> dict:
-        with self.sensor_thread.lock:
-            return {'distance': self.sensor_thread.distance}
+        return {'distance': self.sensor_thread.get_distance()}
 
     def start(self):
         self.sensor_thread.start()
