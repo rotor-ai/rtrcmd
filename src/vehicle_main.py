@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     try:
 
-        # Create the vehicle manager. This will
+        # Create the vehicle manager
         vehicle_mgr = VehicleManager()
 
-        # Create the sensor data collector
+        # Create the sensor manager
         sensor_mgr = SensorManager()
         sensor_mgr.start_sensors()
 

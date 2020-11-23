@@ -4,6 +4,7 @@ import time
 import threading
 import logging
 
+# Surround this in a try/except so it can be run on a non-pi machine
 try:
     import RPi.GPIO as GPIO
 except ImportError:
