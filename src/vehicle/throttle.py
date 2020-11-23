@@ -22,5 +22,5 @@ class Throttle(object):
 
         # Set the new throttle
         self.throttle = throttle
-        logging.debug(f"Setting throttle to {self.throttle}")
+        # logging.debug(f"Setting throttle to {self.throttle}")
         self.servo.value = self.throttle

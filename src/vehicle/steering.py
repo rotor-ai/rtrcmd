@@ -24,5 +24,5 @@ class Steering(object):
 
         # Set the new steering
         self.steering = steering
-        logging.debug(f"Setting steering to {self.steering}")
+        # logging.debug(f"Setting steering to {self.steering}")
         self.servo.value = self.steering

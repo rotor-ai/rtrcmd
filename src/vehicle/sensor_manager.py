@@ -17,9 +17,8 @@ class SensorManager(object):
     }
     """
 
-    def __init__(self, vehicle_ctl):
+    def __init__(self):
         self.config_handler = ConfigHandler.get_instance()
-        self.vehicle_ctl = vehicle_ctl
 
         # Populate our sensor list from the config
         self.sensors = {}
@@ -37,7 +36,7 @@ class SensorManager(object):
     def get_sensor_data(self) -> dict:
 
         # Construct a json object with all the latest data from our sensor list
-        ret = {'vehicle_ctl': self.vehicle_ctl.get_data()}
+        ret = {}
         for name, sensor in self.sensors.items():
             try:
                 ret[name] = sensor.get_data()

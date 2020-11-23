@@ -86,42 +86,34 @@ class MainWindow(QMainWindow):
         central_widget.setFocus()
 
     def up_pressed(self):
-        print("up pressed")
         self.command.set_throttle(1.0)
         self.send_command()
 
     def up_released(self):
-        print("up_released")
         self.command.set_throttle(0.0)
         self.send_command()
 
     def down_pressed(self):
-        print("down_pressed")
         self.command.set_throttle(-1.0)
         self.send_command()
 
     def down_released(self):
-        print("down_released")
         self.command.set_throttle(0.0)
         self.send_command()
 
     def right_pressed(self):
-        print("right_pressed")
         self.command.set_steering(1.0)
         self.send_command()
 
     def right_released(self):
-        print("right_released")
         self.command.set_steering(0.0)
         self.send_command()
 
     def left_pressed(self):
-        print("left_pressed")
         self.command.set_steering(-1.0)
         self.send_command()
 
     def left_released(self):
-        print("left_released")
         self.command.set_steering(0.0)
         self.send_command()
 
