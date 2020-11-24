@@ -9,7 +9,7 @@ class ConfigHandler(object):
     __instance = None
 
     @staticmethod
-    def get_instance():
+    def get_instance() -> 'ConfigHandler':
         if ConfigHandler.__instance is None:
             ConfigHandler()
 

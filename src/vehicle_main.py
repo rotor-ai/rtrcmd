@@ -46,6 +46,7 @@ if __name__ == '__main__':
             mode = Mode()
             mode.from_json(json_in)
             vehicle_mgr.set_mode(mode)
+            sensor_mgr.set_mode(mode)
 
         # Set the server address
         config_handler = ConfigHandler.get_instance()

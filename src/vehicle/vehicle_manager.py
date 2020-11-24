@@ -4,6 +4,7 @@ from vehicle.driving_assist_agent import DrivingAssistAgent
 from common.mode import Mode, ModeType
 from vehicle.vehicle_ctl import VehicleCtl
 from threading import Lock
+import logging
 
 
 class VehicleManager(object):
@@ -73,15 +74,30 @@ class VehicleManager(object):
     def get_trim(self):
         return self.vehicle_ctl.set_trim()
 
-    def set_mode(self, mode):
-        with self.lock:
-            self.mode = mode
+    def set_mode(self, new_mode):
 
-            # Toggle the auto agent on or off if necessary
-            if self.mode.get_mode() == ModeType.AUTO:
+        # If we're not actually changing the mode, leave
+        if new_mode.get_mode() == self.mode.get_mode():
+            return
+
+        with self.lock:
+
+            logging.info(f"Moving into mode: {new_mode.get_mode_name()}")
+
+            # If we're moving into auto mode, turn on the auto agent
+            if new_mode.get_mode() == ModeType.AUTO:
                 self.auto_agent.set_processing(True)
-            else:
+
+            # If we're moving out of auto mode, turn off the auto agent
+            if self.mode.get_mode() == ModeType.AUTO:
                 self.auto_agent.set_processing(False)
+
+            # Start a new log if we're switching into training mode
+            if new_mode.get_mode() == ModeType.TRAIN:
+                self.training_agent.init_new_log()
+
+            # Assign the new mode
+            self.mode = new_mode
 
     def get_mode(self):
         with self.lock:

@@ -1,6 +1,7 @@
 from vehicle.distance_sensor import DistanceSensor
 from vehicle.camera import Camera
 from common.config_handler import ConfigHandler
+from common.mode import Mode, ModeType
 
 
 class SensorManager(object):
@@ -28,6 +29,8 @@ class SensorManager(object):
                 self.sensors['camera'] = Camera()
             elif sensor == 'distance_sensor':
                 self.sensors['distance_sensor'] = DistanceSensor()
+
+        self.mode = Mode()
 
     """
     When called, the collector will loop through all configured sensors and produce a json object with all available 
@@ -64,3 +67,23 @@ class SensorManager(object):
                 sensor.stop()
             except (AttributeError, TypeError):
                 raise AssertionError(f"{type(sensor).__name__} must implement the VehicleSensor interface")
+
+    def set_mode(self, new_mode):
+
+        # If we're not actually changing the mode, return
+        if self.mode.get_mode() == new_mode.get_mode():
+            return
+
+        # If we're switching into auto or training mode, stop the camera if we have one
+        if new_mode.get_mode() == ModeType.AUTO or \
+           new_mode.get_mode() == ModeType.TRAIN:
+
+            if 'camera' in self.sensors:
+                self.sensors['camera'].set_recording(True)
+
+        # If we're switching out of auto or training mode, stop recording on the camera
+        else:
+            if 'camera' in self.sensors:
+                self.sensors['camera'].set_recording(False)
+
+        self.mode = new_mode

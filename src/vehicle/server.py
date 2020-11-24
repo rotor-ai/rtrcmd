@@ -39,7 +39,9 @@ class Endpoint(MethodView):
                 return make_response(jsonify({"status": "OK"}), 200)
 
         except Exception as e:
-            error_json = {'error': str(e)}
+            error_msg = str(e)
+            logging.error(error_msg)
+            error_json = {'error': error_msg}
             return make_response(jsonify(error_json), 400)
 
     def post(self):
@@ -55,7 +57,9 @@ class Endpoint(MethodView):
                 return make_response(jsonify({"status": "OK"}), 200)
 
         except Exception as e:
-            error_json = {'error': str(e)}
+            error_msg = str(e)
+            logging.error(error_msg)
+            error_json = {'error': error_msg}
             return make_response(jsonify(error_json), 400)
 
 

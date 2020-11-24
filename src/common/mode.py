@@ -25,6 +25,16 @@ class Mode(object):
     def get_mode(self):
         return self.mode_type
 
+    def get_mode_name(self):
+        if self.mode_type == ModeType.NORMAL:
+            return "NORMAL"
+        elif self.mode_type == ModeType.TRAIN:
+            return "TRAIN"
+        elif self.mode_type == ModeType.AUTO:
+            return "AUTO"
+        elif self.mode_type == ModeType.ASSISTED:
+            return "ASSISTED"
+
     def to_json(self):
 
         json_mode = {
