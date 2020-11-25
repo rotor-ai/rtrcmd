@@ -63,7 +63,7 @@ if __name__ == '__main__':
         while True:
             data = sensor_mgr.get_sensor_data()
             vehicle_mgr.update_sensor_data(data)
-            time.sleep(0.1)
+            time.sleep(0.25)
 
     except KeyboardInterrupt:
         vehicle_mgr.stop()

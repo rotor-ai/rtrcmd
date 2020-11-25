@@ -2,6 +2,7 @@ from common.config_handler import ConfigHandler
 from datetime import datetime
 from pathlib import Path
 import logging
+import json
 
 
 class TrainingAgent(object):
@@ -14,17 +15,19 @@ class TrainingAgent(object):
         self.config_handler = ConfigHandler.get_instance()
         self.data_dir = self.config_handler.get_config_value_or('data_dir', '/data')
         self.filepath = None
+        self.data = None
 
     def init_new_log(self):
-        filename = Path(datetime.now().strftime("%d%m%Y_%H%M%S.json"))
+        filename = Path(datetime.now().strftime("data_%d%m%Y_%H%M%S.json"))
         self.filepath = Path(self.data_dir) / filename
+        self.data = {'data': []}
 
     def update_sensor_data(self, data):
 
         if self.filepath is None:
             raise Exception("Training log has not been initialized")
         logging.debug(f"Writing to {self.filepath}:\t{data}")
+        self.data['data'].append(data)
 
-        # if 'vehicle_ctl' not in data or \
-        #    'camera' not in data:
-        #     return
+        with open(self.filepath, 'w') as file:
+            file.write(json.dumps(self.data, indent=4))

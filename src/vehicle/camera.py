@@ -5,6 +5,7 @@ from pathlib import Path
 import threading
 import logging
 from time import sleep
+import picamera
 
 
 class CameraThread(threading.Thread):
@@ -19,11 +20,14 @@ class CameraThread(threading.Thread):
 
         self.config_handler = ConfigHandler.get_instance()
         self.data_dir = self.config_handler.get_config_value_or('data_dir', '/data')
-        self.pi_camera = None
+        res_width = self.config_handler.get_config_value_or('res_width', 254)
+        res_height = self.config_handler.get_config_value_or('res_height', 254)
+        self.pi_camera = picamera.PiCamera()
+        self.pi_camera.resolution = (res_width, res_height)
 
         self.lock = threading.Lock()
         self.last_image_filepath = None
-        self.loop_delay = .1
+        self.loop_delay = 0  # The camera takes long enough to capture an image
 
     def stop(self):
         self._stop_event.set()
@@ -52,6 +56,7 @@ class CameraThread(threading.Thread):
             if self.recording():
                 filename = datetime.now().strftime("%d%m%Y_%H%M%S_%f")[:-3] + ".jpg"
                 filepath = Path(self.data_dir) / Path(filename)
+                self.pi_camera.capture(str(filepath))
 
                 with self.lock:
                     self.last_image_filepath = filepath
@@ -65,7 +70,8 @@ class Camera(VehicleSensor):
         self.camera_thread = CameraThread()
 
     def get_data(self) -> dict:
-        return {'filepath': self.camera_thread.get_last_image_filepath()}
+        filepath = self.camera_thread.get_last_image_filepath()
+        return {'filepath': filepath}
 
     def start(self):
         self.camera_thread.start()
