@@ -97,30 +97,31 @@ class Trim(object):
 
     def get_trimmed_throttle(self, throttle):
 
-        trimmed_throttle = throttle + self.throttle_trim
-        if 0.0 < trimmed_throttle < self.throttle_fwd_min:
-            trimmed_throttle = self.throttle_fwd_min
-        elif trimmed_throttle > self.throttle_fwd_max:
-            trimmed_throttle = self.throttle_fwd_max
-        elif self.throttle_rev_min < trimmed_throttle < 0.0:
-            trimmed_throttle = self.throttle_rev_min
-        elif trimmed_throttle < self.throttle_rev_max:
-            trimmed_throttle = self.throttle_rev_max
+        # trimmed_throttle = throttle + self.throttle_trim
+        trimmed_throttle = throttle
+        if throttle > 0:
+            trimmed_throttle = (self.throttle_fwd_max - self.throttle_fwd_min) * throttle + self.throttle_fwd_min
+        elif throttle < 0:
+            trimmed_throttle = (self.throttle_rev_min - self.throttle_rev_max) * throttle + self.throttle_rev_min
+        else:
+            trimmed_throttle = self.throttle_trim
 
-        return trimmed_throttle
+        return round(trimmed_throttle, 2)
 
     def get_trimmed_steering(self, steering):
 
         if self.steering_reversed:
             steering = -1 * steering
 
-        trimmed_steering = steering + self.steering_trim
-        if trimmed_steering > self.steering_max:
-            trimmed_steering = self.steering_max
-        elif trimmed_steering < self.steering_min:
-            trimmed_steering = self.steering_min
+        trimmed_steering = steering
+        if steering > 0:
+            trimmed_steering = (self.steering_max - self.steering_trim) * steering + self.steering_trim
+        elif steering < 0:
+            trimmed_steering = (self.steering_trim - self.steering_min) * steering + self.steering_trim
+        else:
+            trimmed_steering = self.steering_trim
 
-        return trimmed_steering
+        return round(trimmed_steering, 2)
 
     def to_json(self):
 
