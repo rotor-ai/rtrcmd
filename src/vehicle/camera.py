@@ -5,9 +5,14 @@ from pathlib import Path
 import threading
 import logging
 from time import sleep
-import picamera
 from vehicle.video_stream_client import VideoStreamClient
 import io
+
+# Surround this in a try/except so it can be run on a non-pi machine
+try:
+    import picamera
+except ImportError:
+    pass
 
 
 class CameraThread(threading.Thread):
@@ -98,6 +103,7 @@ class CameraThread(threading.Thread):
                     image_buffer.seek(0)
                     file.write(image_buffer.read())
 
+                # Notify other threads that we just saved an image
                 self._image_saved_event.set()
 
             # If we're streaming, send the data to the streaming class

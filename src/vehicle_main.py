@@ -4,8 +4,6 @@ from common.command import Command
 from common.trim import Trim
 from common.config_handler import ConfigHandler
 from common.mode import Mode
-from vehicle.sensor_manager import SensorManager
-import time
 import logging
 
 
@@ -17,10 +15,6 @@ if __name__ == '__main__':
 
         # Create the vehicle manager
         vehicle_mgr = VehicleManager()
-
-        # Create the sensor manager
-        sensor_mgr = SensorManager()
-        sensor_mgr.start_sensors()
 
         # Create the server. This requires that we define some GET and POST request handlers for our endpoints.
         def handle_command_get():
@@ -46,7 +40,6 @@ if __name__ == '__main__':
             mode = Mode()
             mode.from_json(json_in)
             vehicle_mgr.set_mode(mode)
-            sensor_mgr.set_mode(mode)
 
         # Set the server address
         config_handler = ConfigHandler.get_instance()
@@ -59,13 +52,8 @@ if __name__ == '__main__':
         server.add_endpoint('/mode', 'train', get_func=handle_mode_get, post_func=handle_mode_post)
         server.run()
 
-        # Run forever and continually update the vehicle manager with sensor data
-        while True:
-            data = sensor_mgr.get_sensor_data()
-            vehicle_mgr.update_sensor_data(data)
-            time.sleep(0.25)
+        vehicle_mgr.run_forever()
 
     except KeyboardInterrupt:
         vehicle_mgr.stop()
         server.stop()
-        sensor_mgr.stop_sensors()

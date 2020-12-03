@@ -1,10 +1,12 @@
 from vehicle.auto_agent import AutoAgent
 from vehicle.training_agent import TrainingAgent
 from vehicle.driving_assist_agent import DrivingAssistAgent
+from vehicle.sensor_manager import SensorManager
 from common.mode import Mode, ModeType
 from vehicle.vehicle_ctl import VehicleCtl
 from threading import Lock
 import logging
+from time import sleep
 
 
 class VehicleManager(object):
@@ -27,11 +29,18 @@ class VehicleManager(object):
         self.vehicle_ctl = VehicleCtl()
         self.vehicle_ctl.start()
 
-        # Create the auto agent and start
+        # Create the auto agent and start it
         self.auto_agent = AutoAgent()
         self.auto_agent.start()
 
-    def update_sensor_data(self, data):
+        # Create the sensor manager and start it
+        self.sensor_mgr = SensorManager()
+        self.sensor_mgr.start_sensors()
+
+    def poll_sensor_data(self):
+
+        # Get the sensor data from the sensor manager
+        data = self.sensor_mgr.get_sensor_data()
 
         # Append the current user input to the data
         data['vehicle_ctl'] = self.vehicle_ctl.get_cmd().to_json()
@@ -103,6 +112,13 @@ class VehicleManager(object):
         with self.lock:
             return self.mode
 
+    def run_forever(self):
+
+        while True:
+            self.poll_sensor_data()
+            sleep(.1)
+
     def stop(self):
         self.vehicle_ctl.stop()
         self.auto_agent.stop()
+        self.sensor_mgr.stop_sensors()

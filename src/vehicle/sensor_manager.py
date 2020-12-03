@@ -67,23 +67,3 @@ class SensorManager(object):
                 sensor.stop()
             except (AttributeError, TypeError):
                 raise AssertionError(f"{type(sensor).__name__} must implement the VehicleSensor interface")
-
-    def set_mode(self, new_mode):
-
-        # If we're not actually changing the mode, return
-        if self.mode.get_mode() == new_mode.get_mode():
-            return
-
-        # If we're switching into auto or training mode, stop the camera if we have one
-        if new_mode.get_mode() == ModeType.AUTO or \
-           new_mode.get_mode() == ModeType.TRAIN:
-
-            if 'camera' in self.sensors:
-                self.sensors['camera'].set_recording(True)
-
-        # If we're switching out of auto or training mode, stop recording on the camera
-        else:
-            if 'camera' in self.sensors:
-                self.sensors['camera'].set_recording(False)
-
-        self.mode = new_mode
