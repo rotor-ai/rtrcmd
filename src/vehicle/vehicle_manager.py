@@ -105,6 +105,10 @@ class VehicleManager(object):
             if new_mode.get_mode() == ModeType.TRAIN:
                 self.training_agent.init_new_log()
 
+            # If we're moving out of training mode, write out the data log
+            if self.mode.get_mode() == ModeType.TRAIN:
+                self.training_agent.write_data_to_log()
+
             # Assign the new mode
             self.mode = new_mode
 
@@ -115,10 +119,20 @@ class VehicleManager(object):
     def run_forever(self):
 
         while True:
-            self.poll_sensor_data()
+
+            if self.mode.get_mode() == ModeType.TRAIN or \
+               self.mode.get_mode() == ModeType.AUTO or \
+               self.mode.get_mode() == ModeType.ASSISTED:
+
+                self.poll_sensor_data()
+
             sleep(.1)
 
     def stop(self):
+
+        # Move into normal mode before shutting down
+        self.set_mode(Mode())
+
         self.vehicle_ctl.stop()
         self.auto_agent.stop()
         self.sensor_mgr.stop_sensors()

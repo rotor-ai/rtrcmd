@@ -26,8 +26,11 @@ class TrainingAgent(object):
 
         if self.filepath is None:
             raise Exception("Training log has not been initialized")
-        logging.debug(f"Writing to {self.filepath}:\t{data}")
+
         self.data['data'].append(data)
 
+    def write_data_to_log(self):
+
+        logging.info(f"Writing training data to {self.filepath}")
         with open(self.filepath, 'w') as file:
             file.write(json.dumps(self.data, indent=4))

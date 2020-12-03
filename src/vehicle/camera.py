@@ -4,9 +4,9 @@ from datetime import datetime
 from pathlib import Path
 import threading
 import logging
-from time import sleep
 from vehicle.video_stream_client import VideoStreamClient
 import io
+
 
 # Surround this in a try/except so it can be run on a non-pi machine
 try:
@@ -39,7 +39,6 @@ class CameraThread(threading.Thread):
 
         self.lock = threading.Lock()
         self.last_image_filepath = None
-        self.loop_delay = 0  # The camera takes long enough to capture an image
 
         video_stream_ip = self.config_handler.get_config_value_or('video_stream_ip', '127.0.0.1')
         video_stream_port = self.config_handler.get_config_value_or('video_stream_port', 4000)
@@ -87,10 +86,9 @@ class CameraThread(threading.Thread):
 
             # Pull data from the camera and write to a numpy array
             image_buffer = io.BytesIO()
-            self.pi_camera.capture(image_buffer, use_video_port=True)
 
-            # We know the image size based on the current location in the image buffer
-            image_size = image_buffer.tell()
+            # Capture the image to the buffer. Using the video port allows us to capture images at a higher frame rate
+            self.pi_camera.capture(image_buffer, use_video_port=True, format='jpeg')
 
             # If we're training, check if we should save off this image to a file
             if self._save_next_image_event.is_set():
@@ -104,13 +102,12 @@ class CameraThread(threading.Thread):
                     file.write(image_buffer.read())
 
                 # Notify other threads that we just saved an image
+                self.last_image_filepath = str(filepath)
                 self._image_saved_event.set()
 
             # If we're streaming, send the data to the streaming class
             if self.streaming():
                 pass
-
-            sleep(self.loop_delay)
 
 
 class Camera(VehicleSensor):
