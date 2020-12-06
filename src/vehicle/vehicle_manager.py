@@ -81,7 +81,7 @@ class VehicleManager(object):
         self.vehicle_ctl.set_trim(trim)
 
     def get_trim(self):
-        return self.vehicle_ctl.set_trim()
+        return self.vehicle_ctl.get_trim()
 
     def set_mode(self, new_mode):
 

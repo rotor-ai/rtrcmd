@@ -38,7 +38,7 @@ class CameraThread(threading.Thread):
         self.pi_camera.resolution = (self.res_width, self.res_height)
 
         self.lock = threading.Lock()
-        self.last_image_filepath = None
+        self.last_image_filename = None
 
         video_stream_ip = self.config_handler.get_config_value_or('video_stream_ip', '127.0.0.1')
         video_stream_port = self.config_handler.get_config_value_or('video_stream_port', 4000)
@@ -63,7 +63,7 @@ class CameraThread(threading.Thread):
             self.video_stream_client.close()
             self._streaming_event.clear()
 
-    def get_next_image_filepath(self) -> str:
+    def get_last_image_filename(self) -> str:
 
         # Notify the camera loop that we want to save the next image
         self._save_next_image_event.set()
@@ -75,7 +75,7 @@ class CameraThread(threading.Thread):
         self._save_next_image_event.clear()
         self._image_saved_event.clear()
 
-        return self.last_image_filepath
+        return self.last_image_filename
 
     def streaming(self):
         return self._streaming_event.is_set()
@@ -102,7 +102,7 @@ class CameraThread(threading.Thread):
                     file.write(image_buffer.read())
 
                 # Notify other threads that we just saved an image
-                self.last_image_filepath = str(filepath)
+                self.last_image_filename = str(filename)
                 self._image_saved_event.set()
 
             # If we're streaming, send the data to the streaming class
@@ -116,8 +116,8 @@ class Camera(VehicleSensor):
         self.camera_thread = CameraThread()
 
     def get_data(self) -> dict:
-        filepath = self.camera_thread.get_next_image_filepath()
-        return {'filepath': filepath}
+        filename = self.camera_thread.get_last_image_filename()
+        return {'filename': filename}
 
     def start(self):
         self.camera_thread.start()
