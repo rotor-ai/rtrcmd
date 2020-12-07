@@ -19,6 +19,6 @@ if __name__ == '__main__':
     user = config_handler.get_config_value_or('vehicle_user', 'pi')
     pwd = os.path.dirname(os.path.realpath(__file__))
 
-    command = f"scp -4 -r {pwd}/* {user}@{ip}:{vehicle_src_dir}"
+    command = f"rsync -rv {pwd}/* {user}@{ip}:{vehicle_src_dir}"
     print(command)
     subprocess.run(command, shell=True)
