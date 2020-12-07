@@ -3,7 +3,7 @@ from PIL import Image
 from torchvision.transforms import functional
 
 
-class VehicleDataset(Dataset):
+class SingleImageDataset(Dataset):
 
     def __init__(self):
 

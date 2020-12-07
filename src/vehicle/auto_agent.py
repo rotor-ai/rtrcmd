@@ -1,7 +1,14 @@
 from common.command import Command
+from common.config_handler import ConfigHandler
+from ai.simple_net import SimpleNet
+from torch.utils.data import DataLoader
+from ai.single_image_dataset import SingleImageDataset
 import threading
 import time
 import logging
+from pathlib import Path
+import torch
+from ai.label import Label
 
 
 class ProcessingThread(threading.Thread):
@@ -17,6 +24,17 @@ class ProcessingThread(threading.Thread):
         self.lock = threading.Lock()
         self.command = Command()
         self.data = {}
+
+        self.config_handler = ConfigHandler.get_instance()
+        self.data_dir = self.config_handler.get_config_value_or('data_dir', '/data')
+
+        self.model = SimpleNet()
+        self.model.load_state_dict(torch.load("nn_model.pt"))
+
+        # Set the model into evaluation mode
+        self.model.eval()
+
+        self.dataset = SingleImageDataset()
 
     def stop(self):
         self._stop_event.set()
@@ -62,19 +80,45 @@ class ProcessingThread(threading.Thread):
     def process_data(self, data) -> Command:
 
         ret_command = Command()
-
-        if 'distance_sensor' not in data:
-            return ret_command
-        distance_data = data['distance_sensor']
-
-        if 'distance' not in distance_data:
-            return ret_command
-        distance = distance_data['distance']
-
-        if distance > 50:
-            ret_command.set_throttle(1.0)
+        ret_command.set_throttle(self.generate_throttle(data))
 
         return ret_command
+
+    def generate_throttle(self, data) -> float:
+
+        if 'distance_sensor' in data:
+            distance_data = data['distance_sensor']
+            if 'distance' in distance_data:
+                distance = distance_data['distance']
+                if distance < 50:
+                    return 0.0
+
+        return 1.0
+
+    def generate_steering(self, data) -> float:
+
+        if 'camera' in data:
+            camera_data = data['camera']
+            if 'filename' in camera_data:
+                filename = camera_data['filename']
+                filepath = Path(self.data_dir) / Path(filename)
+
+                # Load the image into the dataset
+                self.dataset.load_image(filepath)
+
+                # Create a data loader for the updated dataset
+                data_loader = DataLoader(self.dataset, batch_size=1)
+                data_iter = iter(data_loader)
+                image = data_iter.next()
+
+                # Generate the steering value prediction
+                output = self.model(image)
+                _, label_index = torch.max(output, dim=1)
+
+                logging.info(f"Steering prediction: {Label.label_index_to_name(label_index)}")
+                return Label.label_index_to_steering_value(label_index)
+
+        return 0.0
 
 
 class AutoAgent(object):

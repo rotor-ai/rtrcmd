@@ -1,12 +1,18 @@
-from vehicle.auto_agent import AutoAgent
 from vehicle.training_agent import TrainingAgent
 from vehicle.driving_assist_agent import DrivingAssistAgent
 from vehicle.sensor_manager import SensorManager
 from common.mode import Mode, ModeType
 from vehicle.vehicle_ctl import VehicleCtl
+from common.config_handler import ConfigHandler
 from threading import Lock
 import logging
 from time import sleep
+
+# Surround the import in a try/catch for vehicles that do not have autonomous mode enabled
+try:
+    from vehicle.auto_agent import AutoAgent
+except ModuleNotFoundError:
+    pass
 
 
 class VehicleManager(object):
@@ -16,6 +22,8 @@ class VehicleManager(object):
     """
 
     def __init__(self):
+
+        self.config_handler = ConfigHandler.get_instance()
 
         self.training_agent = TrainingAgent()
         self.driving_assist_agent = DrivingAssistAgent()
@@ -29,13 +37,15 @@ class VehicleManager(object):
         self.vehicle_ctl = VehicleCtl()
         self.vehicle_ctl.start()
 
-        # Create the auto agent and start it
-        self.auto_agent = AutoAgent()
-        self.auto_agent.start()
-
         # Create the sensor manager and start it
         self.sensor_mgr = SensorManager()
         self.sensor_mgr.start_sensors()
+
+        # Create the auto agent and start it if the user has enabled it
+        self.auto_enabled = self.config_handler.get_config_value_or('auto_enabled', False)
+        if self.auto_enabled:
+            self.auto_agent = AutoAgent()
+            self.auto_agent.start()
 
     def poll_sensor_data(self):
 
@@ -95,7 +105,10 @@ class VehicleManager(object):
 
             # If we're moving into auto mode, turn on the auto agent
             if new_mode.get_mode() == ModeType.AUTO:
-                self.auto_agent.set_processing(True)
+                if self.auto_enabled:
+                    self.auto_agent.set_processing(True)
+                else:
+                    raise Exception("Autonomous mode is not enabled on this vehicle")
 
             # If we're moving out of auto mode, turn off the auto agent
             if self.mode.get_mode() == ModeType.AUTO:
@@ -134,5 +147,7 @@ class VehicleManager(object):
         self.set_mode(Mode())
 
         self.vehicle_ctl.stop()
-        self.auto_agent.stop()
         self.sensor_mgr.stop_sensors()
+
+        if self.auto_enabled:
+            self.auto_agent.stop()

@@ -10,7 +10,7 @@ from torch import from_numpy
 import numpy as np
 
 
-class RotorDataset(Dataset):
+class TrainingDataset(Dataset):
 
     def __init__(self, data_dir):
 

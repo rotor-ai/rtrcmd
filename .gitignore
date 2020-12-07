@@ -4,3 +4,4 @@
 venv/
 *.service
 data/
+.DS_Store
