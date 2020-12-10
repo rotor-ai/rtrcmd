@@ -30,14 +30,15 @@ class ConfigHandler(object):
         self.config = {}
 
         # Check if there is a rotor directory defined
-        self.cfg_filepath = Path()
+        self.rotor_dir = Path()
         if "ROTOR_DIR" in os.environ:
-            rotor_dir = os.getenv("ROTOR_DIR")
-            self.cfg_filepath = Path(rotor_dir) / 'cfg.json'
+            self.rotor_dir = os.getenv("ROTOR_DIR")
         else:
 
             # Use a global config filepath
-            self.cfg_filepath = '/etc/rotor/cfg.json'
+            self.rotor_dir = Path('/etc/rotor/')
+
+        self.cfg_filepath = self.rotor_dir / Path('cfg.json')
         logging.info(f"Using configuration file {self.cfg_filepath}")
 
         self._load_config()
@@ -83,3 +84,6 @@ class ConfigHandler(object):
                 return self.config[key]
             else:
                 return default
+
+    def get_rotor_dir(self):
+        return self.rotor_dir

@@ -11,7 +11,8 @@ from time import sleep
 # Surround the import in a try/catch for vehicles that do not have autonomous mode enabled
 try:
     from vehicle.auto_agent import AutoAgent
-except ModuleNotFoundError:
+except ModuleNotFoundError as e:
+    logging.error(e)
     pass
 
 

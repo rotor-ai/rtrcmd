@@ -29,7 +29,8 @@ class ProcessingThread(threading.Thread):
         self.data_dir = self.config_handler.get_config_value_or('data_dir', '/data')
 
         self.model = SimpleNet()
-        self.model.load_state_dict(torch.load("nn_model.pt"))
+        model_path = Path(self.config_handler.get_rotor_dir()) / Path('src/nn_model.pt')
+        self.model.load_state_dict(torch.load(model_path))
 
         # Set the model into evaluation mode
         self.model.eval()
@@ -81,6 +82,7 @@ class ProcessingThread(threading.Thread):
 
         ret_command = Command()
         ret_command.set_throttle(self.generate_throttle(data))
+        ret_command.set_steering(self.generate_steering(data))
 
         return ret_command
 
