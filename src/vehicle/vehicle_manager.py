@@ -121,7 +121,7 @@ class VehicleManager(object):
 
             # If we're moving out of training mode, write out the data log
             if self.mode.get_mode() == ModeType.TRAIN:
-                self.training_agent.write_data_to_log()
+                self.training_agent.finalize_log()
 
             # Assign the new mode
             self.mode = new_mode

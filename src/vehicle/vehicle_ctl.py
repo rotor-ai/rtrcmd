@@ -3,10 +3,16 @@ from common.trim import Trim
 import threading
 import time
 import logging
-from vehicle.throttle import Throttle
-from vehicle.steering import Steering
 from vehicle.vehicle_sensor import VehicleSensor
 from common.config_handler import ConfigHandler
+
+# Surround the import in a try/catch to accommodate running on non-vehicles
+try:
+    from vehicle.throttle import Throttle
+    from vehicle.steering import Steering
+except ModuleNotFoundError as e:
+    logging.error(e)
+    pass
 
 
 class CommandThread(threading.Thread):

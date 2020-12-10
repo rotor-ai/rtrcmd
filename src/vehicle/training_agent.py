@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 import logging
 import json
+import time
+from threading import Thread
 
 
 class TrainingAgent(object):
@@ -17,10 +19,24 @@ class TrainingAgent(object):
         self.filepath = None
         self.data = None
 
+        self.save_interval = 5  # Seconds between saves
+        self.last_save = time.time()
+
     def init_new_log(self):
         filename = Path(datetime.now().strftime("data_%d%m%Y_%H%M%S.json"))
         self.filepath = Path(self.data_dir) / filename
         self.data = {'data': []}
+        self.last_save = time.time()
+
+    def finalize_log(self):
+        thread = Thread(target=self._write_data_to_log, daemon=True)
+        thread.start()
+
+    def _write_data_to_log(self):
+
+        logging.info(f"Writing training data to {self.filepath}")
+        with open(self.filepath, 'w') as file:
+            file.write(json.dumps(self.data, indent=4))
 
     def update_sensor_data(self, data):
 
@@ -29,8 +45,8 @@ class TrainingAgent(object):
 
         self.data['data'].append(data)
 
-    def write_data_to_log(self):
-
-        logging.info(f"Writing training data to {self.filepath}")
-        with open(self.filepath, 'w') as file:
-            file.write(json.dumps(self.data, indent=4))
+        now = time.time()
+        if now - self.last_save > self.save_interval:
+            thread = Thread(target=self._write_data_to_log, daemon=True)
+            thread.start()
+            self.last_save = now
