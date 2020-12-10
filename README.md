@@ -9,9 +9,28 @@
     
     ⚠ On Ubuntu, PyQt5 will require the [libxcb-xinerama0](https://packages.ubuntu.com/focal/libxcb-xinerama0) package, as noted in [this forum post](https://forum.qt.io/topic/93247/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it-was-found/4).
       
-#### Sending code to the Raspberry Pi:
-* On your dev machine, add an entry in `/etc/hosts` for `rc`. This should point to the IP address for your Raspberry Pi (RPi)
-* In terminal, run `$ ./send-to-pi.sh` to send the src folder to an RPi on your network.
+#### Sending code to your Raspberry Pi:
+1) On your dev machine, add an entry in `/etc/hosts` for `rc`. This should point to the IP address for your Raspberry Pi (RPi)
+    ```
+    192.168.1.102  rc
+    ```
+   
+1) Edit your `.bashrc` file and add an export for ROTOR_DIR at the end of the file
+   ```
+        export ROTOR_DIR=/home/stu/
+   ```
+   Make sure to `$ source ~/.bashrc` when you're done
+
+1) Create a new config file to point to your vehicle
+   ```
+    $ echo "
+    {
+        \"vehicle_ip\":\"rc\",
+        \"vehicle_src_dir\":\"/home/pi/rotor/src\",
+        \"vehicle_user\": \"pi\"
+    }" > $ROTOR_DIR/cfg.json
+   ```
+1) In terminal, run `$ python3 ./src/send_to_vehicle.py` 
 
 #### Configuring the Raspberry Pi:
 * You will need the following packages installed locally on the pi:
