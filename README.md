@@ -18,6 +18,10 @@
     
     [`pigpio`](http://abyz.me.uk/rpi/pigpio/download.html) also available [via pip](https://pypi.org/project/pigpio/)
 
+    [`pytorch`](https://www.spinellis.gr/blog/20200317/index.html) (must be built from source)
+
+* Make sure your RPi is setup with SSH enabled by running `$ sudo raspi-config`
+
 #### Sending code to your Raspberry Pi:
 1. On your dev machine, add an entry in `/etc/hosts` for `rc`. This should point to the IP address for your Raspberry Pi (RPi)
     ```
