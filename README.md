@@ -22,6 +22,19 @@
 
 * Make sure your RPi is setup with SSH enabled by running `$ sudo raspi-config`
 
+* Once SSH is installed, you'll need to login to the pi and run:
+```
+$ mkdir rotor
+$ echo "
+{
+    \"is_vehicle\": true,
+    \"server_ip\": \"0.0.0.0\",
+    \"server_port\": 5000,
+    \"speed_control_pin\": 12,
+    \"steering_pin\": 13
+}" > ~/rotor/cfg.json
+```
+
 #### Sending code to your Raspberry Pi:
 1. On your dev machine, add an entry in `/etc/hosts` for `rc`. This should point to the IP address for your Raspberry Pi (RPi)
     ```
