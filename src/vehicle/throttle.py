@@ -1,7 +1,7 @@
-from gpiozero import Servo
 import logging
-from common.config_handler import ConfigHandler
 
+from common.config_handler import ConfigHandler
+from gpiozero import Servo
 from vehicle.constants import Constants
 
 
@@ -24,5 +24,5 @@ class Throttle(object):
 
         # Set the new throttle
         self.throttle = throttle
-        # logging.debug(f"Setting throttle to {self.throttle}")
+        logging.debug(f"Setting throttle to {self.throttle}")
         self.servo.value = self.throttle

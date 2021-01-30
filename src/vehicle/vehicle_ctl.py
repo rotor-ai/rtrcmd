@@ -50,14 +50,12 @@ class CommandThread(threading.Thread):
             if self.stopped():
                 return
 
-            command = Command()
             with self.lock:
-                command = self.command
-                self.execute_command(command)
+                self.execute_command()
 
             time.sleep(self.loop_delay)
 
-    def execute_command(self, command):
+    def execute_command(self):
 
         if self.is_vehicle:
 
