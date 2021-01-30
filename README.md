@@ -63,7 +63,7 @@ $ echo "
 2) Start the pigpio daemon
 3) Start the rtrcmd program
     ```
-    $ python3 rotor/vehicle_main.py
+    $ python3 rotor/src/vehicle_main.py
    ```
    
 #### RPI shutdown procedure:
