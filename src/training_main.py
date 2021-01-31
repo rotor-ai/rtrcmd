@@ -1,12 +1,13 @@
 from ai.training_dataset import TrainingDataset
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader
+from ai.single_image_dataset import SingleImageDataset
 from ai.simple_net import SimpleNet
 import torch.optim as optim
 import math
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.autograd import Variable
-import torch.nn.functional as functional
+from torch.nn.functional import binary_cross_entropy
 from torch import max as torch_max
 from torch import eq as torch_eq
 from torch import save as torch_save
@@ -20,10 +21,13 @@ def show_image_tensor(dataset, index):
     plt.show()
 
 
-def show_image(images, index, result_value, label_value):
+def show_image(images, index, result_value, label_value=None):
     plt.imshow(images[index].permute(1, 2, 0))
     result_name = Label.label_index_to_name(result_value)
-    label_name = Label.label_index_to_name(label_value)
+    if label_value is not None:
+        label_name = Label.label_index_to_name(label_value)
+    else:
+        label_name = "UNK"
     plt.title("Prediction: {}\nCorrect Label: {}".format(result_name, label_name))
     plt.show()
 
@@ -36,7 +40,7 @@ def train(epoch, optimizer_):
         data, target = Variable(data), Variable(target)
         optimizer_.zero_grad()
         output = model(data)
-        loss = functional.binary_cross_entropy(output, target)
+        loss = binary_cross_entropy(output, target)
 
         loss_list.append(loss.item())
 
@@ -74,7 +78,7 @@ if __name__ == '__main__':
 
     # Create the dataset and show a sample image
     rotor_dataset = TrainingDataset(data_dir)
-    show_image_tensor(rotor_dataset, 80)
+    # show_image_tensor(rotor_dataset, 80)
 
     begin_training = input("Begin training (y/n)? ")
     if begin_training != 'y':
@@ -98,13 +102,13 @@ if __name__ == '__main__':
 
     # Reinitialize model
     model = SimpleNet()
-    learning_rate = 0.1
+    learning_rate = 0.05
     optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
     # Train
     loss_list = []
     accuracy_list = []
-    for epoch in range(0, 10):
+    for epoch in range(0, 20):
         loss, accuracy = train(epoch, optimizer)
         loss_list.extend(loss)
         accuracy_list.append(accuracy)
@@ -123,18 +127,26 @@ if __name__ == '__main__':
     plt.show()
 
     # Show a test image
-    test_loader = DataLoader(rotor_dataset, batch_size=1, shuffle=True)
-    data_iter = iter(test_loader)
-    images, labels = data_iter.next()
-    output = model(images)
+    single_image_dataset = SingleImageDataset()
 
-    _, result_value = torch_max(output, dim=1)
-    _, label_value = torch_max(labels, dim=1)
+    while True:
+        command = input("Test model on random image (y/n)? ")
+        if command != 'y':
+            break
 
-    result_name = Label.label_index_to_name(result_value)
-    label_name = Label.label_index_to_name(label_value)
+        single_image_dataset.load_image(rotor_dataset.random_image_filepath())
+        data_loader = DataLoader(single_image_dataset, batch_size=1)
+        data_iter = iter(data_loader)
+        image = data_iter.next()
 
-    show_image(images, 0, result_value, label_value)
+        # Generate the steering value prediction
+        output = model(image)
+
+        _, result_value = torch_max(output, dim=1)
+
+        result_name = Label.label_index_to_name(result_value)
+
+        show_image(image, 0, result_value, None)
 
     # Save off the model
     save_model = input("Save model (y/n)? ")
