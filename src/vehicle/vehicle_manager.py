@@ -1,3 +1,5 @@
+from gpiozero import Device
+from gpiozero.pins.pigpio import PiGPIOFactory
 from vehicle.training_agent import TrainingAgent
 from vehicle.driving_assist_agent import DrivingAssistAgent
 from vehicle.sensor_manager import SensorManager
@@ -23,6 +25,13 @@ class VehicleManager(object):
     """
 
     def __init__(self):
+
+        config_handler = ConfigHandler.get_instance()
+        preferredPinFactory = config_handler.get_config_value_or('preferred_pin_factory', '')
+        if preferredPinFactory == 'pigpio':
+            Device.pin_factory = PiGPIOFactory()
+
+        logging.info(f"Starting vehicle manager thread using PIN FACTORY: {Device.pin_factory}")
 
         self.config_handler = ConfigHandler.get_instance()
 
