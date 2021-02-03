@@ -17,7 +17,9 @@ class VideoStreamClient(object):
 
     def send_image(self, image_buffer, image_size):
         # Send the size of the image
-        self.socket.send(struct.pack('<L', image_size))
+        size_format = '<L'  # Corresponds to a little endian 32 bit unsigned int
+        logging.debug(image_size)
+        self.socket.send(struct.pack(size_format, image_size))
 
         # Rewind back to the beginning of the buffer
         image_buffer.seek(0)
@@ -36,11 +38,14 @@ if __name__ == '__main__':
     streamer.connect()
 
     for i in range(0, 10):
-        with open('test.jpg', 'rb') as im:
-            logging.debug(type(im))
+        with open('10122020_144526_744.jpeg', 'rb') as im:
+            # Read from the image file object into an in-memory buffer
             im_io = io.BytesIO()
             im_io.write(im.read())
-            streamer.send_image(im_io, im_io.tell())
+
+            # Send the image
+            image_size = im_io.tell()  # Returns the size because the index into the buffer is currently at the end
+            streamer.send_image(im_io, image_size)
 
         sleep(.05)
 

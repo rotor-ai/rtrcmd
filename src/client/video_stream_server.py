@@ -3,6 +3,8 @@ import threading
 import logging
 from time import sleep
 import struct
+import io
+from PIL import Image
 
 
 class VideoStreamServerThread(threading.Thread):
@@ -38,7 +40,7 @@ class VideoStreamServerThread(threading.Thread):
             logging.info(f"Bound to client {client_addr}")
 
             while not self.stopped():
-                size_format = '<L'  # Corresponds to a 32 bit unsigned int
+                size_format = '<L'  # Corresponds to a little endian 32 bit unsigned int
                 image_len_bytes = connection.recv(struct.calcsize(size_format))
 
                 if not image_len_bytes:
@@ -46,15 +48,17 @@ class VideoStreamServerThread(threading.Thread):
 
                 # Calculate the size of the next image
                 image_len = struct.unpack(size_format, image_len_bytes)[0]
-                logging.debug(image_len)
 
-                # Read that number of bytes from the buffer
-                image_bytes = connection.recv(image_len)
-
-                if not image_bytes:
+                # Gut check to make sure the size is reasonable
+                if image_len > 2**16:
                     break
 
-                logging.debug("Received image")
+                # Read that number of bytes from the buffer
+                print(image_len)
+                buffer = connection.recv(image_len)
+                image = Image.open(io.BytesIO(buffer))
+
+                # TODO: Do something with the image
 
 
 class VideoStreamServer(object):
@@ -73,7 +77,7 @@ class VideoStreamServer(object):
 if __name__ == '__main__':
 
     logger = logging.getLogger()
-    logger.setLevel('DEBUG')
+    logger.setLevel('INFO')
 
     server = VideoStreamServer(4000)
     server.start()
