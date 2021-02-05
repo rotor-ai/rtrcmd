@@ -151,6 +151,8 @@ class MainWindow(QMainWindow):
         self.request_handler.send_mode(mode)
 
     def keyPressEvent(self, e):
+        if e.isAutoRepeat():
+            return super().keyReleaseEvent(e)
 
         if e.key() == QtCore.Qt.Key_Up:
             self.up_pressed()
@@ -164,6 +166,8 @@ class MainWindow(QMainWindow):
         return super().keyPressEvent(e)
 
     def keyReleaseEvent(self, e):
+        if e.isAutoRepeat():
+            return super().keyReleaseEvent(e)
 
         if e.key() == QtCore.Qt.Key_Up:
             self.up_released()
