@@ -6,6 +6,7 @@ from client.request_handler import CommandHandler
 from common.config_handler import ConfigHandler
 from client.trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
+from client.image_viewer import ImageViewer
 
 
 class MainWindow(QMainWindow):
@@ -57,6 +58,9 @@ class MainWindow(QMainWindow):
         self.cbo_mode.addItem("AUTO", int(ModeType.AUTO))
         self.cbo_mode.addItem("ASSISTED", int(ModeType.ASSISTED))
 
+        # Create the image viewer
+        self.image_viewer = ImageViewer(self)
+
         # Connect all the push button signals
         self.up_btn.pressed.connect(self.up_pressed)
         self.up_btn.released.connect(self.up_released)
@@ -81,6 +85,7 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self.sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
         grid_layout.addWidget(self.lbl_mode, 4, 0)
         grid_layout.addWidget(self.cbo_mode, 4, 1, 1, 2)
+        grid_layout.addWidget(self.image_viewer, 0, 3, 5, 1)
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
