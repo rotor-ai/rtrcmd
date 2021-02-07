@@ -37,7 +37,7 @@ if __name__ == '__main__':
     streamer = VideoStreamClient('localhost', 4000)
     streamer.connect()
 
-    for i in range(0, 10):
+    for i in range(0, 1):
         with open('10122020_144526_744.jpeg', 'rb') as im:
             # Read from the image file object into an in-memory buffer
             im_io = io.BytesIO()

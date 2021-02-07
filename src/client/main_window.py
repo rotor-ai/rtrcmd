@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt5 import QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox
 from PyQt5.QtCore import QSize
 from common.command import Command
@@ -13,6 +13,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
+
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
 
         self.config_handler = ConfigHandler.get_instance()
 
@@ -89,6 +91,9 @@ class MainWindow(QMainWindow):
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
+
+    def closeEvent(self, event) -> None:
+        self.image_viewer.stop_server()
 
     def up_pressed(self):
         self.command.set_throttle(1.0)
