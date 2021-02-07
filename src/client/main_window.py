@@ -14,8 +14,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
-
         self.config_handler = ConfigHandler.get_instance()
 
         self.request_handler = CommandHandler()

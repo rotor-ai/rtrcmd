@@ -1,5 +1,4 @@
 from vehicle.distance_sensor import DistanceSensor
-from vehicle.camera import Camera
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
 
@@ -10,7 +9,6 @@ class SensorManager(object):
     configuration parameter called 'sensor_list'. In the configuration, the sensor list should look as follows:
     {
         "sensor_list": [
-            camera,
             distance_sensor,
             imu,
             ...
@@ -25,9 +23,7 @@ class SensorManager(object):
         self.sensors = {}
         sensor_list = self.config_handler.get_config_value_or('sensor_list', [])
         for sensor in sensor_list:
-            if sensor == 'camera':
-                self.sensors['camera'] = Camera()
-            elif sensor == 'distance_sensor':
+            if sensor == 'distance_sensor':
                 self.sensors['distance_sensor'] = DistanceSensor()
 
         self.mode = Mode()
@@ -61,7 +57,7 @@ class SensorManager(object):
     """
     Calls vehicle_sensor.stop() on all configured sensors
     """
-    def stop_sensors(self):
+    def stop(self):
         for name, sensor in self.sensors.items():
             try:
                 sensor.stop()

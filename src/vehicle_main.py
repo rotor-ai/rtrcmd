@@ -3,8 +3,8 @@ from vehicle.vehicle_manager import VehicleManager
 from common.command import Command
 from common.trim import Trim
 from common.config_handler import ConfigHandler
-from common.mode import Mode
 import logging
+from time import sleep
 
 
 if __name__ == '__main__':
@@ -33,13 +33,24 @@ if __name__ == '__main__':
             trim.from_json(json_in)
             vehicle_mgr.set_trim(trim)
 
-        def handle_mode_get():
-            return vehicle_mgr.get_mode().to_json()
+        def handle_data_get():
+            return vehicle_mgr.get_sensor_data()
 
-        def handle_mode_post(json_in):
-            mode = Mode()
-            mode.from_json(json_in)
-            vehicle_mgr.set_mode(mode)
+        def handle_image_stream_get():
+            return vehicle_mgr.image_stream_running()
+
+        def handle_image_stream_post(json_in):
+            if 'stream_images' not in json_in:
+                raise Exception("No \'stream_images\' key in POST")
+            elif json_in['stream_images']:
+                if 'ip' not in json_in:
+                    raise Exception("No \'ip\' key in POST")
+                if 'port' not in json_in:
+                    raise Exception("No \'port\' key in POST")
+                else:
+                    vehicle_mgr.start_image_stream(json_in['ip'], json_in['port'])
+            else:
+                vehicle_mgr.stop_image_stream()
 
         # Set the server address
         config_handler = ConfigHandler.get_instance()
@@ -49,10 +60,14 @@ if __name__ == '__main__':
         server = Server('Vehicle', server_ip, server_port)
         server.add_endpoint('/command', 'command', get_func=handle_command_get, post_func=handle_command_post)
         server.add_endpoint('/trim', 'trim', get_func=handle_trim_get, post_func=handle_trim_post)
-        server.add_endpoint('/mode', 'train', get_func=handle_mode_get, post_func=handle_mode_post)
+        server.add_endpoint('/data', 'data', get_func=handle_data_get)
+        server.add_endpoint('/image_stream', 'image_stream', get_func=handle_image_stream_get,
+                            post_func=handle_image_stream_post)
         server.run()
 
-        vehicle_mgr.run_forever()
+        # Run forever
+        while True:
+            sleep(.1)
 
     except KeyboardInterrupt:
         vehicle_mgr.stop()

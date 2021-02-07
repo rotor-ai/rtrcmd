@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QPainter, QImage, QPaintEvent, QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget
-from client.video_stream_server import ImageStreamServer
+from client.image_stream_server import ImageStreamServer
 
 
 class ImageViewer(QWidget):

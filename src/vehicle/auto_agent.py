@@ -21,21 +21,21 @@ class ProcessingThread(threading.Thread):
         self._stop_event = threading.Event()
         self._processing_event = threading.Event()
 
-        self.lock = threading.Lock()
-        self.command = Command()
-        self.data = {}
+        self._lock = threading.Lock()
+        self._command = Command()
+        self._data = {}
 
-        self.config_handler = ConfigHandler.get_instance()
-        self.data_dir = self.config_handler.get_config_value_or('data_dir', '/data')
+        self._config_handler = ConfigHandler.get_instance()
+        self._data_dir = self._config_handler.get_config_value_or('data_dir', '/data')
 
-        self.model = SimpleNet()
-        model_path = Path(self.config_handler.get_rotor_dir()) / Path('src/nn_model.pt')
-        self.model.load_state_dict(torch.load(model_path))
+        self._model = SimpleNet()
+        model_path = Path(self._config_handler.get_rotor_dir()) / Path('src/nn_model.pt')
+        self._model.load_state_dict(torch.load(model_path))
 
         # Set the model into evaluation mode
-        self.model.eval()
+        self._model.eval()
 
-        self.dataset = SingleImageDataset()
+        self._dataset = SingleImageDataset()
 
     def stop(self):
         self._stop_event.set()
@@ -52,12 +52,12 @@ class ProcessingThread(threading.Thread):
             self._processing_event.clear()
 
     def set_data(self, data):
-        with self.lock:
-            self.data = data
+        with self._lock:
+            self._data = data
 
     def get_command(self):
-        with self.lock:
-            return self.command
+        with self._lock:
+            return self._command
 
     def processing(self):
         return self._processing_event.is_set()
@@ -68,13 +68,13 @@ class ProcessingThread(threading.Thread):
             if self.processing():
 
                 data = {}
-                with self.lock:
-                    data = self.data
+                with self._lock:
+                    data = self._data
 
                 command = self.process_data(data)
 
-                with self.lock:
-                    self.command = command
+                with self._lock:
+                    self._command = command
 
             time.sleep(.05)
 
@@ -103,18 +103,18 @@ class ProcessingThread(threading.Thread):
             camera_data = data['camera']
             if 'filename' in camera_data:
                 filename = camera_data['filename']
-                filepath = Path(self.data_dir) / Path(filename)
+                filepath = Path(self._data_dir) / Path(filename)
 
                 # Load the image into the dataset
-                self.dataset.load_image(filepath)
+                self._dataset.load_image(filepath)
 
                 # Create a data loader for the updated dataset
-                data_loader = DataLoader(self.dataset, batch_size=1)
+                data_loader = DataLoader(self._dataset, batch_size=1)
                 data_iter = iter(data_loader)
                 image = data_iter.next()
 
                 # Generate the steering value prediction
-                output = self.model(image)
+                output = self._model(image)
                 _, label_index = torch.max(output, dim=1)
 
                 logging.info(f"Steering prediction: {Label.label_index_to_name(label_index)}")

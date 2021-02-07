@@ -18,32 +18,36 @@ class ImageStreamWorker(QObject):
     def __init__(self, port, *args, **kwargs):
         super(QObject, self).__init__(*args, **kwargs)
 
-        self.stop_thread = False
-        self.lock = threading.Lock()
-        self.port = port
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(.1)
+        self._running = False
+        self._lock = threading.Lock()
+        self._port = port
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.settimeout(.1)
 
-        self.last_image = None
+        self._last_image = None
 
     def get_last_image(self):
 
-        with self.lock:
-            return self.last_image
+        with self._lock:
+            return self._last_image
 
     @pyqtSlot()
     def do_work(self):
 
-        try:
-            logging.info(f"Starting video stream server on port {self.port}")
-            self.socket.bind(('', self.port))
-            self.socket.listen(1)
+        logging.debug("Doing work")
 
-            while not self.stop_thread:
+        self._running = True
+
+        try:
+            logging.info(f"Starting image stream server on port {self._port}")
+            self._socket.bind(('', self._port))
+            self._socket.listen(1)
+
+            while self._running:
 
                 # Wait for incoming connections
                 try:
-                    connection, client_addr = self.socket.accept()
+                    connection, client_addr = self._socket.accept()
                     conn_file = connection.makefile('rb')
                     self.listen_for_images(connection)
 
@@ -58,7 +62,8 @@ class ImageStreamWorker(QObject):
     # Continually listens for images coming over the connection
     def listen_for_images(self, connection):
 
-        while not self.stop_thread:
+        while self._running:
+
             size_format = '<L'  # Corresponds to a little endian 32 bit unsigned int
             image_len_bytes = connection.recv(struct.calcsize(size_format))
 
@@ -67,20 +72,33 @@ class ImageStreamWorker(QObject):
 
             # Calculate the size of the next image
             image_len = struct.unpack(size_format, image_len_bytes)[0]
+            logging.debug(f"Received image of length: {image_len}")
 
             # Gut check to make sure the size is reasonable
             if image_len > 2 ** 16:
                 break
 
-            # Read that number of bytes from the buffer
-            buffer = connection.recv(image_len)
+            # Read that number of bytes from the buffer. Need to do this repeatedly because each packet is not
+            # guaranteed to include all of the data
+            data = bytearray()
+            while len(data) < image_len:
+                packet = connection.recv(image_len - len(data))
+                if not packet:
+                    break
+                data.extend(packet)
 
-            with self.lock:
-                self.last_image = Image.open(io.BytesIO(buffer))
-                self.last_image = self.last_image.convert("RGB")
+            image_received = False
+            with self._lock:
+                try:
+                    self._last_image = Image.open(io.BytesIO(data))
+                    self._last_image = self._last_image.convert("RGB")
+                    image_received = True
+                except Exception as e:
+                    logging.error(f"While receiving image: {e}")
 
-            # Notify listeners that an image was received
-            self.image_received.emit()
+            # Notify listeners if an image was received
+            if image_received:
+                self.image_received.emit()
 
 
 class ImageStreamServer(QObject):
@@ -113,6 +131,6 @@ class ImageStreamServer(QObject):
 
     def stop(self):
         logging.info("Stopping image server")
-        self.worker.stop_thread = True
+        self.worker._running = False
         self.thread.quit()
         self.thread.wait()

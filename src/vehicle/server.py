@@ -9,18 +9,18 @@ class ServerThread(threading.Thread):
 
     def __init__(self, app, server_addr, port):
         threading.Thread.__init__(self)
-        self.server_addr = server_addr
-        self.server_port = port
-        self.srv = make_server(server_addr, port, app)
-        self.ctx = app.app_context()
-        self.ctx.push()
+        self._server_addr = server_addr
+        self._server_port = port
+        self._srv = make_server(server_addr, port, app)
+        self._ctx = app.app_context()
+        self._ctx.push()
 
     def run(self):
-        logging.info(f"Serving on {self.server_addr}:{self.server_port}")
-        self.srv.serve_forever()
+        logging.info(f"Serving on {self._server_addr}:{self._server_port}")
+        self._srv.serve_forever()
 
     def shutdown(self):
-        self.srv.shutdown()
+        self._srv.shutdown()
 
 
 class Endpoint(MethodView):
@@ -66,19 +66,19 @@ class Endpoint(MethodView):
 class Server(object):
 
     def __init__(self, name, server_addr, port):
-        self.name = name
-        self.port = port
-        self.server_addr = server_addr
-        self.app = Flask(name)
-        self.srv = ServerThread(self.app, self.server_addr, self.port)
+        self._name = name
+        self._port = port
+        self._server_addr = server_addr
+        self._app = Flask(name)
+        self._srv = ServerThread(self._app, self._server_addr, self._port)
 
     def add_endpoint(self, url, name, get_func=None, post_func=None):
-        self.app.add_url_rule(url, view_func=Endpoint.as_view(name, get_func=get_func, post_func=post_func))
+        self._app.add_url_rule(url, view_func=Endpoint.as_view(name, get_func=get_func, post_func=post_func))
 
     def run(self, debug=False):
 
-        self.srv.start()
+        self._srv.start()
 
     def stop(self):
         logging.info("Shutting down server")
-        self.srv.shutdown()
+        self._srv.shutdown()
