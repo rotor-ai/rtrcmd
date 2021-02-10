@@ -54,11 +54,23 @@ class RequestHandler(object):
         # Return a generic trim object
         return Trim()
 
-    def send_mode(self, mode):
+    def send_image_stream_start(self, port):
         try:
-            logging.info(f"Posting mode: {mode.to_json()}")
-            endpoint = "http://" + self._ip + ":" + str(self._port) + "/mode"
-            r = requests.post(endpoint, None, mode.to_json(), timeout=.5)
+            json_start = {'port': port, 'stream_images': True}
+            endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
+            print("Requesting video stream start")
+            r = requests.post(endpoint, None, json_start, timeout=.5)
+            if r.status_code != 200:
+                logging.error(r.text)
+        except Exception as e:
+            logging.error(e)
+
+    def send_image_stream_stop(self):
+        try:
+            json_stop = {'stream_images': False}
+            endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
+            logging.info("Requesting video stream stop")
+            r = requests.post(endpoint, None, json_stop, timeout=.5)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:

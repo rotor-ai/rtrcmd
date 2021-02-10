@@ -31,7 +31,6 @@ class Endpoint(MethodView):
 
     def get(self):
         try:
-
             response = self.get_func()
             if response is not None:
                 return make_response(jsonify(response), 200)
@@ -50,7 +49,7 @@ class Endpoint(MethodView):
             json_in = {}
             if request.data:
                 json_in = request.get_json()
-            response = self.post_func(json_in)
+            response = self.post_func(json_in, request.remote_addr)
             if response is not None:
                 return response
             else:

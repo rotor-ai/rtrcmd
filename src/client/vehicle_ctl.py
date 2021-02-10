@@ -30,14 +30,18 @@ class VehicleCtl(QObject):
         self._mode = Mode()
 
         # Setup the image server to receive images from the vehicle
-        stream_port = self._config_handler.get_config_value_or('stream_port', 4000)
-        self._image_stream_server = ImageStreamServer(stream_port)
+        self._stream_port = self._config_handler.get_config_value_or('stream_port', 4000)
+        self._image_stream_server = ImageStreamServer(self._stream_port)
         self._image_stream_server.image_received.connect(self.image_received_slot)
 
     def start(self):
+        # Start the image server and automatically request the vehicle to start streaming image data
         self._image_stream_server.start()
+        self._request_handler.send_image_stream_start(self._stream_port)
 
     def stop(self):
+        # Tell the vehicle to stop sending images, and stop the server
+        self._request_handler.send_image_stream_stop()
         self._image_stream_server.stop()
 
     @pyqtSlot()

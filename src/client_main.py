@@ -7,13 +7,13 @@ from client.vehicle_ctl import VehicleCtl
 
 if __name__ == "__main__":
 
-    # Setup the primary vehicle control class
-    vehicle_ctl = VehicleCtl()
-    vehicle_ctl.start()
-
     # Set the log level
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
+
+    # Setup the primary vehicle control class
+    vehicle_ctl = VehicleCtl()
+    vehicle_ctl.start()
 
     # Create the Qt application and launch
     app = QtWidgets.QApplication(sys.argv)

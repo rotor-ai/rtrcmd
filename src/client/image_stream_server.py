@@ -3,6 +3,7 @@ import threading
 import logging
 import struct
 import io
+import select
 from PIL import Image
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QThread, QObject
 
@@ -22,7 +23,7 @@ class ImageStreamWorker(QObject):
         self._lock = threading.Lock()
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.settimeout(.1)
+        self._timeout = 0.1
 
         self._last_image = None
 
@@ -40,6 +41,7 @@ class ImageStreamWorker(QObject):
 
         try:
             logging.info(f"Starting image stream server on port {self._port}")
+            self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._socket.bind(('', self._port))
             self._socket.listen(1)
 
@@ -49,11 +51,12 @@ class ImageStreamWorker(QObject):
                 try:
                     connection, client_addr = self._socket.accept()
                     logging.info(f"Bound to vehicle at {client_addr}")
-                    conn_file = connection.makefile('rb')
                     self.listen_for_images(connection)
 
                 except socket.timeout:
                     continue
+
+            self._socket.close()
 
         except Exception as e:
             logging.error(f"Closing server socket due to exception: {e}")
@@ -63,11 +66,18 @@ class ImageStreamWorker(QObject):
 
         while self._running:
 
-            size_format = '<L'  # Corresponds to a little endian 32 bit unsigned int
-            image_len_bytes = connection.recv(struct.calcsize(size_format))
+            # Wait for data to show up on the connection, this is a work around to consistently timeout the recv
+            read_sockets, write_sockets, error_sockets = select.select([connection], [], [], self._timeout)
 
+            # Try to read the size of the picture from the connection
+            image_len_bytes = None
+            size_format = '<L'  # Corresponds to a little endian 32 bit unsigned int
+            if read_sockets:
+                image_len_bytes = connection.recv(struct.calcsize(size_format))
+
+            # If we timed out, continue looping
             if not image_len_bytes:
-                break
+                continue
 
             # Calculate the size of the next image
             image_len = struct.unpack(size_format, image_len_bytes)[0]
@@ -75,7 +85,7 @@ class ImageStreamWorker(QObject):
 
             # Gut check to make sure the size is reasonable
             if image_len > 2 ** 16:
-                break
+                continue
 
             # Read that number of bytes from the buffer. Need to do this repeatedly because each packet is not
             # guaranteed to include all of the data

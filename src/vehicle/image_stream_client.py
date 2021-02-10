@@ -12,6 +12,7 @@ class ImageStreamClient(object):
     def connect(self, ip, port):
         try:
             self._socket.connect((ip, port))
+            logging.info(f"Image stream client connected to {ip}:{port}")
             self._connected = True
         except Exception as e:
             logging.error(f"Could not connect image stream client due to {e}")

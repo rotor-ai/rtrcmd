@@ -20,7 +20,7 @@ if __name__ == '__main__':
         def handle_command_get():
             return vehicle_mgr.get_command().to_json()
 
-        def handle_command_post(json_in):
+        def handle_command_post(json_in, remote_addr):
             cmd = Command()
             cmd.from_json(json_in)
             vehicle_mgr.set_command(cmd)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         def handle_trim_get():
             return vehicle_mgr.get_trim().to_json()
 
-        def handle_trim_post(json_in):
+        def handle_trim_post(json_in, remote_addr):
             trim = Trim()
             trim.from_json(json_in)
             vehicle_mgr.set_trim(trim)
@@ -39,16 +39,14 @@ if __name__ == '__main__':
         def handle_image_stream_get():
             return vehicle_mgr.image_stream_running()
 
-        def handle_image_stream_post(json_in):
+        def handle_image_stream_post(json_in, remote_addr):
             if 'stream_images' not in json_in:
                 raise Exception("No \'stream_images\' key in POST")
             elif json_in['stream_images']:
-                if 'ip' not in json_in:
-                    raise Exception("No \'ip\' key in POST")
                 if 'port' not in json_in:
                     raise Exception("No \'port\' key in POST")
                 else:
-                    vehicle_mgr.start_image_stream(json_in['ip'], json_in['port'])
+                    vehicle_mgr.start_image_stream(remote_addr, json_in['port'])
             else:
                 vehicle_mgr.stop_image_stream()
 
