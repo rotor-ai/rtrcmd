@@ -11,7 +11,7 @@ class ModeType(IntEnum):
 class Mode(object):
 
     def __init__(self):
-        self.mode_type = ModeType.NORMAL
+        self._mode_type = ModeType.NORMAL
 
     def set_mode(self, mode_type):
 
@@ -20,25 +20,25 @@ class Mode(object):
         if mode_type not in values:
             raise Exception("Invalid mode type")
 
-        self.mode_type = mode_type
+        self._mode_type = mode_type
 
     def get_mode(self):
-        return self.mode_type
+        return self._mode_type
 
     def get_mode_name(self):
-        if self.mode_type == ModeType.NORMAL:
+        if self._mode_type == ModeType.NORMAL:
             return "NORMAL"
-        elif self.mode_type == ModeType.TRAIN:
+        elif self._mode_type == ModeType.TRAIN:
             return "TRAIN"
-        elif self.mode_type == ModeType.AUTO:
+        elif self._mode_type == ModeType.AUTO:
             return "AUTO"
-        elif self.mode_type == ModeType.ASSISTED:
+        elif self._mode_type == ModeType.ASSISTED:
             return "ASSISTED"
 
     def to_json(self):
 
         json_mode = {
-            'mode': int(self.mode_type)
+            'mode': int(self._mode_type)
         }
 
         return json_mode

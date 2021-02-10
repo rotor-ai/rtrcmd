@@ -2,30 +2,25 @@ from PyQt5 import QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox
 from PyQt5.QtCore import QSize
 from common.command import Command
-from client.request_handler import CommandHandler
-from common.config_handler import ConfigHandler
 from client.trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
 from client.image_viewer import ImageViewer
+import logging
 
 
 class MainWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, vehicle_ctl):
         QMainWindow.__init__(self)
 
-        self.config_handler = ConfigHandler.get_instance()
+        # Main vehicle control interface
+        self._vehicle_ctl = vehicle_ctl
 
-        self.request_handler = CommandHandler()
-        ip = self.config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
-        port = self.config_handler.get_config_value_or('vehicle_port', 5000)
-        self.request_handler.set_endpoint(ip, port)
-
-        # Get the initial command including trim values from the config handler
-        self.command = Command()
+        # Our current command
+        self._cmd = Command()
 
         # Our popup window for setting trim
-        self.trim_window = None
+        self._trim_window = None
 
         self.setMinimumSize(QSize(150, 50))
         self.setWindowTitle("Rotor Client")
@@ -43,12 +38,12 @@ class MainWindow(QMainWindow):
         self.right_btn = QPushButton("RIGHT", self)
         self.trim_btn = QPushButton("Set Trim", self)
         self.trim_btn.clicked.connect(self.show_trim_window)
-        self.le_ip = QLineEdit(ip, self)
+        self.le_ip = QLineEdit(self._vehicle_ctl.vehicle_ip(), self)
         self.le_ip.textChanged.connect(self.ip_changed)
         self.lbl_ip = QLabel("Ip:")
         self.sb_port = QSpinBox(self)
         self.sb_port.setMaximum(99999)
-        self.sb_port.setValue(port)
+        self.sb_port.setValue(self._vehicle_ctl.vehicle_port())
         self.sb_port.valueChanged.connect(self.port_changed)
         self.lbl_port = QLabel("Port:")
         self.lbl_mode = QLabel("Mode:")
@@ -59,7 +54,7 @@ class MainWindow(QMainWindow):
         self.cbo_mode.addItem("ASSISTED", int(ModeType.ASSISTED))
 
         # Create the image viewer
-        self.image_viewer = ImageViewer(self)
+        self.image_viewer = ImageViewer(self._vehicle_ctl, self)
 
         # Connect all the push button signals
         self.up_btn.pressed.connect(self.up_pressed)
@@ -90,54 +85,51 @@ class MainWindow(QMainWindow):
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
 
-    def closeEvent(self, event) -> None:
-        self.image_viewer.stop_server()
-
     def up_pressed(self):
-        self.command.set_throttle(1.0)
+        self._cmd.set_throttle(1.0)
         self.send_command()
 
     def up_released(self):
-        self.command.set_throttle(0.0)
+        self._cmd.set_throttle(0.0)
         self.send_command()
 
     def down_pressed(self):
-        self.command.set_throttle(-1.0)
+        self._cmd.set_throttle(-1.0)
         self.send_command()
 
     def down_released(self):
-        self.command.set_throttle(0.0)
+        self._cmd.set_throttle(0.0)
         self.send_command()
 
     def right_pressed(self):
-        self.command.set_steering(1.0)
+        self._cmd.set_steering(1.0)
         self.send_command()
 
     def right_released(self):
-        self.command.set_steering(0.0)
+        self._cmd.set_steering(0.0)
         self.send_command()
 
     def left_pressed(self):
-        self.command.set_steering(-1.0)
+        self._cmd.set_steering(-1.0)
         self.send_command()
 
     def left_released(self):
-        self.command.set_steering(0.0)
+        self._cmd.set_steering(0.0)
         self.send_command()
 
     def show_trim_window(self):
 
         # Pull in the trim from the vehicle to populate the trim window
         trim = self.request_handler.get_trim()
-        self.trim_window = TrimDialog(trim)
-        self.trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
-        self.trim_window.show()
+        self._trim_window = TrimDialog(trim)
+        self._trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
+        self._trim_window.show()
 
         # After things have been trimmed, update our command so we can send updated trim values
-        self.trim_window.trim_changed.connect(self.update_trim_from_dialog)
+        self._trim_window.trim_changed.connect(self.update_trim_from_dialog)
 
     def update_trim_from_dialog(self):
-        trim = self.trim_window.get_trim()
+        trim = self._trim_window.get_trim()
         self.request_handler.send_trim(trim)
 
     def ip_changed(self, ip):
@@ -156,7 +148,8 @@ class MainWindow(QMainWindow):
         mode_int = self.cbo_mode.currentData()
         mode = Mode()
         mode.set_mode(mode_int)
-        self.request_handler.send_mode(mode)
+
+        self._vehicle_ctl.set_mode(mode)
 
     def keyPressEvent(self, e):
 
@@ -185,7 +178,7 @@ class MainWindow(QMainWindow):
         return super().keyReleaseEvent(e)
 
     def send_command(self):
-        self.request_handler.send_command(self.command)
+        self._vehicle_ctl.send_command(self._cmd)
 
     def send_trim(self):
         self.request_handler.send_trim(self.trim)

@@ -6,7 +6,7 @@ from client.image_stream_server import ImageStreamServer
 
 class ImageViewer(QWidget):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, vehicle_ctl, *args, **kwargs):
         super(QWidget, self).__init__(*args, **kwargs)
 
         self.width = 196
@@ -16,16 +16,14 @@ class ImageViewer(QWidget):
         # Stored image object
         self.q_image = None
 
-        # Start the image server to receive images from the vehicle
-        self.video_stream_server = ImageStreamServer(4000)
-        self.video_stream_server.start()
-        self.video_stream_server.image_received.connect(self.image_received_slot)
+        self._vehicle_ctl = vehicle_ctl
+        self._vehicle_ctl.image_received.connect(self.image_received_slot)
 
     @pyqtSlot()
     def image_received_slot(self):
 
         # Pull down the last image from the server and convert to a QImage
-        last_image = self.video_stream_server.get_last_image()
+        last_image = self._vehicle_ctl.get_last_image()
         data = last_image.tobytes("raw", "RGB")
         self.q_image = QImage(data, last_image.size[0], last_image.size[1], QImage.Format_RGB888)
 
@@ -40,6 +38,3 @@ class ImageViewer(QWidget):
             painter.drawImage(event.rect(), self.q_image)
         else:
             painter.drawText(event.rect(), Qt.AlignCenter, "No Image Data")
-
-    def stop_server(self):
-        self.video_stream_server.stop()

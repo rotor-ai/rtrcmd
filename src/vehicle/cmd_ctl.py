@@ -25,7 +25,7 @@ class CommandThread(threading.Thread):
         self.config_handler = ConfigHandler.get_instance()
 
         # Flag noting whether this is the vehicle or if it's a test server
-        self.is_vehicle = self.config_handler.get_config_value_or('is_vehicle', False)
+        self.is_vehicle = self.config_handler.get_config_value_or('is_vehicle', True)
 
         # Pull in the trim from the config file
         self.trim = Trim()
@@ -67,10 +67,10 @@ class CommandThread(threading.Thread):
             self.steering.update_steering(trimmed_steering)
 
 
-class VehicleCtl(VehicleSensor):
+class CmdCtl(VehicleSensor):
     """
-    Control class for the vehicle. Implements VehicleSensor because we want to be able to pull the current command which
-    is dumped into the rest of the sensor data.
+    Command and control class for the vehicle. Implements VehicleSensor because we want to be able to pull the current
+    command which is dumped into the rest of the sensor data.
     """
 
     def __init__(self):

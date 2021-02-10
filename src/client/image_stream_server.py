@@ -48,13 +48,12 @@ class ImageStreamWorker(QObject):
                 # Wait for incoming connections
                 try:
                     connection, client_addr = self._socket.accept()
+                    logging.info(f"Bound to vehicle at {client_addr}")
                     conn_file = connection.makefile('rb')
                     self.listen_for_images(connection)
 
                 except socket.timeout:
                     continue
-
-                logging.info(f"Bound to client {client_addr}")
 
         except Exception as e:
             logging.error(f"Closing server socket due to exception: {e}")
@@ -112,11 +111,11 @@ class ImageStreamServer(QObject):
 
     def __init__(self, port, *args, **kwargs):
         super(QObject, self).__init__(*args, **kwargs)
-        self.worker = ImageStreamWorker(port)
-        self.thread = QThread(self)
-        self.worker.image_received.connect(self.image_received_slot)
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.do_work)
+        self._worker = ImageStreamWorker(port)
+        self._thread = QThread(self)
+        self._worker.image_received.connect(self.image_received_slot)
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.do_work)
 
     @pyqtSlot()
     def image_received_slot(self):
@@ -124,13 +123,13 @@ class ImageStreamServer(QObject):
         self.image_received.emit()
 
     def get_last_image(self):
-        return self.worker.get_last_image()
+        return self._worker.get_last_image()
 
     def start(self):
-        self.thread.start()
+        self._thread.start()
 
     def stop(self):
         logging.info("Stopping image server")
-        self.worker._running = False
-        self.thread.quit()
-        self.thread.wait()
+        self._worker._running = False
+        self._thread.quit()
+        self._thread.wait()

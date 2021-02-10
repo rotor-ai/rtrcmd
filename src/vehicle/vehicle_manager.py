@@ -1,7 +1,7 @@
 from gpiozero import Device
 from gpiozero.pins.pigpio import PiGPIOFactory
 from vehicle.sensor_manager import SensorManager
-from vehicle.vehicle_ctl import VehicleCtl
+from vehicle.cmd_ctl import CmdCtl
 from common.config_handler import ConfigHandler
 from threading import Lock
 import logging
@@ -37,7 +37,7 @@ class VehicleManager(object):
         self._lock = Lock()
 
         # Create the vehicle controller and start it
-        self._vehicle_ctl = VehicleCtl()
+        self._vehicle_ctl = CmdCtl()
         self._vehicle_ctl.start()
 
         # Create the sensor manager and start it
