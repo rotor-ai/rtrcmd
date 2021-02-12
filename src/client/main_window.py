@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
     def show_trim_window(self):
 
         # Pull in the trim from the vehicle to populate the trim window
-        trim = self.request_handler.get_trim()
+        trim = self._vehicle_ctl.get_trim()
         self._trim_window = TrimDialog(trim)
         self._trim_window.setGeometry(QtCore.QRect(100, 100, 400, 200))
         self._trim_window.show()
@@ -130,19 +130,16 @@ class MainWindow(QMainWindow):
 
     def update_trim_from_dialog(self):
         trim = self._trim_window.get_trim()
-        self.request_handler.send_trim(trim)
+        self._vehicle_ctl.send_trim(trim)
 
     def ip_changed(self, ip):
 
         port = self.sb_port.value()
-        self.request_handler.set_endpoint(ip, port)
-        self.config_handler.set_config_value('vehicle_ip', ip)
+        self._vehicle_ctl.set_endpoint(ip, port)
 
     def port_changed(self, port):
-
         ip = self.le_ip.text()
-        self.request_handler.set_endpoint(ip, port)
-        self.config_handler.set_config_value('vehicle_port', port)
+        self._vehicle_ctl.set_endpoint(ip, port)
 
     def mode_changed(self, index):
         mode_int = self.cbo_mode.currentData()
@@ -181,4 +178,4 @@ class MainWindow(QMainWindow):
         self._vehicle_ctl.send_command(self._cmd)
 
     def send_trim(self):
-        self.request_handler.send_trim(self.trim)
+        self._vehicle_ctl.send_trim(self.trim)

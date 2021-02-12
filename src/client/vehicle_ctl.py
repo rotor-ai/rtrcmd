@@ -41,7 +41,9 @@ class VehicleCtl(QObject):
 
     def stop(self):
         # Tell the vehicle to stop sending images, and stop the server
-        self._request_handler.send_image_stream_stop()
+        if self._image_stream_server.streaming():
+            self._request_handler.send_image_stream_stop()
+
         self._image_stream_server.stop()
 
     @pyqtSlot()
@@ -68,3 +70,14 @@ class VehicleCtl(QObject):
 
     def get_last_image(self):
         return self._image_stream_server.get_last_image()
+
+    def set_endpoint(self, ip, port):
+        self._config_handler.set_config_value('vehicle_ip', ip)
+        self._config_handler.set_config_value('vehicle_port', port)
+        self._request_handler.set_endpoint(ip, port)
+
+    def get_trim(self):
+        return self._request_handler.get_trim()
+
+    def send_trim(self, trim):
+        self._request_handler.send_trim(trim)

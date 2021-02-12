@@ -20,10 +20,12 @@ class ImageStreamWorker(QObject):
         super(QObject, self).__init__(*args, **kwargs)
 
         self._running = False
+        self._streaming = False
         self._lock = threading.Lock()
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._timeout = 0.1
+        self._socket.settimeout(self._timeout)
 
         self._last_image = None
 
@@ -31,6 +33,9 @@ class ImageStreamWorker(QObject):
 
         with self._lock:
             return self._last_image
+
+    def streaming(self):
+        return self._streaming
 
     @pyqtSlot()
     def do_work(self):
@@ -107,6 +112,7 @@ class ImageStreamWorker(QObject):
 
             # Notify listeners if an image was received
             if image_received:
+                self._streaming = True
                 self.image_received.emit()
 
 
@@ -134,6 +140,9 @@ class ImageStreamServer(QObject):
 
     def get_last_image(self):
         return self._worker.get_last_image()
+
+    def streaming(self):
+        return self._worker.streaming()
 
     def start(self):
         self._thread.start()
