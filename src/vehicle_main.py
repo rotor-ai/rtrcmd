@@ -25,6 +25,9 @@ if __name__ == '__main__':
             cmd.from_json(json_in)
             vehicle_mgr.set_command(cmd)
 
+        def handle_telemetry_get():
+            return vehicle_mgr.current_telemetry()
+
         def handle_trim_get():
             return vehicle_mgr.get_trim().to_json()
 
@@ -34,7 +37,7 @@ if __name__ == '__main__':
             vehicle_mgr.set_trim(trim)
 
         def handle_data_get():
-            return vehicle_mgr.get_sensor_data()
+            return vehicle_mgr.current_telemetry()
 
         def handle_image_stream_get():
             return vehicle_mgr.image_stream_running()
@@ -57,6 +60,7 @@ if __name__ == '__main__':
 
         server = Server('Vehicle', server_ip, server_port)
         server.add_endpoint('/command', 'command', get_func=handle_command_get, post_func=handle_command_post)
+        server.add_endpoint('/telemetry', 'telemetry', get_func=handle_telemetry_get, post_func=handle_command_post)
         server.add_endpoint('/trim', 'trim', get_func=handle_trim_get, post_func=handle_trim_post)
         server.add_endpoint('/data', 'data', get_func=handle_data_get)
         server.add_endpoint('/image_stream', 'image_stream', get_func=handle_image_stream_get,

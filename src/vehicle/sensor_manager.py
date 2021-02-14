@@ -32,7 +32,7 @@ class SensorManager(object):
     When called, the collector will loop through all configured sensors and produce a json object with all available 
     data. The json object may be larger or smaller depending on the number of sensors configured.
     """
-    def get_sensor_data(self) -> dict:
+    def current_telemetry(self) -> dict:
 
         # Construct a json object with all the latest data from our sensor list
         ret = {}

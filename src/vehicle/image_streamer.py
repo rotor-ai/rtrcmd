@@ -1,7 +1,4 @@
-from vehicle.vehicle_sensor import VehicleSensor
 from common.config_handler import ConfigHandler
-from datetime import datetime
-from pathlib import Path
 import threading
 import logging
 from vehicle.image_stream_client import ImageStreamClient

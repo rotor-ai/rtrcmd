@@ -5,7 +5,6 @@ class ModeType(IntEnum):
     NORMAL = 0
     TRAIN = 1
     AUTO = 2
-    ASSISTED = 3
 
 
 class Mode(object):
@@ -22,18 +21,16 @@ class Mode(object):
 
         self._mode_type = mode_type
 
-    def get_mode(self):
+    def mode_type(self):
         return self._mode_type
 
-    def get_mode_name(self):
+    def mode_name(self):
         if self._mode_type == ModeType.NORMAL:
             return "NORMAL"
         elif self._mode_type == ModeType.TRAIN:
             return "TRAIN"
         elif self._mode_type == ModeType.AUTO:
             return "AUTO"
-        elif self._mode_type == ModeType.ASSISTED:
-            return "ASSISTED"
 
     def to_json(self):
 

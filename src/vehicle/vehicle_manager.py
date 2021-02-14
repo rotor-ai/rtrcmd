@@ -5,15 +5,7 @@ from vehicle.cmd_ctl import CmdCtl
 from common.config_handler import ConfigHandler
 from threading import Lock
 import logging
-from time import sleep
 from vehicle.image_streamer import ImageStreamer
-
-# Surround the import in a try/catch for vehicles that do not have autonomous mode enabled
-try:
-    from vehicle.auto_agent import AutoAgent
-except ModuleNotFoundError as e:
-    logging.error(e)
-    pass
 
 
 class VehicleManager(object):
@@ -48,15 +40,15 @@ class VehicleManager(object):
         self._image_streamer = ImageStreamer()
         self._image_streamer.start()
 
-    def get_sensor_data(self):
+    def current_telemetry(self):
 
         # Get the sensor data from the sensor manager
-        data = self._sensor_mgr.get_sensor_data()
+        telemetry = self._sensor_mgr.current_telemetry()
 
         # Append the current user input to the data
-        data['vehicle_ctl'] = self._vehicle_ctl.get_cmd().to_json()
+        telemetry['vehicle_ctl'] = self._vehicle_ctl.get_cmd().to_json()
 
-        return data
+        return telemetry
 
     def set_command(self, command):
 

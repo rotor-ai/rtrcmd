@@ -18,7 +18,7 @@ class RequestHandler(object):
 
     def send_command(self, command):
         try:
-            logging.info(f"Posting command: {command.to_json()}")
+            logging.debug(f"Posting command: {command.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/command"
             r = requests.post(endpoint, None, command.to_json(), timeout=.5)
             if r.status_code != 200:
@@ -28,7 +28,7 @@ class RequestHandler(object):
 
     def send_trim(self, trim):
         try:
-            logging.info(f"Posting trim: {trim.to_json()}")
+            logging.debug(f"Posting trim: {trim.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/trim"
             r = requests.post(endpoint, None, trim.to_json(), timeout=.5)
             if r.status_code != 200:
@@ -58,7 +58,6 @@ class RequestHandler(object):
         try:
             json_start = {'port': port, 'stream_images': True}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
-            print("Requesting video stream start")
             r = requests.post(endpoint, None, json_start, timeout=.5)
             if r.status_code != 200:
                 logging.error(r.text)
@@ -69,10 +68,23 @@ class RequestHandler(object):
         try:
             json_stop = {'stream_images': False}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
-            logging.info("Requesting video stream stop")
+            logging.debug("Requesting video stream stop")
             r = requests.post(endpoint, None, json_stop, timeout=.5)
             if r.status_code != 200:
                 logging.error(r.text)
+        except Exception as e:
+            logging.error(e)
+
+    def get_telemetry(self):
+        try:
+            endpoint = "http://" + self._ip + ":" + str(self._port) + "/telemetry"
+            logging.debug("Requesting current telemetry")
+            r = requests.get(endpoint, timeout=.5)
+            if r.status_code != 200:
+                logging.error(r.text)
+
+            return r.text
+
         except Exception as e:
             logging.error(e)
 

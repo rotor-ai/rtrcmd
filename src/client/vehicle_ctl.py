@@ -1,8 +1,9 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from client.request_handler import RequestHandler
 from common.config_handler import ConfigHandler
-from common.mode import Mode
+from common.mode import Mode, ModeType
 from client.image_stream_server import ImageStreamServer
+import logging
 
 
 class VehicleCtl(QObject):
@@ -48,6 +49,22 @@ class VehicleCtl(QObject):
 
     @pyqtSlot()
     def image_received_slot(self):
+
+        if self._mode.mode_type() == ModeType.TRAIN:
+
+            # Get the latest telemetry data from the vehicle
+            telemetry = self._request_handler.get_telemetry()
+
+            # Save off the current image and the current controls
+            pass
+
+        elif self._mode.mode_type() == ModeType.AUTO:
+            # Send the image to the auto agent
+            pass
+
+        else:
+            pass
+
         self.image_received.emit()
 
     def set_vehicle_endpoint(self, ip, port):
@@ -66,6 +83,7 @@ class VehicleCtl(QObject):
         return self._mode
 
     def set_mode(self, mode):
+        logging.info(f"Setting to mode {mode.mode_name()}")
         self._mode = mode
 
     def get_last_image(self):

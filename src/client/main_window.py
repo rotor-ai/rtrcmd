@@ -51,7 +51,6 @@ class MainWindow(QMainWindow):
         self.cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
         self.cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
         self.cbo_mode.addItem("AUTO", int(ModeType.AUTO))
-        self.cbo_mode.addItem("ASSISTED", int(ModeType.ASSISTED))
 
         # Create the image viewer
         self.image_viewer = ImageViewer(self._vehicle_ctl, self)
