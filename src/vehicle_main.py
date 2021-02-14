@@ -1,5 +1,5 @@
 from vehicle.server import Server
-from vehicle.vehicle_manager import VehicleManager
+from vehicle.vehicle_mgr import VehicleMgr
 from common.command import Command
 from common.trim import Trim
 from common.config_handler import ConfigHandler
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     try:
 
         # Create the vehicle manager
-        vehicle_mgr = VehicleManager()
+        vehicle_mgr = VehicleMgr()
 
         # Create the server. This requires that we define some GET and POST request handlers for our endpoints.
         def handle_command_get():

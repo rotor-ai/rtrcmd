@@ -83,7 +83,7 @@ class RequestHandler(object):
             if r.status_code != 200:
                 logging.error(r.text)
 
-            return r.text
+            return r.json()
 
         except Exception as e:
             logging.error(e)

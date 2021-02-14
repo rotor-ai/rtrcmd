@@ -4,6 +4,7 @@ from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
 from client.image_stream_server import ImageStreamServer
 import logging
+from client.training_mgr import TrainingMgr
 
 
 class VehicleCtl(QObject):
@@ -35,6 +36,8 @@ class VehicleCtl(QObject):
         self._image_stream_server = ImageStreamServer(self._stream_port)
         self._image_stream_server.image_received.connect(self.image_received_slot)
 
+        self._training_mgr = TrainingMgr()
+
     def start(self):
         # Start the image server and automatically request the vehicle to start streaming image data
         self._image_stream_server.start()
@@ -51,18 +54,15 @@ class VehicleCtl(QObject):
     def image_received_slot(self):
 
         if self._mode.mode_type() == ModeType.TRAIN:
-
             # Get the latest telemetry data from the vehicle
             telemetry = self._request_handler.get_telemetry()
 
             # Save off the current image and the current controls
-            pass
+            image = self._image_stream_server.get_last_image()
+            self._training_mgr.add_image_telemetry(image, telemetry)
 
         elif self._mode.mode_type() == ModeType.AUTO:
             # Send the image to the auto agent
-            pass
-
-        else:
             pass
 
         self.image_received.emit()
@@ -84,6 +84,15 @@ class VehicleCtl(QObject):
 
     def set_mode(self, mode):
         logging.info(f"Setting to mode {mode.mode_name()}")
+
+        if self._mode.mode_type() == ModeType.TRAIN and mode.mode_type() != ModeType.TRAIN:
+            # We're moving out of training mode
+            self._training_mgr.finalize_log()
+
+        elif self._mode.mode_type() != ModeType.TRAIN and mode.mode_type() == ModeType.TRAIN:
+            # We're moving into training mode
+            self._training_mgr.init_new_log()
+
         self._mode = mode
 
     def get_last_image(self):

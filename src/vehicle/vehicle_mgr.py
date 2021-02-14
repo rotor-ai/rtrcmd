@@ -1,6 +1,6 @@
 from gpiozero import Device
 from gpiozero.pins.pigpio import PiGPIOFactory
-from vehicle.sensor_manager import SensorManager
+from vehicle.sensor_mgr import SensorMgr
 from vehicle.cmd_ctl import CmdCtl
 from common.config_handler import ConfigHandler
 from threading import Lock
@@ -8,7 +8,7 @@ import logging
 from vehicle.image_streamer import ImageStreamer
 
 
-class VehicleManager(object):
+class VehicleMgr(object):
     """
     This class acts as a manager interface for controlling the vehicle. It can be used to directly control the vehicle
     or to set the current mode.
@@ -33,7 +33,7 @@ class VehicleManager(object):
         self._vehicle_ctl.start()
 
         # Create the sensor manager and start it
-        self._sensor_mgr = SensorManager()
+        self._sensor_mgr = SensorMgr()
         self._sensor_mgr.start_sensors()
 
         # Create the image streamer and start it

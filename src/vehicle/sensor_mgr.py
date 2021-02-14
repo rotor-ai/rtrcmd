@@ -3,7 +3,7 @@ from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
 
 
-class SensorManager(object):
+class SensorMgr(object):
     """
     The sensor manager collects data from all sensors configured on the vehicle. The sensors are listed as a
     configuration parameter called 'sensor_list'. In the configuration, the sensor list should look as follows:
