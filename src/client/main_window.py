@@ -148,6 +148,8 @@ class MainWindow(QMainWindow):
         self._vehicle_ctl.set_mode(mode)
 
     def keyPressEvent(self, e):
+        if e.isAutoRepeat():
+            return super().keyReleaseEvent(e)
 
         if e.key() == QtCore.Qt.Key_Up:
             self.up_pressed()
@@ -161,6 +163,8 @@ class MainWindow(QMainWindow):
         return super().keyPressEvent(e)
 
     def keyReleaseEvent(self, e):
+        if e.isAutoRepeat():
+            return super().keyReleaseEvent(e)
 
         if e.key() == QtCore.Qt.Key_Up:
             self.up_released()
