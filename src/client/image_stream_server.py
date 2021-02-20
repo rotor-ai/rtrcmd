@@ -21,11 +21,11 @@ class ImageStreamWorker(QObject):
 
         self._running = False
         self._streaming = False
+        self._connected = False
         self._lock = threading.Lock()
         self._port = port
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._timeout = 0.1
-        self._socket.settimeout(self._timeout)
+
+        self._timeout = 0.25
 
         self._last_image = None
 
@@ -44,32 +44,48 @@ class ImageStreamWorker(QObject):
 
         self._running = True
 
-        try:
-            logging.info(f"Starting image stream server on port {self._port}")
-            self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._socket.bind(('', self._port))
-            self._socket.listen(1)
+        # Create the socket as a local variable, because this function may be revisited. Creating the socket as a class
+        # member variable does not work if we need to rebind
+        logging.info(f"Listening for image stream server on port {self._port}")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.settimeout(self._timeout)
+        sock.bind(('', self._port))
 
-            while self._running:
+        while self._running:
+            try:
+                # Listen for incoming connections
+                sock.listen(1)
 
                 # Wait for incoming connections
                 try:
-                    connection, client_addr = self._socket.accept()
+                    connection, client_addr = sock.accept()
                     logging.info(f"Bound to vehicle at {client_addr}")
+                    self._connected = True
                     self.listen_for_images(connection)
+                    self._connected = False
 
                 except socket.timeout:
                     continue
 
-            self._socket.close()
+            except Exception as e:
+                logging.error(f"Error image stream read: {e}")
 
-        except Exception as e:
-            logging.error(f"Closing server socket due to exception: {e}")
+        self._last_image = None
+        sock.close()
 
     # Continually listens for images coming over the connection
     def listen_for_images(self, connection):
 
-        while self._running:
+        while self._running and self._connected:
+
+            # Send a heartbeat to make sure the connection is active. This will throw an
+            try:
+                connection.sendall(bytes(1))
+            except Exception as e:
+                # Heartbeat failed
+                logging.info(f"Heartbeat failed due to {e}")
+                return
 
             # Wait for data to show up on the connection, this is a work around to consistently timeout the recv
             read_sockets, write_sockets, error_sockets = select.select([connection], [], [], self._timeout)
@@ -80,8 +96,10 @@ class ImageStreamWorker(QObject):
             if read_sockets:
                 image_len_bytes = connection.recv(struct.calcsize(size_format))
 
-            # If we timed out, continue looping
+            # If we timed out, create a blank image
             if not image_len_bytes:
+                self._last_image = None
+                self.image_received.emit()
                 continue
 
             # Calculate the size of the next image

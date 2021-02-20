@@ -5,7 +5,6 @@ from common.command import Command
 from client.trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
 from client.image_viewer import ImageViewer
-import logging
 
 
 class MainWindow(QMainWindow):
@@ -32,54 +31,57 @@ class MainWindow(QMainWindow):
         central_widget.setFocusPolicy(QtCore.Qt.ClickFocus)
 
         # Create all the buttons and widgets
-        self.up_btn = QPushButton("FWD", self)
-        self.down_btn = QPushButton("REV", self)
-        self.left_btn = QPushButton("LEFT", self)
-        self.right_btn = QPushButton("RIGHT", self)
-        self.trim_btn = QPushButton("Set Trim", self)
-        self.trim_btn.clicked.connect(self.show_trim_window)
-        self.le_ip = QLineEdit(self._vehicle_ctl.vehicle_ip(), self)
-        self.le_ip.textChanged.connect(self.ip_changed)
-        self.lbl_ip = QLabel("Ip:")
-        self.sb_port = QSpinBox(self)
-        self.sb_port.setMaximum(99999)
-        self.sb_port.setValue(self._vehicle_ctl.vehicle_port())
-        self.sb_port.valueChanged.connect(self.port_changed)
-        self.lbl_port = QLabel("Port:")
-        self.lbl_mode = QLabel("Mode:")
-        self.cbo_mode = QComboBox(self)
-        self.cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
-        self.cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
-        self.cbo_mode.addItem("AUTO", int(ModeType.AUTO))
+        self._up_btn = QPushButton("FWD", self)
+        self._down_btn = QPushButton("REV", self)
+        self._left_btn = QPushButton("LEFT", self)
+        self._right_btn = QPushButton("RIGHT", self)
+        self._trim_btn = QPushButton("Set Trim", self)
+        self._trim_btn.clicked.connect(self.show_trim_window)
+        self._le_ip = QLineEdit(self._vehicle_ctl.vehicle_ip(), self)
+        self._le_ip.textChanged.connect(self.ip_changed)
+        self._lbl_ip = QLabel("Ip:")
+        self._sb_port = QSpinBox(self)
+        self._sb_port.setMaximum(99999)
+        self._sb_port.setValue(self._vehicle_ctl.vehicle_port())
+        self._sb_port.valueChanged.connect(self.port_changed)
+        self._lbl_port = QLabel("Port:")
+        self._lbl_mode = QLabel("Mode:")
+        self._cbo_mode = QComboBox(self)
+        self._cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
+        self._cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
+        self._cbo_mode.addItem("AUTO", int(ModeType.AUTO))
+        self._btn_restart = QPushButton("Restart Stream")
 
         # Create the image viewer
-        self.image_viewer = ImageViewer(self._vehicle_ctl, self)
+        self._image_viewer = ImageViewer(self._vehicle_ctl, self)
 
         # Connect all the push button signals
-        self.up_btn.pressed.connect(self.up_pressed)
-        self.up_btn.released.connect(self.up_released)
-        self.down_btn.pressed.connect(self.down_pressed)
-        self.down_btn.released.connect(self.down_released)
-        self.right_btn.pressed.connect(self.right_pressed)
-        self.right_btn.released.connect(self.right_released)
-        self.left_btn.pressed.connect(self.left_pressed)
-        self.left_btn.released.connect(self.left_released)
-        self.cbo_mode.activated.connect(self.mode_changed)
+        self._up_btn.pressed.connect(self.up_pressed)
+        self._up_btn.released.connect(self.up_released)
+        self._down_btn.pressed.connect(self.down_pressed)
+        self._down_btn.released.connect(self.down_released)
+        self._right_btn.pressed.connect(self.right_pressed)
+        self._right_btn.released.connect(self.right_released)
+        self._left_btn.pressed.connect(self.left_pressed)
+        self._left_btn.released.connect(self.left_released)
+        self._cbo_mode.activated.connect(self.mode_changed)
+        self._btn_restart.pressed.connect(self.restart_stream)
 
         # Set the widgets in the grid layout
         grid_layout = QGridLayout(central_widget)
-        grid_layout.addWidget(self.up_btn, 0, 1)
-        grid_layout.addWidget(self.left_btn, 1, 0)
-        grid_layout.addWidget(self.down_btn, 1, 1)
-        grid_layout.addWidget(self.right_btn, 1, 2)
-        grid_layout.addWidget(self.trim_btn, 0, 2)
-        grid_layout.addWidget(self.lbl_ip, 2, 0)
-        grid_layout.addWidget(self.le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
-        grid_layout.addWidget(self.lbl_port, 3, 0)
-        grid_layout.addWidget(self.sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
-        grid_layout.addWidget(self.lbl_mode, 4, 0)
-        grid_layout.addWidget(self.cbo_mode, 4, 1, 1, 2)
-        grid_layout.addWidget(self.image_viewer, 0, 3, 5, 1)
+        grid_layout.addWidget(self._up_btn, 0, 1)
+        grid_layout.addWidget(self._left_btn, 1, 0)
+        grid_layout.addWidget(self._down_btn, 1, 1)
+        grid_layout.addWidget(self._right_btn, 1, 2)
+        grid_layout.addWidget(self._trim_btn, 0, 2)
+        grid_layout.addWidget(self._lbl_ip, 2, 0)
+        grid_layout.addWidget(self._le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
+        grid_layout.addWidget(self._lbl_port, 3, 0)
+        grid_layout.addWidget(self._sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
+        grid_layout.addWidget(self._lbl_mode, 4, 0)
+        grid_layout.addWidget(self._cbo_mode, 4, 1, 1, 2)
+        grid_layout.addWidget(self._image_viewer, 0, 3, 5, 1)
+        grid_layout.addWidget(self._btn_restart, 5, 3)
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
@@ -133,19 +135,23 @@ class MainWindow(QMainWindow):
 
     def ip_changed(self, ip):
 
-        port = self.sb_port.value()
+        port = self._sb_port.value()
         self._vehicle_ctl.set_endpoint(ip, port)
 
     def port_changed(self, port):
-        ip = self.le_ip.text()
+        ip = self._le_ip.text()
         self._vehicle_ctl.set_endpoint(ip, port)
 
     def mode_changed(self, index):
-        mode_int = self.cbo_mode.currentData()
+        mode_int = self._cbo_mode.currentData()
         mode = Mode()
         mode.set_mode(mode_int)
 
         self._vehicle_ctl.set_mode(mode)
+
+    def restart_stream(self):
+
+        self._vehicle_ctl.restart_stream()
 
     def keyPressEvent(self, e):
         if e.isAutoRepeat():

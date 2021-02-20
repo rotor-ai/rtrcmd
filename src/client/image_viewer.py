@@ -24,8 +24,11 @@ class ImageViewer(QWidget):
 
         # Pull down the last image from the server and convert to a QImage
         last_image = self._vehicle_ctl.get_last_image()
-        data = last_image.tobytes("raw", "RGB")
-        self.q_image = QImage(data, last_image.size[0], last_image.size[1], QImage.Format_RGB888)
+        if last_image is not None:
+            data = last_image.tobytes("raw", "RGB")
+            self.q_image = QImage(data, last_image.size[0], last_image.size[1], QImage.Format_RGB888)
+        else:
+            self.q_image = None
 
         # Force a repaint event
         self.update()

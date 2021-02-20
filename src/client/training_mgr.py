@@ -30,6 +30,7 @@ class TrainingMgr(object):
 
         self._filepath = None
         self._data = None
+        self._logging = False
 
         self._save_interval = 5  # Seconds between saves
         self._last_save = time.time()
@@ -39,16 +40,23 @@ class TrainingMgr(object):
         self._filepath = Path(self._data_dir) / filename
         self._data = {'data': []}
         self._last_save = time.time()
+        self._logging = True
 
     def finalize_log(self):
-        thread = Thread(target=self._write_data_to_log, daemon=True)
-        thread.start()
+        if self._filepath is not None:
+            thread = Thread(target=self._write_data_to_log, daemon=True)
+            thread.start()
+
+        self._logging = False
 
     def _write_data_to_log(self):
 
         logging.info(f"Writing training data to {self._filepath}")
         with open(self._filepath, 'w') as file:
             file.write(json.dumps(self._data, indent=4))
+
+        if not self._logging:
+            self._filepath = None
 
     def add_image_telemetry(self, image, telemetry):
 

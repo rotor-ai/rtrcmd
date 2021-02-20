@@ -5,6 +5,7 @@ from common.mode import Mode, ModeType
 from client.image_stream_server import ImageStreamServer
 import logging
 from client.training_mgr import TrainingMgr
+from client.auto_agent import AutoAgent
 
 
 class VehicleCtl(QObject):
@@ -18,6 +19,7 @@ class VehicleCtl(QObject):
 
     # Signal is emitted when the image is received
     image_received = pyqtSignal()
+    command_ready = pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super(QObject, self).__init__(*args, **kwargs)
@@ -37,6 +39,7 @@ class VehicleCtl(QObject):
         self._image_stream_server.image_received.connect(self.image_received_slot)
 
         self._training_mgr = TrainingMgr()
+        self._auto_agent = AutoAgent()
 
     def start(self):
         # Start the image server and automatically request the vehicle to start streaming image data
@@ -49,6 +52,13 @@ class VehicleCtl(QObject):
             self._request_handler.send_image_stream_stop()
 
         self._image_stream_server.stop()
+        self._training_mgr.finalize_log()
+        self._auto_agent.stop()
+
+    def restart_stream(self):
+
+        self._request_handler.send_image_stream_stop()
+        self._request_handler.send_image_stream_start(self._stream_port)
 
     @pyqtSlot()
     def image_received_slot(self):
@@ -89,9 +99,17 @@ class VehicleCtl(QObject):
             # We're moving out of training mode
             self._training_mgr.finalize_log()
 
-        elif self._mode.mode_type() != ModeType.TRAIN and mode.mode_type() == ModeType.TRAIN:
+        if self._mode.mode_type() != ModeType.TRAIN and mode.mode_type() == ModeType.TRAIN:
             # We're moving into training mode
             self._training_mgr.init_new_log()
+
+        if self._mode.mode_type() == ModeType.AUTO and mode.mode_type() != ModeType.AUTO:
+            # We're moving out of auto mode
+            self._auto_agent.stop()
+
+        if self._mode.mode_type() != ModeType.AUTO and mode.mode_type() == ModeType.AUTO:
+            # Moving into auto
+            self._auto_agent.start()
 
         self._mode = mode
 
@@ -102,6 +120,11 @@ class VehicleCtl(QObject):
         self._config_handler.set_config_value('vehicle_ip', ip)
         self._config_handler.set_config_value('vehicle_port', port)
         self._request_handler.set_endpoint(ip, port)
+
+        # Need to now restart the image server and image stream
+        self._image_stream_server.stop()
+        self._image_stream_server.start()
+        self.restart_stream()
 
     def get_trim(self):
         return self._request_handler.get_trim()

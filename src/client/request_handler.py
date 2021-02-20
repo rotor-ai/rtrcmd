@@ -11,6 +11,7 @@ class RequestHandler(object):
     def __init__(self):
         self._ip = ""
         self._port = 5000
+        self._timeout = .25
 
     def set_endpoint(self, ip, port):
         self._ip = ip
@@ -20,7 +21,7 @@ class RequestHandler(object):
         try:
             logging.debug(f"Posting command: {command.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/command"
-            r = requests.post(endpoint, None, command.to_json(), timeout=.5)
+            r = requests.post(endpoint, None, command.to_json(), timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -30,7 +31,7 @@ class RequestHandler(object):
         try:
             logging.debug(f"Posting trim: {trim.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/trim"
-            r = requests.post(endpoint, None, trim.to_json(), timeout=.5)
+            r = requests.post(endpoint, None, trim.to_json(), timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -39,7 +40,7 @@ class RequestHandler(object):
     def get_trim(self):
         try:
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/trim"
-            r = requests.get(endpoint, timeout=.5)
+            r = requests.get(endpoint, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
 
@@ -58,7 +59,7 @@ class RequestHandler(object):
         try:
             json_start = {'port': port, 'stream_images': True}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
-            r = requests.post(endpoint, None, json_start, timeout=.5)
+            r = requests.post(endpoint, None, json_start, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -69,7 +70,7 @@ class RequestHandler(object):
             json_stop = {'stream_images': False}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
             logging.debug("Requesting video stream stop")
-            r = requests.post(endpoint, None, json_stop, timeout=.5)
+            r = requests.post(endpoint, None, json_stop, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -79,7 +80,7 @@ class RequestHandler(object):
         try:
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/telemetry"
             logging.debug("Requesting current telemetry")
-            r = requests.get(endpoint, timeout=.5)
+            r = requests.get(endpoint, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
 
