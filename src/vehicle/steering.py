@@ -1,6 +1,4 @@
 from gpiozero import Servo
-import logging
-from common.command import Command
 from common.config_handler import ConfigHandler
 
 from vehicle.constants import Constants
