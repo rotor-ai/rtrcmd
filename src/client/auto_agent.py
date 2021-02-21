@@ -7,7 +7,7 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 
 class AutoAgentWorker(QObject):
     """
-    Simple worker class to listen to a socket and notify the main thread when the images are received
+    Worker class to actually run the image processing
     """
 
     # Signal is emitted when the image is received
@@ -30,6 +30,12 @@ class AutoAgentWorker(QObject):
         with self._lock:
             return self._last_image
 
+    def add_image(self, image):
+
+        with self._cond_var:
+            self._image = image
+            self._cond_var.notifyAll()
+
     @pyqtSlot()
     def do_work(self):
 
@@ -37,17 +43,24 @@ class AutoAgentWorker(QObject):
 
         while self._running:
 
-            with self._lock:
+            # Use the condition variable to determine if a new image is ready to be processed
+            with self._cond_var:
                 while self._running and self._image is None:
+
+                    # No image is ready for processing, wait for notification that one is ready
                     self._cond_var.wait()
-            logging.info("Running image through ")
+
+            if not self._running:
+                break
+
+            # Placeholder for running the image through the neural net
+            logging.info("Processing image (PLACEHOLDER)...")
             time.sleep(1)
 
 
 class AutoAgent(QObject):
     """
-    Server class that will asynchronously listen for images coming from the vehicle and emit signals when images are
-    received.
+    Auto agent class will asynchronously process images and emit a signal when a new command is ready
     """
 
     # Emitted when a new image is received
@@ -69,6 +82,10 @@ class AutoAgent(QObject):
     def latest_command(self):
         return self._worker.latest_command()
 
+    def add_image(self, image):
+
+        self._worker.add_image(image)
+
     def start(self):
         self._thread.start()
 
@@ -76,5 +93,6 @@ class AutoAgent(QObject):
         if self._worker.running():
             logging.info("Stopping auto agent")
             self._worker._running = False
+            self._worker.add_image(None)
             self._thread.quit()
             self._thread.wait()

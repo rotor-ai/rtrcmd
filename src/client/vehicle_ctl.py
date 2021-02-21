@@ -10,7 +10,7 @@ from client.auto_agent import AutoAgent
 
 class VehicleCtl(QObject):
     """
-    Primary vehicle interface class for the client. Controls:
+    Primary vehicle interface class for the client. This class Controls:
         - Communication to and from the vehicle
         - Autonomous agents
         - Video streaming
@@ -73,7 +73,8 @@ class VehicleCtl(QObject):
 
         elif self._mode.mode_type() == ModeType.AUTO:
             # Send the image to the auto agent
-            pass
+            image = self._image_stream_server.get_last_image()
+            self._auto_agent.add_image(image)
 
         self.image_received.emit()
 

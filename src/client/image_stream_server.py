@@ -79,7 +79,8 @@ class ImageStreamWorker(QObject):
 
         while self._running and self._connected:
 
-            # Send a heartbeat to make sure the connection is active. This will throw an
+            # Send a heartbeat to make sure the connection is active. This will throw an exception if the vehicle side
+            # has been closed allowing us to reset the connection
             try:
                 connection.sendall(bytes(1))
             except Exception as e:
