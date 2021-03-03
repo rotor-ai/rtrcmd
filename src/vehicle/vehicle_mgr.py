@@ -6,6 +6,11 @@ from common.config_handler import ConfigHandler
 from threading import Lock
 import logging
 from vehicle.image_streamer import ImageStreamer
+import board
+import busio as io
+import netifaces
+
+from vehicle.segmented_display import SegmentedDisplay
 
 
 class VehicleMgr(object):
@@ -16,6 +21,7 @@ class VehicleMgr(object):
 
     def __init__(self):
 
+        self._i2c_instance = io.I2C(board.SCL, board.SDA)
         config_handler = ConfigHandler.get_instance()
         preferred_pin_factory = config_handler.get_config_value_or('preferred_pin_factory', '')
         if preferred_pin_factory == 'pigpio':
@@ -23,6 +29,7 @@ class VehicleMgr(object):
             logging.info(f"Starting vehicle manager thread using pin factory: {Device.pin_factory}")
         else:
             logging.info("Starting vehicle manager thread using default pin factory")
+
 
         # The mode can be set from a thread different from the one in which it was created, so this lock prevents
         # unnecessary funny business when setting the mode
@@ -35,6 +42,12 @@ class VehicleMgr(object):
         # Create the sensor manager and start it
         self._sensor_mgr = SensorMgr()
         self._sensor_mgr.start_sensors()
+
+        #Digital Segmented display
+
+        self._display = SegmentedDisplay(self._i2c_instance)
+        wifi_ip = netifaces.ifaddresses('wlan0')[2][0]['addr']
+        self._display.set_text(wifi_ip[-4:])
 
         # Create the image streamer and start it
         self._image_streamer = ImageStreamer()

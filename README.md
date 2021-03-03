@@ -14,11 +14,15 @@
     
     [`pip`](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
     
-    [`gpiozero`](https://gpiozero.readthedocs.io/en/stable/installing.html)
+    [`gpiozero`](https://gpiozero.readthedocs.io/en/stable/installing.html) (used for interfacing with GPIO pins)
     
-    [`pigpio`](http://abyz.me.uk/rpi/pigpio/download.html) also available [via pip](https://pypi.org/project/pigpio/)
+    [`pigpio`](http://abyz.me.uk/rpi/pigpio/download.html) also, available [via pip](https://pypi.org/project/pigpio/) (used in conjunction with gpiozero for stable interface to PWM pins)
 
-    [`pytorch`](https://www.spinellis.gr/blog/20200317/index.html) (must be built from source)
+    [`pytorch`](https://www.spinellis.gr/blog/20200317/index.html) (AI agent modeling. Must be built from source)
+
+    [`HT16k33`](https://github.com/adafruit/Adafruit_CircuitPython_HT16K33) (used for segmented digital display)
+
+    [`Netifaces`](https://github.com/al45tair/netifaces) (used for getting vehicle IP address for segmented display)
 
 * Make sure your RPi is setup with SSH enabled by running `$ sudo raspi-config`
 
