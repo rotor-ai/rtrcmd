@@ -44,10 +44,8 @@ class VehicleMgr(object):
         self._sensor_mgr.start_sensors()
 
         #Digital Segmented display
-
-        self._display = SegmentedDisplay(self._i2c_instance)
-        wifi_ip = netifaces.ifaddresses('wlan0')[2][0]['addr']
-        self._display.set_text(wifi_ip[-4:])
+        self._digital_display = SegmentedDisplay(self._i2c_instance)
+        self._digital_display.start()
 
         # Create the image streamer and start it
         self._image_streamer = ImageStreamer()
@@ -87,6 +85,7 @@ class VehicleMgr(object):
 
     def stop(self):
 
+        self._digital_display.stop()
         self._vehicle_ctl.stop()
         self._sensor_mgr.stop()
         self._image_streamer.stop()
