@@ -13,6 +13,9 @@ class SegmentedDisplay():
     def run_duration(self):
         return self.thread.run_duration
 
+    def loop_delay(self):
+        return self.thread.loop_delay
+
     def add_display_mode(self, mode_behavior):
         self.modeBehaviors.append(mode_behavior)
         self.set_display_mode(len(self.modeBehaviors)-1)
@@ -39,7 +42,7 @@ class SegmentedDisplayThread(threading.Thread):
 
     def __init__(self):
         super().__init__()
-        self.loop_delay = 1
+        self.loop_delay = 0.5
         self.run_duration = 0
         self.behave = lambda : print("NO BEHAVIOR DEFINED FOR THREAD!")
 

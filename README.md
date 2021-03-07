@@ -40,10 +40,6 @@ $ echo "
 ```
 
 #### Sending code to your Raspberry Pi:
-1. On your dev machine, add an entry in `/etc/hosts` for `rc`. This should point to the IP address for your Raspberry Pi (RPi)
-    ```
-    192.168.x.x  rc
-    ```
    
 1. Edit your `.bashrc` file and add an export for ROTOR_DIR at the end of the file
    ```
@@ -55,7 +51,7 @@ $ echo "
    ```
     $ echo "
     {
-        \"vehicle_ip\":\"rc\",
+        \"vehicle_ip\":\"192.168.x.x\",
         \"vehicle_src_dir\":\"/home/pi/rotor/src\",
         \"vehicle_user\": \"pi\"
     }" > $ROTOR_DIR/cfg.json
