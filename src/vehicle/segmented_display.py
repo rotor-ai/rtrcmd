@@ -11,10 +11,15 @@ class SegmentedDisplay(threading.Thread):
         self.segmentDisplayInstance = adafruit_ht16k33.segments.Seg7x4(i_square_c_instance)
         self.loop_delay = 1
         self.runDuration = 0
+        self.modeBehaviors = []
+        self.currentDisplayMode = 0
 
     def set_text(self, text):
         self.segmentDisplayInstance.fill(0)
         self.segmentDisplayInstance.print(text)
+
+    def add_display_mode(self, mode_behavior):
+        self.modeBehaviors.append(mode_behavior)
 
     def run(self) -> None:
         super().run()
@@ -22,8 +27,6 @@ class SegmentedDisplay(threading.Thread):
             time.sleep(self.loop_delay)
             self.runDuration += self.loop_delay
 
-            ipaddress = "    " + netifaces.ifaddresses('wlan0')[2][0]['addr']
-            position = self.runDuration % len(ipaddress)
-            scrolling_ip_address = ipaddress[position:] + ipaddress[:position]
-            self.set_text(scrolling_ip_address)
+            current_behavior = self.modeBehaviors[self.currentDisplayMode]
+            current_behavior(self)
 
