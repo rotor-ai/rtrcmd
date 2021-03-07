@@ -30,7 +30,6 @@ class VehicleMgr(object):
         else:
             logging.info("Starting vehicle manager thread using default pin factory")
 
-
         # The mode can be set from a thread different from the one in which it was created, so this lock prevents
         # unnecessary funny business when setting the mode
         self._lock = Lock()
@@ -45,8 +44,8 @@ class VehicleMgr(object):
 
         #Digital Segmented display
         self._digital_display = SegmentedDisplay(self._i2c_instance)
+        self._digital_display.add_display_mode(mode_behavior = lambda : self.addressDisplay(self._digital_display))
         self._digital_display.start()
-        self._digital_display.add_display_mode(mode_behavior = self.addressDisplay)
 
         # Create the image streamer and start it
         self._image_streamer = ImageStreamer()
@@ -54,7 +53,7 @@ class VehicleMgr(object):
 
     def addressDisplay(self, display):
         ipaddress = "    " + netifaces.ifaddresses('wlan0')[2][0]['addr']
-        position = display.runDuration % len(ipaddress)
+        position = display.run_duration() % len(ipaddress)
         scrolling_ip_address = ipaddress[position:] + ipaddress[:position]
         display.set_text(scrolling_ip_address)
 
