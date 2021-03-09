@@ -12,6 +12,8 @@ import netifaces
 
 from vehicle.segmented_display import SegmentedDisplay
 
+from vehicle import segmented_display_behaviors
+
 
 class VehicleMgr(object):
     """
@@ -42,20 +44,17 @@ class VehicleMgr(object):
         self._sensor_mgr = SensorMgr()
         self._sensor_mgr.start_sensors()
 
-        #Digital Segmented display
+        # Digital Segmented display
         self._digital_display = SegmentedDisplay(self._i2c_instance)
-        self._digital_display.add_display_mode(mode_behavior = lambda : self.addressDisplay(self._digital_display))
+        self._digital_display.add_display_mode(
+            mode_behavior=lambda: segmented_display_behaviors.addressDisplay(
+                display=self._digital_display,
+                network_adapter=netifaces.ifaddresses('wlan0')))
         self._digital_display.start()
 
         # Create the image streamer and start it
         self._image_streamer = ImageStreamer()
         self._image_streamer.start()
-
-    def addressDisplay(self, display):
-        ipaddress = "    " + netifaces.ifaddresses('wlan0')[2][0]['addr']
-        position = int(display.run_duration() / display.loop_delay()) % len(ipaddress)
-        scrolling_ip_address = ipaddress[position:] + ipaddress[:position]
-        display.set_text(scrolling_ip_address)
 
     def current_telemetry(self):
 
