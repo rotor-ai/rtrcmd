@@ -40,9 +40,10 @@ class SegmentedDisplay():
 
 class SegmentedDisplayThread(threading.Thread):
 
+    loop_delay = 0.5
+
     def __init__(self):
         super().__init__()
-        self.loop_delay = 0.5
         self.run_duration = 0
         self.behave = lambda : print("NO BEHAVIOR DEFINED FOR THREAD!")
 

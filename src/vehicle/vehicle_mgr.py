@@ -47,7 +47,7 @@ class VehicleMgr(object):
         # Digital Segmented display
         self._digital_display = SegmentedDisplay(self._i2c_instance)
         self._digital_display.add_display_mode(
-            mode_behavior=lambda: segmented_display_behaviors.addressDisplay(
+            mode_behavior=lambda: segmented_display_behaviors.address_display(
                 display=self._digital_display,
                 network_adapter=netifaces.ifaddresses('wlan0')))
         self._digital_display.start()
