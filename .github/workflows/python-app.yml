@@ -17,9 +17,6 @@ jobs:
 
     runs-on: ubuntu-20.04
 
-    env:
-      BUILD_FAILURE_WEBHOOK: ${{ secrets.BUILD_FAILED }}
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -40,6 +37,8 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - name: echo foobar if failing
+    - name: failure webhook
       if: ${{ failure() }}
       run: curl $BUILD_FAILURE_WEBHOOK -F content='Build Failed! :('
+      env:
+        BUILD_FAILURE_WEBHOOK: ${{ secrets.BUILD_FAILED }}
