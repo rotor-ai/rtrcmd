@@ -62,6 +62,3 @@ class SegmentedDisplayTest(unittest.TestCase):
         address_display(mock_display, fake_network_interface)
 
         mock_display.set_text.assert_called_once_with("    127.0.0.1")
-
-    def test_should_fail(self):
-        self.assertTrue(False)
