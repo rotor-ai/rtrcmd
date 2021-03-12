@@ -1,11 +1,11 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
-from client.request_handler import RequestHandler
+from .request_handler import RequestHandler
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
-from client.image_stream_server import ImageStreamServer
+from .image_stream_server import ImageStreamServer
 import logging
-from client.training_mgr import TrainingMgr
-from client.auto_agent import AutoAgent
+from .training_mgr import TrainingMgr
+from .auto_agent import AutoAgent
 
 
 class VehicleCtl(QObject):

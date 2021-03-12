@@ -1,18 +1,18 @@
 from gpiozero import Device
 from gpiozero.pins.pigpio import PiGPIOFactory
-from vehicle.sensor_mgr import SensorMgr
-from vehicle.cmd_ctl import CmdCtl
+from .sensor_mgr import SensorMgr
+from .cmd_ctl import CmdCtl
 from common.config_handler import ConfigHandler
 from threading import Lock
 import logging
-from vehicle.image_streamer import ImageStreamer
+from .image_streamer import ImageStreamer
 import board
 import busio as io
 import netifaces
 
-from vehicle.segmented_display import SegmentedDisplay
+from .segmented_display import SegmentedDisplay
 
-from vehicle import segmented_display_behaviors
+from . import segmented_display_behaviors
 
 
 class VehicleMgr(object):

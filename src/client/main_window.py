@@ -2,9 +2,9 @@ from PyQt5 import QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox
 from PyQt5.QtCore import QSize
 from common.command import Command
-from client.trim_dialog import TrimDialog
+from .trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
-from client.image_viewer import ImageViewer
+from .image_viewer import ImageViewer
 
 
 class MainWindow(QMainWindow):

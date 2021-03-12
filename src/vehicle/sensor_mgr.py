@@ -1,4 +1,4 @@
-from vehicle.distance_sensor import DistanceSensor
+from .distance_sensor import DistanceSensor
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
 

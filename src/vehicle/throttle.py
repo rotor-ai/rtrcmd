@@ -2,7 +2,7 @@ import logging
 
 from common.config_handler import ConfigHandler
 from gpiozero import Servo
-from vehicle.constants import Constants
+from .constants import Constants
 
 
 class Throttle(object):

@@ -1,7 +1,7 @@
 from common.config_handler import ConfigHandler
 import threading
 import logging
-from vehicle.image_stream_client import ImageStreamClient
+from .image_stream_client import ImageStreamClient
 import io
 
 

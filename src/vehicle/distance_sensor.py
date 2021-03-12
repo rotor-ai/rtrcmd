@@ -1,4 +1,4 @@
-from vehicle.vehicle_sensor import VehicleSensor
+from .vehicle_sensor import VehicleSensor
 from common.config_handler import ConfigHandler
 import time
 import threading

@@ -1,7 +1,7 @@
 from gpiozero import Servo
 from common.config_handler import ConfigHandler
 
-from vehicle.constants import Constants
+from .constants import Constants
 
 
 class Steering(object):
