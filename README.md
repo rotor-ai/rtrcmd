@@ -1,3 +1,5 @@
+[![Python application](https://github.com/rotor-ai/rtrcmd/actions/workflows/python-app.yml/badge.svg)](https://github.com/rotor-ai/rtrcmd/actions/workflows/python-app.yml)
+
 #### PyCharm Development Setup:
 
 1. Open project.
