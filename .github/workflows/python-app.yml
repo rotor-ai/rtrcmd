@@ -40,5 +40,5 @@ jobs:
     - name: failure webhook
       if: ${{ failure() }}
       env:
-        BUILD_FAILURE_WEBHOOK: ${{ secrets.BUILD_FAILED }}
+        BUILD_FAILURE_WEBHOOK: ${{ secrets.BUILD_FAILED_WEBHOOK }}
       run: curl "$BUILD_FAILURE_WEBHOOK" -F content='Build Failed! :('
