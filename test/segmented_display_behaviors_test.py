@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 from ..src.vehicle.segmented_display_behaviors import address_display
 
+
 class SegmentedDisplayTest(unittest.TestCase):
 
     def test_should_display_ip_address(self):
