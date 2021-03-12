@@ -16,3 +16,48 @@ class SegmentedDisplayTest(unittest.TestCase):
         address_display(mock_display, fake_network_interface)
 
         mock_display.set_text.assert_called_once_with("    192.168.1.2")
+
+    def test_should_display_offset_ip_address_with_offset(self):
+        fake_network_interface = [[], [], [dict({'addr': '192.168.1.2'})]]
+        mock_display = Mock()
+        mock_display.run_duration = Mock(return_value=4)
+        mock_display.loop_delay = Mock(return_value=0.5)
+        mock_display.set_text = Mock()
+
+        address_display(mock_display, fake_network_interface)
+
+        mock_display.set_text.assert_called_once_with("168.1.2    192.")
+
+    def test_should_handle_situation_when_key_not_present(self):
+
+        fake_network_interface = [[], [], [dict()]]
+        mock_display = Mock()
+        mock_display.run_duration = Mock(return_value=0)
+        mock_display.loop_delay = Mock(return_value=0.5)
+        mock_display.set_text = Mock()
+
+        address_display(mock_display, fake_network_interface)
+
+        mock_display.set_text.assert_called_once_with("    127.0.0.1")
+
+    def test_should_handle_situation_when_network_object_does_not_contain_second_index_zero(self):
+        fake_network_interface = [[], [], []]
+        mock_display = Mock()
+        mock_display.run_duration = Mock(return_value=0)
+        mock_display.loop_delay = Mock(return_value=0.5)
+        mock_display.set_text = Mock()
+
+        address_display(mock_display, fake_network_interface)
+
+        mock_display.set_text.assert_called_once_with("    127.0.0.1")
+
+    def test_should_handle_situation_when_network_object_does_not_contain_first_index_two(self):
+        fake_network_interface = [[], []]
+        mock_display = Mock()
+        mock_display.run_duration = Mock(return_value=0)
+        mock_display.loop_delay = Mock(return_value=0.5)
+        mock_display.set_text = Mock()
+
+        address_display(mock_display, fake_network_interface)
+
+        mock_display.set_text.assert_called_once_with("    127.0.0.1")
