@@ -157,13 +157,13 @@ class MainWindow(QMainWindow):
         if e.isAutoRepeat():
             return super().keyReleaseEvent(e)
 
-        if e.key() == QtCore.Qt.Key_Up:
+        if e.key() == QtCore.Qt.Key_Up or e.key() == QtCore.Qt.Key_W:
             self.up_pressed()
-        if e.key() == QtCore.Qt.Key_Left:
+        if e.key() == QtCore.Qt.Key_Left or e.key() == QtCore.Qt.Key_A:
             self.left_pressed()
-        if e.key() == QtCore.Qt.Key_Down:
+        if e.key() == QtCore.Qt.Key_Down or e.key() == QtCore.Qt.Key_S:
             self.down_pressed()
-        if e.key() == QtCore.Qt.Key_Right:
+        if e.key() == QtCore.Qt.Key_Right or e.key() == QtCore.Qt.Key_D:
             self.right_pressed()
 
         return super().keyPressEvent(e)
@@ -172,13 +172,13 @@ class MainWindow(QMainWindow):
         if e.isAutoRepeat():
             return super().keyReleaseEvent(e)
 
-        if e.key() == QtCore.Qt.Key_Up:
+        if e.key() == QtCore.Qt.Key_Up or e.key() == QtCore.Qt.Key_W:
             self.up_released()
-        elif e.key() == QtCore.Qt.Key_Left:
+        elif e.key() == QtCore.Qt.Key_Left or e.key() == QtCore.Qt.Key_A:
             self.left_released()
-        elif e.key() == QtCore.Qt.Key_Down:
+        elif e.key() == QtCore.Qt.Key_Down or e.key() == QtCore.Qt.Key_S:
             self.down_released()
-        elif e.key() == QtCore.Qt.Key_Right:
+        elif e.key() == QtCore.Qt.Key_Right or e.key() == QtCore.Qt.Key_D:
             self.right_released()
 
         return super().keyReleaseEvent(e)
