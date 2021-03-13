@@ -6,6 +6,6 @@ def address_display(display, network_adapter):
     else:
         ipaddress += "127.0.0.1"
 
-    position = int(display.run_duration() / display.loop_delay()) % len(ipaddress)
+    position = int(display.run_duration() / display.loop_delay()) #% len(ipaddress)
     scrolling_ip_address = ipaddress[position:] + ipaddress[:position]
     display.set_text(scrolling_ip_address)
