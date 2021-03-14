@@ -1,5 +1,7 @@
 from gpiozero import Device
 from gpiozero.pins.pigpio import PiGPIOFactory
+
+from .cpu_fan import CpuFan
 from .sensor_mgr import SensorMgr
 from .cmd_ctl import CmdCtl
 from common.config_handler import ConfigHandler
@@ -52,6 +54,9 @@ class VehicleMgr(object):
                 network_adapter=netifaces.ifaddresses('wlan0')))
         self._digital_display.start()
 
+        self._cpu_fan = CpuFan()
+        self._cpu_fan.start()
+
         # Create the image streamer and start it
         self._image_streamer = ImageStreamer()
         self._image_streamer.start()
@@ -94,3 +99,4 @@ class VehicleMgr(object):
         self._vehicle_ctl.stop()
         self._sensor_mgr.stop()
         self._image_streamer.stop()
+        self._cpu_fan.stop()

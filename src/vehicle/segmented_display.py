@@ -27,11 +27,8 @@ class SegmentedDisplay():
     def start(self):
         self.thread.start()
 
-    def run(self):
-        self.thread.run()
-
     def stop(self):
-        self.stop()
+        self.thread.stop()
 
     def set_text(self, text):
         self.hardwareInstance.fill(0)
