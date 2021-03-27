@@ -34,7 +34,7 @@ class ConfigHandler(object):
         if "ROTOR_DIR" in os.environ:
             self._rotor_dir = os.getenv("ROTOR_DIR")
         else:
-            raise Exception("The environmental variable ROTOR_DIR must be set to point to the directory containing"
+            raise Exception("The environmental variable ROTOR_DIR must be set to point to the directory containing "
                             "cfg.json")
 
         self.cfg_filepath = self._rotor_dir / Path('cfg.json')
