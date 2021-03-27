@@ -12,10 +12,16 @@ class RequestHandler(object):
         self._ip = ""
         self._port = 5000
         self._timeout = .25
+        self._proxy_address = ""
+        self._proxy_port = 0
 
     def set_endpoint(self, ip, port):
         self._ip = ip
         self._port = port
+
+    def set_proxy(self, address, port):
+        self._proxy_address = address
+        self._proxy_port = port
 
     def send_command(self, command):
         try:
@@ -94,3 +100,9 @@ class RequestHandler(object):
 
     def dest_ip(self):
         return self._ip
+
+    def proxy_address(self):
+        return self._proxy_address
+
+    def proxy_port(self):
+        return self._proxy_port

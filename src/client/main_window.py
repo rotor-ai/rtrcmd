@@ -47,6 +47,12 @@ class MainWindow(QMainWindow):
         self._lbl_port = QLabel("Port:")
         self._lbl_mode = QLabel("Mode:")
         self._cbo_mode = QComboBox(self)
+        self._lbl_proxy_address = QLabel("Proxy:")
+        self._le_proxy_address = QLineEdit(self._vehicle_ctl.vehicle_proxy_address(), self)
+        self._lbl_proxy_port = QLabel("Proxy Port:")
+        self._sb_proxy_port = QSpinBox(self)
+        self._sb_proxy_port.setMaximum(99999)
+        self._sb_proxy_port.setValue(self._vehicle_ctl.vehicle_proxy_port())
         self._cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
         self._cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
         self._cbo_mode.addItem("AUTO", int(ModeType.AUTO))
@@ -78,8 +84,12 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self._le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
         grid_layout.addWidget(self._lbl_port, 3, 0)
         grid_layout.addWidget(self._sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
-        grid_layout.addWidget(self._lbl_mode, 4, 0)
-        grid_layout.addWidget(self._cbo_mode, 4, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_proxy_address, 4, 0)
+        grid_layout.addWidget(self._le_proxy_address, 4, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_proxy_port, 5, 0)
+        grid_layout.addWidget(self._sb_proxy_port, 5, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_mode, 6, 0)
+        grid_layout.addWidget(self._cbo_mode, 6, 1, 1, 2)
         grid_layout.addWidget(self._image_viewer, 0, 3, 5, 1)
         grid_layout.addWidget(self._btn_restart, 5, 3)
 

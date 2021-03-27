@@ -29,7 +29,10 @@ class VehicleCtl(QObject):
         self._request_handler = RequestHandler()
         vehicle_ip = self._config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
         vehicle_port = self._config_handler.get_config_value_or('vehicle_port', 5000)
+        vehicle_proxy_address = self._config_handler.get_config_value_or('proxy_address', "")
+        vehicle_proxy_port = self._config_handler.get_config_value_or('proxy_port', 0)
         self._request_handler.set_endpoint(vehicle_ip, vehicle_port)
+        self._request_handler.set_proxy(vehicle_proxy_address, vehicle_proxy_port)
 
         self._mode = Mode()
 
@@ -86,6 +89,12 @@ class VehicleCtl(QObject):
 
     def vehicle_port(self):
         return self._request_handler.dest_port()
+
+    def vehicle_proxy_address(self):
+        return self._request_handler.proxy_address()
+
+    def vehicle_proxy_port(self):
+        return self._request_handler.proxy_port()
 
     def send_command(self, cmd):
         self._request_handler.send_command(cmd)
