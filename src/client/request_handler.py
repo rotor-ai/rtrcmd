@@ -14,6 +14,7 @@ class RequestHandler(object):
         self._timeout = .25
         self._proxy_address = ""
         self._proxy_port = 0
+        self._use_proxy = False
 
     def set_endpoint(self, ip, port):
         self._ip = ip
@@ -22,6 +23,15 @@ class RequestHandler(object):
     def set_proxy(self, address, port):
         self._proxy_address = address
         self._proxy_port = port
+
+    def is_using_proxy(self):
+        return self._use_proxy
+
+    def enable_proxy(self):
+        self._use_proxy = True
+
+    def disable_proxy(self):
+        self._use_proxy = False
 
     def send_command(self, command):
         try:

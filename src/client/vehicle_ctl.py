@@ -31,8 +31,11 @@ class VehicleCtl(QObject):
         vehicle_port = self._config_handler.get_config_value_or('vehicle_port', 5000)
         vehicle_proxy_address = self._config_handler.get_config_value_or('proxy_address', "")
         vehicle_proxy_port = self._config_handler.get_config_value_or('proxy_port', 0)
+        use_proxy = self._config_handler.get_config_value_or('use_proxy', False)
         self._request_handler.set_endpoint(vehicle_ip, vehicle_port)
         self._request_handler.set_proxy(vehicle_proxy_address, vehicle_proxy_port)
+        if use_proxy:
+            self._request_handler.enable_proxy()
 
         self._mode = Mode()
 
@@ -125,6 +128,27 @@ class VehicleCtl(QObject):
 
     def get_last_image(self):
         return self._image_stream_server.get_last_image()
+
+    def set_proxy(self, address, port):
+        self._config_handler.set_config_value('proxy_address', address)
+        self._config_handler.set_config_value('proxy_port', port)
+        self._request_handler.set_proxy(address, port)
+
+        # Need to now restart the image server and image stream
+        self._image_stream_server.stop()
+        self._image_stream_server.start()
+        self.restart_stream()
+
+    def is_using_proxy(self):
+        return self._request_handler.is_using_proxy()
+
+    def enable_proxy(self):
+        self._config_handler.set_config_value('use_proxy', True)
+        self._request_handler.enable_proxy()
+
+    def disable_proxy(self):
+        self._config_handler.set_config_value('use_proxy', False)
+        self._request_handler.disable_proxy()
 
     def set_endpoint(self, ip, port):
         self._config_handler.set_config_value('vehicle_ip', ip)

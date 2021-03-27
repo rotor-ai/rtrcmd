@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, Qt
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, \
+    QCheckBox
 from PyQt5.QtCore import QSize
 from common.command import Command
 from .trim_dialog import TrimDialog
@@ -49,14 +50,23 @@ class MainWindow(QMainWindow):
         self._cbo_mode = QComboBox(self)
         self._lbl_proxy_address = QLabel("Proxy:")
         self._le_proxy_address = QLineEdit(self._vehicle_ctl.vehicle_proxy_address(), self)
+        self._le_proxy_address.textChanged.connect(self.proxy_address_changed)
         self._lbl_proxy_port = QLabel("Proxy Port:")
+
         self._sb_proxy_port = QSpinBox(self)
         self._sb_proxy_port.setMaximum(99999)
         self._sb_proxy_port.setValue(self._vehicle_ctl.vehicle_proxy_port())
+
         self._cbo_mode.addItem("NORMAL", int(ModeType.NORMAL))
         self._cbo_mode.addItem("TRAIN", int(ModeType.TRAIN))
         self._cbo_mode.addItem("AUTO", int(ModeType.AUTO))
         self._btn_restart = QPushButton("Restart Stream")
+        self._cb_proxy = QCheckBox()
+        self._lbl_use_proxy = QLabel("Use Proxy")
+        self._cb_proxy.toggled.connect(self.use_proxy_toggled)
+        self._cb_proxy.setChecked(self._vehicle_ctl.is_using_proxy())
+        self._le_proxy_address.setEnabled(self._vehicle_ctl.is_using_proxy())
+        self._sb_proxy_port.setEnabled(self._vehicle_ctl.is_using_proxy())
 
         # Create the image viewer
         self._image_viewer = ImageViewer(self._vehicle_ctl, self)
@@ -84,12 +94,14 @@ class MainWindow(QMainWindow):
         grid_layout.addWidget(self._le_ip, 2, 1, 1, 2)  # Stretch the line edit into two cells
         grid_layout.addWidget(self._lbl_port, 3, 0)
         grid_layout.addWidget(self._sb_port, 3, 1, 1, 2)  # Stretch the spinbox into two cells
-        grid_layout.addWidget(self._lbl_proxy_address, 4, 0)
-        grid_layout.addWidget(self._le_proxy_address, 4, 1, 1, 2)
-        grid_layout.addWidget(self._lbl_proxy_port, 5, 0)
-        grid_layout.addWidget(self._sb_proxy_port, 5, 1, 1, 2)
-        grid_layout.addWidget(self._lbl_mode, 6, 0)
-        grid_layout.addWidget(self._cbo_mode, 6, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_use_proxy, 4, 0)
+        grid_layout.addWidget(self._cb_proxy, 4, 1)
+        grid_layout.addWidget(self._lbl_proxy_address, 5, 0)
+        grid_layout.addWidget(self._le_proxy_address, 5, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_proxy_port, 6, 0)
+        grid_layout.addWidget(self._sb_proxy_port, 6, 1, 1, 2)
+        grid_layout.addWidget(self._lbl_mode, 7, 0)
+        grid_layout.addWidget(self._cbo_mode, 7, 1, 1, 2)
         grid_layout.addWidget(self._image_viewer, 0, 3, 5, 1)
         grid_layout.addWidget(self._btn_restart, 5, 3)
 
@@ -147,6 +159,20 @@ class MainWindow(QMainWindow):
 
         port = self._sb_port.value()
         self._vehicle_ctl.set_endpoint(ip, port)
+
+    def proxy_address_changed(self, address):
+        self._vehicle_ctl.set_proxy(address, self._vehicle_ctl.vehicle_proxy_port)
+
+    def proxy_port_changed(self, port):
+        self._vehicle_ctl.set_proxy(self._vehicle_ctl.vehicle_proxy_address, port)
+
+    def use_proxy_toggled(self, state):
+        self._le_proxy_address.setEnabled(state)
+        self._sb_proxy_port.setEnabled(state)
+        if state:
+            self._vehicle_ctl.enable_proxy()
+        else:
+            self._vehicle_ctl.disable_proxy()
 
     def port_changed(self, port):
         ip = self._le_ip.text()
