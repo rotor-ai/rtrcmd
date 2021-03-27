@@ -50,7 +50,6 @@ class MainWindow(QMainWindow):
         self._cbo_mode = QComboBox(self)
         self._lbl_proxy_address = QLabel("Proxy:")
         self._le_proxy_address = QLineEdit(self._vehicle_ctl.vehicle_proxy_address(), self)
-        self._le_proxy_address.textChanged.connect(self.proxy_address_changed)
         self._lbl_proxy_port = QLabel("Proxy Port:")
 
         self._sb_proxy_port = QSpinBox(self)
@@ -63,7 +62,6 @@ class MainWindow(QMainWindow):
         self._btn_restart = QPushButton("Restart Stream")
         self._cb_proxy = QCheckBox()
         self._lbl_use_proxy = QLabel("Use Proxy")
-        self._cb_proxy.toggled.connect(self.use_proxy_toggled)
         self._cb_proxy.setChecked(self._vehicle_ctl.is_using_proxy())
         self._le_proxy_address.setEnabled(self._vehicle_ctl.is_using_proxy())
         self._sb_proxy_port.setEnabled(self._vehicle_ctl.is_using_proxy())
@@ -82,6 +80,9 @@ class MainWindow(QMainWindow):
         self._left_btn.released.connect(self.left_released)
         self._cbo_mode.activated.connect(self.mode_changed)
         self._btn_restart.pressed.connect(self.restart_stream)
+        self._cb_proxy.toggled.connect(self.use_proxy_toggled)
+        self._le_proxy_address.textChanged.connect(self.proxy_address_changed)
+        self._sb_proxy_port.valueChanged.connect(self.proxy_port_changed)
 
         # Set the widgets in the grid layout
         grid_layout = QGridLayout(central_widget)
@@ -161,10 +162,10 @@ class MainWindow(QMainWindow):
         self._vehicle_ctl.set_endpoint(ip, port)
 
     def proxy_address_changed(self, address):
-        self._vehicle_ctl.set_proxy(address, self._vehicle_ctl.vehicle_proxy_port)
+        self._vehicle_ctl.set_proxy(address, self._vehicle_ctl.vehicle_proxy_port())
 
     def proxy_port_changed(self, port):
-        self._vehicle_ctl.set_proxy(self._vehicle_ctl.vehicle_proxy_address, port)
+        self._vehicle_ctl.set_proxy(self._vehicle_ctl.vehicle_proxy_address(), port)
 
     def use_proxy_toggled(self, state):
         self._le_proxy_address.setEnabled(state)
