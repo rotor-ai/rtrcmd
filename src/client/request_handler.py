@@ -15,6 +15,7 @@ class RequestHandler(object):
         self._proxy_address = ""
         self._proxy_port = 0
         self._use_proxy = False
+        self.currentSession = requests.Session()
 
     def set_endpoint(self, ip, port):
         self._ip = ip
@@ -23,21 +24,31 @@ class RequestHandler(object):
     def set_proxy(self, address, port):
         self._proxy_address = address
         self._proxy_port = port
+        if self._use_proxy:
+            full_address = self._proxy_address + ":" + str(self._proxy_port)
+            logging.info("setting proxy " + full_address)
+            self.currentSession.proxies.update({'http': full_address})
 
     def is_using_proxy(self):
         return self._use_proxy
 
     def enable_proxy(self):
+        full_address = self._proxy_address + ":" + str(self._proxy_port)
+        logging.info("setting proxy " + full_address)
+        self.currentSession.proxies.update({'http': full_address})
         self._use_proxy = True
+        logging.info("proxy enabled")
 
     def disable_proxy(self):
         self._use_proxy = False
+        self.currentSession.proxies.clear()
+        logging.info("proxy disabled")
 
     def send_command(self, command):
         try:
             logging.debug(f"Posting command: {command.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/command"
-            r = requests.post(endpoint, None, command.to_json(), timeout=self._timeout)
+            r = self.currentSession.post(endpoint, None, command.to_json(), timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -47,7 +58,7 @@ class RequestHandler(object):
         try:
             logging.debug(f"Posting trim: {trim.to_json()}")
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/trim"
-            r = requests.post(endpoint, None, trim.to_json(), timeout=self._timeout)
+            r = self.currentSession.post(endpoint, None, trim.to_json(), timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -56,7 +67,7 @@ class RequestHandler(object):
     def get_trim(self):
         try:
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/trim"
-            r = requests.get(endpoint, timeout=self._timeout)
+            r = self.currentSession.get(endpoint, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
 
@@ -75,7 +86,7 @@ class RequestHandler(object):
         try:
             json_start = {'port': port, 'stream_images': True}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
-            r = requests.post(endpoint, None, json_start, timeout=self._timeout)
+            r = self.currentSession.post(endpoint, None, json_start, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -86,7 +97,7 @@ class RequestHandler(object):
             json_stop = {'stream_images': False}
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/image_stream"
             logging.debug("Requesting video stream stop")
-            r = requests.post(endpoint, None, json_stop, timeout=self._timeout)
+            r = self.currentSession.post(endpoint, None, json_stop, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
         except Exception as e:
@@ -96,7 +107,7 @@ class RequestHandler(object):
         try:
             endpoint = "http://" + self._ip + ":" + str(self._port) + "/telemetry"
             logging.debug("Requesting current telemetry")
-            r = requests.get(endpoint, timeout=self._timeout)
+            r = self.currentSession.get(endpoint, timeout=self._timeout)
             if r.status_code != 200:
                 logging.error(r.text)
 
