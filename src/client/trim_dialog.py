@@ -19,60 +19,28 @@ class TrimDialog(QWidget):
         self.cb_steering_reversed.setChecked(self.trim.get_steering_reversed())
 
         self.lbl_steering_trim = QLabel("Steering Trim:", self)
-        self.sb_steering_trim = QDoubleSpinBox(self)
-        self.sb_steering_trim.setMaximum(1.0)
-        self.sb_steering_trim.setMinimum(-1.0)
-        self.sb_steering_trim.setSingleStep(.01)
-        self.sb_steering_trim.setValue(self.trim.get_steering_trim())
+        self.sb_steering_trim = self.generate_numeric_input(1.0, -1.0, .01, self.trim.get_steering_trim())
 
         self.lbl_steering_max = QLabel("Steering Max:", self)
-        self.sb_steering_max = QDoubleSpinBox(self)
-        self.sb_steering_max.setMaximum(1.0)
-        self.sb_steering_max.setMinimum(0.0)
-        self.sb_steering_max.setSingleStep(.01)
-        self.sb_steering_max.setValue(self.trim.get_steering_max())
+        self.sb_steering_max = self.generate_numeric_input(1.0, 0.0, .01, self.trim.get_steering_max())
 
         self.lbl_steering_min = QLabel("Steering Min:", self)
-        self.sb_steering_min = QDoubleSpinBox(self)
-        self.sb_steering_min.setMaximum(0.0)
-        self.sb_steering_min.setMinimum(-1.0)
-        self.sb_steering_min.setSingleStep(.01)
-        self.sb_steering_min.setValue(self.trim.get_steering_min())
+        self.sb_steering_min = self.generate_numeric_input(0.0, -1.0, .01, self.trim.get_steering_min())
 
         self.lbl_throttle_trim = QLabel("Throttle Trim:", self)
-        self.sb_throttle_trim = QDoubleSpinBox(self)
-        self.sb_throttle_trim.setMaximum(1.0)
-        self.sb_throttle_trim.setMinimum(-1.0)
-        self.sb_throttle_trim.setSingleStep(.01)
-        self.sb_throttle_trim.setValue(self.trim.get_throttle_trim())
+        self.sb_throttle_trim = self.generate_numeric_input(1.0, -1.0, .01, self.trim.get_throttle_trim())
 
         self.lbl_throttle_fwd_max = QLabel("Max Fwd Throttle:", self)
-        self.sb_throttle_fwd_max = QDoubleSpinBox(self)
-        self.sb_throttle_fwd_max.setMaximum(1.0)
-        self.sb_throttle_fwd_max.setMinimum(0.0)
-        self.sb_throttle_fwd_max.setSingleStep(.01)
-        self.sb_throttle_fwd_max.setValue(self.trim.get_throttle_fwd_max())
+        self.sb_throttle_fwd_max = self.generate_numeric_input(1.0, 0.0, .01, self.trim.get_throttle_fwd_max())
 
         self.lbl_throttle_fwd_min = QLabel("Min Fwd Throttle:", self)
-        self.sb_throttle_fwd_min = QDoubleSpinBox(self)
-        self.sb_throttle_fwd_min.setMaximum(1.0)
-        self.sb_throttle_fwd_min.setMinimum(0.0)
-        self.sb_throttle_fwd_min.setSingleStep(.01)
-        self.sb_throttle_fwd_min.setValue(self.trim.get_throttle_fwd_min())
+        self.sb_throttle_fwd_min = self.generate_numeric_input(1.0, 0.0, .01, self.trim.get_throttle_fwd_min())
 
         self.lbl_throttle_rev_max = QLabel("Max Rev Throttle:", self)
-        self.sb_throttle_rev_max = QDoubleSpinBox(self)
-        self.sb_throttle_rev_max.setMaximum(0.0)
-        self.sb_throttle_rev_max.setMinimum(-1.0)
-        self.sb_throttle_rev_max.setSingleStep(.01)
-        self.sb_throttle_rev_max.setValue(self.trim.get_throttle_rev_max())
+        self.sb_throttle_rev_max = self.generate_numeric_input(0.0, -1.0, .01, self.trim.get_throttle_rev_max())
 
         self.lbl_throttle_rev_min = QLabel("Min Rev Throttle:", self)
-        self.sb_throttle_rev_min = QDoubleSpinBox(self)
-        self.sb_throttle_rev_min.setMaximum(0.0)
-        self.sb_throttle_rev_min.setMinimum(-1.0)
-        self.sb_throttle_rev_min.setSingleStep(.01)
-        self.sb_throttle_rev_min.setValue(self.trim.get_throttle_rev_min())
+        self.sb_throttle_rev_min = self.generate_numeric_input(0.0, -1.0, .01, self.trim.get_throttle_rev_min())
 
         self.btn_apply = QPushButton("Apply", self)
         self.btn_apply.clicked.connect(self.apply_clicked)
@@ -95,6 +63,14 @@ class TrimDialog(QWidget):
         grid_layout.addWidget(self.lbl_throttle_rev_min, 8, 0)
         grid_layout.addWidget(self.sb_throttle_rev_min, 8, 1)
         grid_layout.addWidget(self.btn_apply, 9, 1)
+
+    def generate_numeric_input(self, maximum, minimum, increment, current):
+        sb = QDoubleSpinBox(self)
+        sb.setMaximum(maximum)
+        sb.setMinimum(minimum)
+        sb.setSingleStep(increment)
+        sb.setValue(current)
+        return sb
 
     def apply_clicked(self):
 
