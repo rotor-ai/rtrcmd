@@ -6,6 +6,7 @@ from .image_stream_server import ImageStreamServer
 import logging
 from .training_mgr import TrainingMgr
 from .auto_agent import AutoAgent
+from common.command import Command
 
 
 class VehicleCtl(QObject):
@@ -46,6 +47,8 @@ class VehicleCtl(QObject):
 
         self._training_mgr = TrainingMgr()
         self._auto_agent = AutoAgent()
+
+        self.staged_cmd = Command()
 
     def start(self):
         # Start the image server and automatically request the vehicle to start streaming image data
@@ -99,8 +102,8 @@ class VehicleCtl(QObject):
     def vehicle_proxy_port(self):
         return self._request_handler.proxy_port()
 
-    def send_command(self, cmd):
-        self._request_handler.send_command(cmd)
+    def send_command(self):
+        self._request_handler.send_command(self.staged_cmd)
 
     def mode(self):
         return self._mode

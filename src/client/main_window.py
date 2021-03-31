@@ -16,9 +16,6 @@ class MainWindow(QMainWindow):
         # Main vehicle control interface
         self._vehicle_ctl = vehicle_ctl
 
-        # Our current command
-        self._cmd = Command()
-
         # Our popup window for setting trim
         self._trim_window = None
 
@@ -47,36 +44,36 @@ class MainWindow(QMainWindow):
         central_widget.setFocus()
 
     def up_pressed(self):
-        self._cmd.set_throttle(1.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_throttle(1.0)
+        self._vehicle_ctl.send_command()
 
     def up_released(self):
-        self._cmd.set_throttle(0.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_throttle(0.0)
+        self._vehicle_ctl.send_command()
 
     def down_pressed(self):
-        self._cmd.set_throttle(-1.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_throttle(-1.0)
+        self._vehicle_ctl.send_command()
 
     def down_released(self):
-        self._cmd.set_throttle(0.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_throttle(0.0)
+        self._vehicle_ctl.send_command()
 
     def right_pressed(self):
-        self._cmd.set_steering(1.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_steering(1.0)
+        self._vehicle_ctl.send_command()
 
     def right_released(self):
-        self._cmd.set_steering(0.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_steering(0.0)
+        self._vehicle_ctl.send_command()
 
     def left_pressed(self):
-        self._cmd.set_steering(-1.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_steering(-1.0)
+        self._vehicle_ctl.send_command()
 
     def left_released(self):
-        self._cmd.set_steering(0.0)
-        self.send_command()
+        self._vehicle_ctl.staged_cmd.set_steering(0.0)
+        self._vehicle_ctl.send_command()
 
     def show_trim_window(self):
 
@@ -156,9 +153,6 @@ class MainWindow(QMainWindow):
             self.right_released()
 
         return super().keyReleaseEvent(e)
-
-    def send_command(self):
-        self._vehicle_ctl.send_command(self._cmd)
 
     def send_trim(self):
         self._vehicle_ctl.send_trim(self.trim)
