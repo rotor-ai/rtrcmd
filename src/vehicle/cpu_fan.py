@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 
@@ -16,16 +17,17 @@ class CpuFan():
 
     def behavior(self):
         current_temp = gpiozero.CPUTemperature().temperature
-        if self.fanState == 1 and current_temp <= 35:
+        if self.fanState == 1 and current_temp <= 30:
             self.fanState = False
-            print("turning fan off")
             self.fan.value = self.fanState
-            print("CPU is " + str(current_temp) + "C   Fan state is " + str(self.fan.value))
-        elif self.fanState == 0 and current_temp >= 40:
+            self.log_cpu_temp_and_fan_state(current_temp)
+        elif self.fanState == 0 and current_temp >= 35:
             self.fanState = True
-            print("turning fan on")
             self.fan.value = self.fanState
-            print("CPU is " + str(current_temp) + "C   Fan state is " + str(self.fan.value))
+            self.log_cpu_temp_and_fan_state(current_temp)
+
+    def log_cpu_temp_and_fan_state(self, current_temp):
+        logging.info("CPU is " + str(current_temp) + "C   Fan state is " + str(self.fan.value))
 
     def start(self):
         self.thread.start()
