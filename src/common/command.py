@@ -39,6 +39,9 @@ class Command(object):
 
         return json_cmd
 
+    def equal(self, some_other_command):
+        return self.to_json() == some_other_command.to_json()
+
     def from_json(self, json_cmd):
 
         if 'throttle' not in json_cmd:
