@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 import adafruit_ht16k33.segments
@@ -42,7 +43,7 @@ class SegmentedDisplayThread(threading.Thread):
     def __init__(self):
         super().__init__()
         self.run_duration = 0
-        self.behave = lambda : print("NO BEHAVIOR DEFINED FOR THREAD!")
+        self.behave = lambda : logging.error("NO BEHAVIOR DEFINED FOR THREAD!")
 
     def run(self) -> None:
         super().run()
