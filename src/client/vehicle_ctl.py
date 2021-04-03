@@ -1,3 +1,6 @@
+import threading
+import time
+
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from .request_handler import RequestHandler
 from common.config_handler import ConfigHandler
@@ -28,13 +31,11 @@ class VehicleCtl(QObject):
         self._config_handler = ConfigHandler.get_instance()
 
         self._request_handler = RequestHandler()
-        vehicle_ip = self._config_handler.get_config_value_or('vehicle_ip', "127.0.0.1")
-        vehicle_port = self._config_handler.get_config_value_or('vehicle_port', 5000)
-        proxy_address = self._config_handler.get_config_value_or('proxy_address', "")
-        proxy_port = self._config_handler.get_config_value_or('proxy_port', 0)
         use_proxy = self._config_handler.get_config_value_or('use_proxy', False)
-        self._request_handler.set_endpoint(vehicle_ip, vehicle_port)
-        self._request_handler.set_proxy(proxy_address, proxy_port)
+        self._request_handler.set_endpoint(self._config_handler.get_config_value_or('vehicle_ip', "127.0.0.1"),
+                                           self._config_handler.get_config_value_or('vehicle_port', 5000))
+        self._request_handler.set_proxy(self._config_handler.get_config_value_or('proxy_address', ""),
+                                        self._config_handler.get_config_value_or('proxy_port', 0))
         if use_proxy:
             self._request_handler.enable_proxy()
 
@@ -48,12 +49,46 @@ class VehicleCtl(QObject):
         self._training_mgr = TrainingMgr()
         self._auto_agent = AutoAgent()
 
-        self.staged_cmd = Command()
+        self._thread = VehicleCtlThread()
+
+        # This represents the last command we sent to the vehicle. It is needed to interpolate
+        # between the current command and the target command.
+        self._last_cmd_sent = Command()
+
+        # This represents the intended speed/direction of the vehicle
+        # VehicleCtlThread is used to interpolate between our current command, and this target command.
+        # This allows us to roll onto the throttle, rather than FLOOR IT when we press the forward button on the client.
+        self._target_cmd = Command()
+
+        #defines the bahavior for our thread loop
+        self._thread.behave = lambda: self.thread_behavior()
+
+    def thread_behavior(self):
+        if not self._target_cmd.equal(self._last_cmd_sent):
+            interpolated_throttle = self._last_cmd_sent.get_throttle()
+            interpolated_steering = self._last_cmd_sent.get_steering()
+
+            if self._target_cmd.get_throttle() > self._last_cmd_sent.get_throttle():
+                interpolated_throttle = min(self._last_cmd_sent.get_throttle() + 0.15, self._target_cmd.get_throttle())
+            elif self._target_cmd.get_throttle() < self._last_cmd_sent.get_throttle():
+                interpolated_throttle = max(self._last_cmd_sent.get_throttle() - 0.15, self._target_cmd.get_throttle())
+
+            if self._target_cmd.get_steering() > self._last_cmd_sent.get_steering():
+                interpolated_steering = min(self._last_cmd_sent.get_steering() + 0.3, self._target_cmd.get_steering())
+            elif self._target_cmd.get_steering() < self._last_cmd_sent.get_steering():
+                interpolated_steering = max(self._last_cmd_sent.get_steering() - 0.3, self._target_cmd.get_steering())
+
+            prepared_cmd = Command(interpolated_steering, interpolated_throttle)
+            self._request_handler.send_command(prepared_cmd)
+            self._last_cmd_sent = prepared_cmd
+
+        time.sleep(0.05)
 
     def start(self):
         # Start the image server and automatically request the vehicle to start streaming image data
         self._image_stream_server.start()
         self._request_handler.send_image_stream_start(self._stream_port)
+        self._thread.start()
 
     def stop(self):
         # Tell the vehicle to stop sending images, and stop the server
@@ -63,6 +98,7 @@ class VehicleCtl(QObject):
         self._image_stream_server.stop()
         self._training_mgr.finalize_log()
         self._auto_agent.stop()
+        self._thread.stop()
 
     def restart_stream(self):
 
@@ -87,9 +123,6 @@ class VehicleCtl(QObject):
 
         self.image_received.emit()
 
-    def set_vehicle_endpoint(self, ip, port):
-        self._request_handler.set_endpoint(ip, port)
-
     def vehicle_ip(self):
         return self._request_handler.dest_ip()
 
@@ -102,8 +135,14 @@ class VehicleCtl(QObject):
     def vehicle_proxy_port(self):
         return self._request_handler.proxy_port()
 
-    def send_command(self):
-        self._request_handler.send_command(self.staged_cmd)
+    # def send_command(self):
+    #     self._request_handler.send_command(self.target_cmd)
+
+    def set_throttle(self, t_value):
+        self._target_cmd.set_throttle(t_value)
+
+    def set_steering(self, s_value):
+        self._target_cmd.set_steering(s_value)
 
     def mode(self):
         return self._mode
@@ -168,3 +207,16 @@ class VehicleCtl(QObject):
 
     def send_trim(self, trim):
         self._request_handler.send_trim(trim)
+
+
+class VehicleCtlThread(threading.Thread):
+
+    def __init__(self):
+        super().__init__()
+        self.behave = lambda: logging.error("NO BEHAVIOR DEFINED FOR THREAD!")
+
+    def run(self) -> None:
+        super().run()
+
+        while 1:
+            self.behave()

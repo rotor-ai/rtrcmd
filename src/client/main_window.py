@@ -44,36 +44,28 @@ class MainWindow(QMainWindow):
         central_widget.setFocus()
 
     def up_pressed(self):
-        self._vehicle_ctl.staged_cmd.set_throttle(1.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_throttle(1.0)
 
     def up_released(self):
-        self._vehicle_ctl.staged_cmd.set_throttle(0.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_throttle(0.0)
 
     def down_pressed(self):
-        self._vehicle_ctl.staged_cmd.set_throttle(-1.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_throttle(-1.0)
 
     def down_released(self):
-        self._vehicle_ctl.staged_cmd.set_throttle(0.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_throttle(0.0)
 
     def right_pressed(self):
-        self._vehicle_ctl.staged_cmd.set_steering(1.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_steering(1.0)
 
     def right_released(self):
-        self._vehicle_ctl.staged_cmd.set_steering(0.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_steering(0.0)
 
     def left_pressed(self):
-        self._vehicle_ctl.staged_cmd.set_steering(-1.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_steering(-1.0)
 
     def left_released(self):
-        self._vehicle_ctl.staged_cmd.set_steering(0.0)
-        self._vehicle_ctl.send_command()
+        self._vehicle_ctl.set_steering(0.0)
 
     def show_trim_window(self):
 

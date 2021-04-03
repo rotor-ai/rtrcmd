@@ -4,10 +4,9 @@ class Command(object):
     Command class used to set vehicle settings
     """
 
-    def __init__(self):
-
-        self.steering = 0.0
-        self.throttle = 0.0
+    def __init__(self, s=0.0, t=0.0):
+        self.steering = s
+        self.throttle = t
 
     def get_steering(self):
         return self.steering
