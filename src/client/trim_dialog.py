@@ -42,9 +42,6 @@ class TrimDialog(QWidget):
         self.lbl_throttle_rev_min = QLabel("Min Rev Throttle:", self)
         self.sb_throttle_rev_min = self.generate_numeric_input(0.0, -1.0, .01, self.trim.get_throttle_rev_min())
 
-        self.lbl_throttle_acc = QLabel("Throttle Acc:", self)
-        self.sb_throttle_acc = self.generate_numeric_input(1.0, 0.0, .01, self.trim.get_throttle_acc())
-
         self.btn_apply = QPushButton("Apply", self)
         self.btn_apply.clicked.connect(self.apply_clicked)
 
@@ -65,9 +62,7 @@ class TrimDialog(QWidget):
         grid_layout.addWidget(self.sb_throttle_rev_max, 7, 1)
         grid_layout.addWidget(self.lbl_throttle_rev_min, 8, 0)
         grid_layout.addWidget(self.sb_throttle_rev_min, 8, 1)
-        grid_layout.addWidget(self.lbl_throttle_acc, 9, 0)
-        grid_layout.addWidget(self.sb_throttle_acc, 9, 1)
-        grid_layout.addWidget(self.btn_apply, 10, 1)
+        grid_layout.addWidget(self.btn_apply, 9, 1)
 
     def generate_numeric_input(self, maximum, minimum, increment, current):
         sb = QDoubleSpinBox(self)
@@ -89,7 +84,6 @@ class TrimDialog(QWidget):
         self.trim.set_throttle_rev_max(self.sb_throttle_rev_max.value())
         self.trim.set_throttle_fwd_min(self.sb_throttle_fwd_min.value())
         self.trim.set_throttle_fwd_max(self.sb_throttle_fwd_max.value())
-        self.trim.set_throttle_acc(self.sb_throttle_acc.value())
 
         self.trim_changed.emit()
 

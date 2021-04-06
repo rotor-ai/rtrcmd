@@ -18,7 +18,6 @@ class Trim(object):
         self.throttle_fwd_max = 1.0
         self.throttle_rev_min = 0.0
         self.throttle_rev_max = -1.0
-        self.throttle_acc = 1.0
 
     def get_steering_trim(self):
         return self.steering_trim
@@ -46,9 +45,6 @@ class Trim(object):
 
     def get_throttle_rev_max(self):
         return self.throttle_rev_max
-
-    def get_throttle_acc(self):
-        return self.throttle_acc
 
     def set_steering_trim(self, steering_trim):
 
@@ -93,11 +89,6 @@ class Trim(object):
 
         self.check_bounds(throttle_rev_min, "throttle fwd min", -1.0, 0.0)
         self.throttle_rev_min = throttle_rev_min
-
-    def set_throttle_acc(self, throttle_acc):
-
-        self.check_bounds(throttle_acc, "throttle acc", 0.0, 1.0)
-        self.throttle_acc = throttle_acc
 
     def check_bounds(self, value, value_name, min_value, max_value):
 
@@ -144,7 +135,6 @@ class Trim(object):
             'throttle_fwd_min': self.throttle_fwd_min,
             'throttle_rev_max': self.throttle_rev_max,
             'throttle_rev_min': self.throttle_rev_min,
-            'throttle_acc': self.throttle_acc
         }
 
         return json_cmd
@@ -169,5 +159,3 @@ class Trim(object):
             self.set_throttle_rev_max(json_cmd['throttle_rev_max'])
         if 'throttle_rev_min' in json_cmd:
             self.set_throttle_rev_min(json_cmd['throttle_rev_min'])
-        if 'throttle_acc' in json_cmd:
-            self.set_throttle_acc(json_cmd['throttle_acc'])

@@ -135,9 +135,6 @@ class VehicleCtl(QObject):
     def vehicle_proxy_port(self):
         return self._request_handler.proxy_port()
 
-    # def send_command(self):
-    #     self._request_handler.send_command(self.target_cmd)
-
     def set_throttle(self, t_value):
         self._target_cmd.set_throttle(t_value)
 
@@ -206,6 +203,7 @@ class VehicleCtl(QObject):
         return self._request_handler.get_trim()
 
     def send_trim(self, trim):
+        self._trim_cached = trim
         self._request_handler.send_trim(trim)
 
 
