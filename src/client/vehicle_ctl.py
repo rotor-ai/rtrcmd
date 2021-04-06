@@ -61,17 +61,17 @@ class VehicleCtl(QObject):
         self._target_cmd = Command()
 
         #defines the bahavior for our thread loop
-        self._thread.behave = lambda: self.thread_behavior()
+        self._thread.behave = lambda: self.interpolate_throttle_and_steering()
 
-    def thread_behavior(self):
+    def interpolate_throttle_and_steering(self):
         if not self._target_cmd.equal(self._last_cmd_sent):
             interpolated_throttle = self._last_cmd_sent.get_throttle()
             interpolated_steering = self._last_cmd_sent.get_steering()
 
             if self._target_cmd.get_throttle() > self._last_cmd_sent.get_throttle():
-                interpolated_throttle = min(self._last_cmd_sent.get_throttle() + 0.15, self._target_cmd.get_throttle())
+                interpolated_throttle = min(self._last_cmd_sent.get_throttle() + 0.10, self._target_cmd.get_throttle())
             elif self._target_cmd.get_throttle() < self._last_cmd_sent.get_throttle():
-                interpolated_throttle = max(self._last_cmd_sent.get_throttle() - 0.15, self._target_cmd.get_throttle())
+                interpolated_throttle = max(self._last_cmd_sent.get_throttle() - 0.10, self._target_cmd.get_throttle())
 
             if self._target_cmd.get_steering() > self._last_cmd_sent.get_steering():
                 interpolated_steering = min(self._last_cmd_sent.get_steering() + 0.3, self._target_cmd.get_steering())
@@ -98,7 +98,6 @@ class VehicleCtl(QObject):
         self._image_stream_server.stop()
         self._training_mgr.finalize_log()
         self._auto_agent.stop()
-        self._thread.stop()
 
     def restart_stream(self):
 

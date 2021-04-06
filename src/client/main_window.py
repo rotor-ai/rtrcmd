@@ -1,8 +1,10 @@
+import inputs
 from PyQt5 import QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, \
     QCheckBox
 from PyQt5.QtCore import QSize
-from common.command import Command
+
+from .game_controller import GameController
 from .trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
 from .image_viewer import ImageViewer
@@ -42,6 +44,30 @@ class MainWindow(QMainWindow):
 
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
+
+        if len(inputs.devices.gamepads) > 0:
+            self._game_controller = GameController(inputs.devices.gamepads[0])
+            self._game_controller.add_event_response('ABS_HAT0X', self.gamepad_direction_pad_response)
+            self._game_controller.add_event_response('ABS_RZ', self.gamepad_right_trigger_response)
+            self._game_controller.add_event_response('BTN_EAST', self.gamepad_b_button_response)
+            self._game_controller.start()
+
+    def gamepad_direction_pad_response(self, state):
+        if state == -1:
+            self.left_pressed()
+        elif state == 1:
+            self.right_pressed()
+        else:
+            self._vehicle_ctl.set_steering(0.0)
+
+    def gamepad_b_button_response(self, state):
+        if state == 1:
+            self.down_pressed()
+        else:
+            self.down_released()
+
+    def gamepad_right_trigger_response(self, state):
+        self._vehicle_ctl.set_throttle(state/1023)
 
     def up_pressed(self):
         self._vehicle_ctl.set_throttle(1.0)
