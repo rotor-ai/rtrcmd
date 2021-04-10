@@ -60,7 +60,7 @@ class VehicleCtl(QObject):
         # This allows us to roll onto the throttle, rather than FLOOR IT when we press the forward button on the client.
         self._target_cmd = Command()
 
-        #defines the bahavior for our thread loop
+        # Defines the bahavior for our thread loop
         self._thread.behave = lambda: self.interpolate_throttle_and_steering()
 
     def interpolate_throttle_and_steering(self):
@@ -95,6 +95,7 @@ class VehicleCtl(QObject):
         if self._image_stream_server.streaming():
             self._request_handler.send_image_stream_stop()
 
+        self._thread.stop()
         self._image_stream_server.stop()
         self._training_mgr.finalize_log()
         self._auto_agent.stop()
@@ -211,9 +212,15 @@ class VehicleCtlThread(threading.Thread):
     def __init__(self):
         super().__init__()
         self.behave = lambda: logging.error("NO BEHAVIOR DEFINED FOR THREAD!")
+        self._running = False
 
     def run(self) -> None:
         super().run()
 
-        while 1:
+        self._running = True
+        while self._running:
             self.behave()
+
+    def stop(self):
+        self._running = False
+        super().join()
