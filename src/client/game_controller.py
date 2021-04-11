@@ -1,6 +1,6 @@
 from inputs import devices
 
-from src.common.threadable_behavior import ThreadableBehavior
+from common.threadable_behavior import ThreadableBehavior
 
 
 class GameController(ThreadableBehavior):
