@@ -1,6 +1,7 @@
 
 # This file contains all of our immediate dependencies. Each line also contains the license of the respective dependency.
 
+#Client side dependencies
 torch==1.8.1            #BSD 3-Clause
 numpy==1.20.2           #BSD 3-Clause
 Pillow==8.2.0           #HPND license
