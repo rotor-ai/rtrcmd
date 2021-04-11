@@ -1,9 +1,12 @@
+import typing
+
+import PySide6
+from PySide6.QtCore import QObject, Signal, Slot, QThread
 from common.command import Command
 from common.config_handler import ConfigHandler
 import logging
 from threading import Condition, Lock
 from PIL.Image import Image
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread
 from torchvision.transforms import functional
 from ai.simple_net import SimpleNet
 from ai.label import Label
@@ -18,10 +21,10 @@ class AutoAgentWorker(QObject):
     """
 
     # Signal is emitted when the image is received
-    command_ready = pyqtSignal()
+    command_ready = Signal()
 
-    def __init__(self, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
+    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+        super().__init__()
 
         self._config_handler = ConfigHandler.get_instance()
         model_filepath = self._config_handler.get_config_value_or('model_filepath', None)
@@ -61,7 +64,7 @@ class AutoAgentWorker(QObject):
             self._image_ready = True
             self._cond_var.notifyAll()
 
-    @pyqtSlot()
+    @Slot()
     def do_work(self):
 
         self._running = True
@@ -103,17 +106,17 @@ class AutoAgent(QObject):
     """
 
     # Emitted when a new image is received
-    command_ready = pyqtSignal()
+    command_ready = Signal()
 
-    def __init__(self, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
+    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+        super().__init__()
         self._worker = AutoAgentWorker()
         self._thread = QThread(self)
         self._worker.command_ready.connect(self.command_ready_slot)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.do_work)
 
-    @pyqtSlot()
+    @Slot()
     def command_ready_slot(self):
         # Just pass on the signal
         self.command_ready.emit()

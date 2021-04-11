@@ -1,8 +1,8 @@
 import inputs
-from PyQt5 import QtCore, Qt
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, \
-    QCheckBox
-from PyQt5.QtCore import QSize
+from PySide6 import QtCore
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import QMainWindow, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, QCheckBox, \
+    QGridLayout
 
 from .game_controller import GameController
 from .trim_dialog import TrimDialog

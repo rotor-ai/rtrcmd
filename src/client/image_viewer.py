@@ -1,6 +1,9 @@
-from PyQt5.QtGui import QPainter, QImage, QPaintEvent, QPixmap
-from PyQt5.QtCore import Qt, pyqtSlot, QSize
-from PyQt5.QtWidgets import QWidget, QSizePolicy, QBoxLayout, QSpacerItem
+import typing
+
+import PySide6
+from PySide6.QtCore import QSize, Slot, Qt
+from PySide6.QtGui import QPaintEvent, QPainter, QImage
+from PySide6.QtWidgets import QWidget, QSizePolicy, QBoxLayout, QSpacerItem
 
 
 class ImageWidget(QWidget):
@@ -8,8 +11,9 @@ class ImageWidget(QWidget):
     Widget responsible for painting the image
     """
 
-    def __init__(self, vehicle_ctl, width, height, *args, **kwargs):
-        super(QWidget, self).__init__(*args, **kwargs)
+    def __init__(self, vehicle_ctl, width, height, parent: typing.Optional[PySide6.QtWidgets.QWidget] = ...,
+                 f: PySide6.QtCore.Qt.WindowFlags = ...) -> None:
+        super().__init__()
 
         self._width = width
         self._height = height
@@ -20,7 +24,7 @@ class ImageWidget(QWidget):
         self._vehicle_ctl = vehicle_ctl
         self._vehicle_ctl.image_received.connect(self.image_received_slot)
 
-    @pyqtSlot()
+    @Slot()
     def image_received_slot(self):
 
         # Pull down the last image from the server and convert to a QImage
@@ -53,8 +57,9 @@ class ImageViewer(QWidget):
     Defines a container for the image view widget with a fixed aspect ratio
     """
 
-    def __init__(self, vehicle_ctl, *args, **kwargs):
-        super(QWidget, self).__init__(*args, **kwargs)
+    def __init__(self, vehicle_ctl, parent: typing.Optional[PySide6.QtWidgets.QWidget] = ...,
+                 f: PySide6.QtCore.Qt.WindowFlags = ...) -> None:
+        super().__init__()
 
         self._width = 196
         self._height = 144

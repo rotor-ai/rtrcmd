@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel, QDoubleSpinBox, QCheckBox
-from PyQt5.QtCore import pyqtSignal
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget, QGridLayout, QCheckBox, QLabel, QPushButton, QDoubleSpinBox
 
 
 class TrimDialog(QWidget):
@@ -7,7 +7,7 @@ class TrimDialog(QWidget):
     Custom widget to edit trim values on the client
     """
 
-    trim_changed = pyqtSignal()
+    trim_changed = Signal()
 
     def __init__(self, trim):
         QWidget.__init__(self)

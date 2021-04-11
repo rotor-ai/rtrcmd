@@ -1,6 +1,8 @@
 import sys
-from PyQt5 import QtWidgets
 import logging
+
+from PySide6 import QtWidgets
+
 from client.main_window import MainWindow
 from client.vehicle_ctl import VehicleCtl
 

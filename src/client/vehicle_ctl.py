@@ -1,7 +1,10 @@
 import threading
 import time
+import typing
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+import PySide6
+from PySide6.QtCore import QObject, Signal, Slot
+
 from .request_handler import RequestHandler
 from common.config_handler import ConfigHandler
 from common.mode import Mode, ModeType
@@ -22,11 +25,11 @@ class VehicleCtl(QObject):
     """
 
     # Signal is emitted when the image is received
-    image_received = pyqtSignal()
-    command_ready = pyqtSignal()
+    image_received = Signal()
+    command_ready = Signal()
 
-    def __init__(self, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
+    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+        super().__init__()
 
         self._config_handler = ConfigHandler.get_instance()
 
@@ -105,7 +108,7 @@ class VehicleCtl(QObject):
         self._request_handler.send_image_stream_stop()
         self._request_handler.send_image_stream_start(self._stream_port)
 
-    @pyqtSlot()
+    @Slot()
     def image_received_slot(self):
 
         if self._mode.mode_type() == ModeType.TRAIN:

@@ -4,8 +4,11 @@ import logging
 import struct
 import io
 import select
+import typing
+
+import PySide6
 from PIL import Image
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QThread, QObject
+from PySide6.QtCore import QObject, Signal, Slot, QThread
 
 
 class ImageStreamWorker(QObject):
@@ -14,11 +17,10 @@ class ImageStreamWorker(QObject):
     """
 
     # Signal is emitted when the image is received
-    image_received = pyqtSignal()
+    image_received = Signal()
 
-    def __init__(self, port, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
-
+    def __init__(self, port, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+        super().__init__()
         self._running = False
         self._streaming = False
         self._connected = False
@@ -37,7 +39,7 @@ class ImageStreamWorker(QObject):
     def streaming(self):
         return self._streaming
 
-    @pyqtSlot()
+    @Slot()
     def do_work(self):
 
         logging.debug("Doing work")
@@ -142,17 +144,17 @@ class ImageStreamServer(QObject):
     """
 
     # Emitted when a new image is received
-    image_received = pyqtSignal()
+    image_received = Signal()
 
-    def __init__(self, port, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
+    def __init__(self, port, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+        super().__init__()
         self._worker = ImageStreamWorker(port)
         self._thread = QThread(self)
         self._worker.image_received.connect(self.image_received_slot)
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.do_work)
 
-    @pyqtSlot()
+    @Slot()
     def image_received_slot(self):
         # Just pass on the signal
         self.image_received.emit()
