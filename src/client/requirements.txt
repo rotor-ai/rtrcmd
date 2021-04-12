@@ -1,5 +1,5 @@
 
-# This file contains all of our immediate dependencies. Each line also contains the license of the respective dependency.
+# This file contains all of our immediate dependencies for the client program. Each line also contains the license of the respective dependency.
 
 #Client side dependencies
 torch==1.8.1            #BSD 3-Clause

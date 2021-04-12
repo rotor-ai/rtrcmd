@@ -9,22 +9,12 @@
     ⚠ On Ubuntu, the [`python3-distutils`](https://packages.ubuntu.com/focal/python3-distutils) package 
     is required to setup a virtual Python Interpreter in PyCharm.
     
-    ⚠ On Ubuntu, PyQt5 will require the [libxcb-xinerama0](https://packages.ubuntu.com/focal/libxcb-xinerama0) package, as noted in [this forum post](https://forum.qt.io/topic/93247/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it-was-found/4).
+    ⚠ On Ubuntu, PySide6 will require the [libopengl0](https://packages.ubuntu.com/bionic/libs/libopengl0) package, as noted in [this SO post](https://stackoverflow.com/questions/65751536/importerror-libopengl-so-0-cannot-open-shared-object-file-no-such-file-or-dir).
       
 #### Configuring the Raspberry Pi:
-* You will need the following packages installed locally on the pi:
+* In addition to the packages listed in src/vehicle/requirements.txt, you will also need:
     
-    [`pip`](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
-    
-    [`gpiozero`](https://gpiozero.readthedocs.io/en/stable/installing.html) (used for interfacing with GPIO pins)
-    
-    [`pigpio`](http://abyz.me.uk/rpi/pigpio/download.html) also, available [via pip](https://pypi.org/project/pigpio/) (used in conjunction with gpiozero for stable interface to PWM pins)
-
-    [`pytorch`](https://www.spinellis.gr/blog/20200317/index.html) (AI agent modeling. Must be built from source)
-
-    [`HT16k33`](https://github.com/adafruit/Adafruit_CircuitPython_HT16K33) (used for segmented digital display)
-
-    [`Netifaces`](https://github.com/al45tair/netifaces) (used for getting vehicle IP address for segmented display)
+    [CircuitPython and AdafruitBlinka are required for the 7 segment display](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi)
 
 * Make sure your RPi is setup with SSH enabled by running `$ sudo raspi-config`
 
