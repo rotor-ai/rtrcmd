@@ -1,7 +1,4 @@
-import typing
-
-import PySide6
-from PySide6.QtCore import QObject, Signal, Slot, QThread
+from PySide2.QtCore import QObject, Signal, Slot, QThread
 from common.command import Command
 from common.config_handler import ConfigHandler
 import logging
@@ -23,7 +20,7 @@ class AutoAgentWorker(QObject):
     # Signal is emitted when the image is received
     command_ready = Signal()
 
-    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._config_handler = ConfigHandler.get_instance()
@@ -108,7 +105,7 @@ class AutoAgent(QObject):
     # Emitted when a new image is received
     command_ready = Signal()
 
-    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self._worker = AutoAgentWorker()
         self._thread = QThread(self)

@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from PySide6 import QtWidgets
+from PySide2 import QtWidgets
 
 from client.main_window import MainWindow
 from client.vehicle_ctl import VehicleCtl

@@ -9,7 +9,7 @@
     ⚠ On Ubuntu, the [`python3-distutils`](https://packages.ubuntu.com/focal/python3-distutils) package 
     is required to setup a virtual Python Interpreter in PyCharm.
     
-    ⚠ On Ubuntu, PySide6 will require the [libopengl0](https://packages.ubuntu.com/bionic/libs/libopengl0) package, as noted in [this SO post](https://stackoverflow.com/questions/65751536/importerror-libopengl-so-0-cannot-open-shared-object-file-no-such-file-or-dir).
+    ⚠ On Ubuntu, PySide2 will require the [libopengl0](https://packages.ubuntu.com/bionic/libs/libopengl0) package, as noted in [this SO post](https://stackoverflow.com/questions/65751536/importerror-libopengl-so-0-cannot-open-shared-object-file-no-such-file-or-dir).
       
 #### Configuring the Raspberry Pi:
 * In addition to the packages listed in src/vehicle/requirements.txt, you will also need:

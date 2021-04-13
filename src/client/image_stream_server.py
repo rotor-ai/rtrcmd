@@ -6,9 +6,9 @@ import io
 import select
 import typing
 
-import PySide6
+import PySide2
 from PIL import Image
-from PySide6.QtCore import QObject, Signal, Slot, QThread
+from PySide2.QtCore import QObject, Signal, Slot, QThread
 
 
 class ImageStreamWorker(QObject):
@@ -19,7 +19,7 @@ class ImageStreamWorker(QObject):
     # Signal is emitted when the image is received
     image_received = Signal()
 
-    def __init__(self, port, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+    def __init__(self, port) -> None:
         super().__init__()
         self._running = False
         self._streaming = False
@@ -146,7 +146,7 @@ class ImageStreamServer(QObject):
     # Emitted when a new image is received
     image_received = Signal()
 
-    def __init__(self, port, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+    def __init__(self, port) -> None:
         super().__init__()
         self._worker = ImageStreamWorker(port)
         self._thread = QThread(self)

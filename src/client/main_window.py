@@ -1,7 +1,7 @@
 import inputs
-from PySide6 import QtCore
-from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QMainWindow, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, QCheckBox, \
+from PySide2 import QtCore
+from PySide2.QtCore import QSize
+from PySide2.QtWidgets import QMainWindow, QWidget, QPushButton, QLineEdit, QLabel, QSpinBox, QComboBox, QCheckBox, \
     QGridLayout
 
 from .game_controller import GameController
@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(150, 50))
         self.setWindowTitle("Rotor Client")
 
-        central_widget = QWidget(self)
+        central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
         # Need to allow the central widget to get focus so the key presses are caught correctly
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.create_gui()
 
         # Create the image viewer
-        self._image_viewer = ImageViewer(self._vehicle_ctl, self)
+        self._image_viewer = ImageViewer(self._vehicle_ctl)
 
         # Connect all the push button signals
         self.add_gui_listeners()

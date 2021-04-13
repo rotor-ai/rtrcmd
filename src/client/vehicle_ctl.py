@@ -1,9 +1,7 @@
 import threading
 import time
-import typing
 
-import PySide6
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide2.QtCore import QObject, Signal, Slot
 
 from .request_handler import RequestHandler
 from common.config_handler import ConfigHandler
@@ -28,7 +26,7 @@ class VehicleCtl(QObject):
     image_received = Signal()
     command_ready = Signal()
 
-    def __init__(self, parent: typing.Optional[PySide6.QtCore.QObject] = ...) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self._config_handler = ConfigHandler.get_instance()

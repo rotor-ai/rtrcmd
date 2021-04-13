@@ -1,5 +1,5 @@
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QGridLayout, QCheckBox, QLabel, QPushButton, QDoubleSpinBox
+from PySide2.QtCore import Signal
+from PySide2.QtWidgets import QWidget, QGridLayout, QCheckBox, QLabel, QPushButton, QDoubleSpinBox
 
 
 class TrimDialog(QWidget):

@@ -1,9 +1,7 @@
-import typing
-
-import PySide6
-from PySide6.QtCore import QSize, Slot, Qt
-from PySide6.QtGui import QPaintEvent, QPainter, QImage
-from PySide6.QtWidgets import QWidget, QSizePolicy, QBoxLayout, QSpacerItem
+import PySide2
+from PySide2.QtCore import QSize, Slot, Qt
+from PySide2.QtGui import QPaintEvent, QPainter, QImage
+from PySide2.QtWidgets import QWidget, QSizePolicy, QBoxLayout, QSpacerItem
 
 
 class ImageWidget(QWidget):
@@ -11,9 +9,8 @@ class ImageWidget(QWidget):
     Widget responsible for painting the image
     """
 
-    def __init__(self, vehicle_ctl, width, height, parent: typing.Optional[PySide6.QtWidgets.QWidget] = ...,
-                 f: PySide6.QtCore.Qt.WindowFlags = ...) -> None:
-        super().__init__()
+    def __init__(self, vehicle_ctl, width, height, parent=None) -> None:
+        super().__init__(parent)
 
         self._width = width
         self._height = height
@@ -57,8 +54,7 @@ class ImageViewer(QWidget):
     Defines a container for the image view widget with a fixed aspect ratio
     """
 
-    def __init__(self, vehicle_ctl, parent: typing.Optional[PySide6.QtWidgets.QWidget] = ...,
-                 f: PySide6.QtCore.Qt.WindowFlags = ...) -> None:
+    def __init__(self, vehicle_ctl) -> None:
         super().__init__()
 
         self._width = 196

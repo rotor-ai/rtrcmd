@@ -8,4 +8,4 @@ Pillow==8.2.0           #HPND license
 torchvision==0.9.1      #BSD 3-Clause
 inputs==0.5             #BSD 3-Clause
 requests==2.25.1        #Apache 2.0
-PySide6==6.0.3          #GNU LGPLv3
+PySide2==5.15.2         #GNU LGPL
