@@ -16,7 +16,7 @@ class GameControllerCalibrationDialog(QWidget):
         grid_layout = QGridLayout(self)
 
         self.lbl_dialog_text = QLabel(
-            "Controller Detected!\nPress the left and right triggers all the way down,\nPull the left joy stick to the far right\n then press A",
+            "Controller Detected!\nPress the left and right triggers all the way down,\nPull the left joy stick to the far left or right\n then press A",
             self)
 
         self._game_controller = GameController(inputs.devices.gamepads[0])
@@ -51,7 +51,7 @@ class GameControllerCalibrationDialog(QWidget):
         self.lbl_right_trigger_value.setText(str(self._controller_calibration.right_trigger_max))
 
     def gamepad_left_stick_x_response(self, state):
-        self._controller_calibration.joystick_boundary = max(state, self._controller_calibration.joystick_boundary)
+        self._controller_calibration.joystick_boundary = max(abs(state), self._controller_calibration.joystick_boundary)
         self.lbl_left_stick_x_value.setText(str(self._controller_calibration.joystick_boundary))
 
 

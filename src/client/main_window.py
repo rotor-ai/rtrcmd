@@ -62,12 +62,12 @@ class MainWindow(QMainWindow):
             self._game_controller = GameController(inputs.devices.gamepads[0], calibration_data)
             self._game_controller.add_event_response('ABS_HAT0X', self.gamepad_direction_pad_response)
             self._game_controller.add_event_response('ABS_RZ', self.gamepad_right_trigger_response)
-            self._game_controller.add_event_response('ABS_X', self.gamepad_left_stick)
+            self._game_controller.add_event_response('ABS_X', self.gamepad_left_stick_x)
             self._game_controller.add_event_response('BTN_EAST', self.gamepad_b_button_response)
             self._game_controller.start()
 
-    def gamepad_left_stick(self, state):
-        logging.info("GAMEPAD LEFT STICK VALUE: " + str(state))
+    def gamepad_left_stick_x(self, state):
+        self._vehicle_ctl.set_steering(state/self._game_controller.get_calibration().joystick_boundary)
 
     def gamepad_direction_pad_response(self, state):
         if state == -1:
