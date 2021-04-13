@@ -1,7 +1,4 @@
-import logging
-
 import inputs
-from PySide2.QtCore import Qt, Signal
 from PySide2.QtWidgets import QWidget, QGridLayout, QLabel
 
 from src.client.game_controller import GameController, GameControllerCalibration
