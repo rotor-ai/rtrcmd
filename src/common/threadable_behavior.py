@@ -13,17 +13,26 @@ class ThreadableBehavior(ABC):
         self._thread.start()
 
     def stop(self):
-        self._thread.quit()
-        self._thread.wait()
+        # FYI, this does not instantaneously stop the thread.
+        # The thread will stop after it iterates through the next behavior cycle inside the run() method
+        self._thread.behave = lambda: False
+
 
 class ThreadableBehaviorThread(threading.Thread):
 
     def __init__(self):
         super().__init__()
-        self.behave = lambda: logging.error("NO BEHAVIOR DEFINED FOR THREAD!")
+        self._should_continue = True
+        self.behave = self.default_behavior
+
+    def default_behavior(self):
+        logging.error("NO BEHAVIOR DEFINED FOR THREAD!")
+        return False
 
     def run(self) -> None:
         super().run()
 
-        while 1:
-            self.behave()
+        while self._should_continue:
+            self._should_continue = self.behave()
+
+        logging.info("ENDING THREAD")

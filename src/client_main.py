@@ -1,6 +1,7 @@
 import sys
 import logging
 
+import inputs
 from PySide2 import QtWidgets
 
 from client.main_window import MainWindow
@@ -21,6 +22,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mainWin = MainWindow(vehicle_ctl)
     mainWin.show()
+
+    if len(inputs.devices.gamepads) > 0:
+        mainWin.gamepad_controller_calibration_dialog()
+
     res = app.exec_()
 
     # Stop the vehicle control class

@@ -1,3 +1,5 @@
+import logging
+
 import inputs
 from PySide2 import QtCore
 from PySide2.QtCore import QSize
@@ -5,6 +7,7 @@ from PySide2.QtWidgets import QMainWindow, QWidget, QPushButton, QLineEdit, QLab
     QGridLayout
 
 from .game_controller import GameController
+from .game_controller_calibration_dialog import GameControllerCalibrationDialog
 from .trim_dialog import TrimDialog
 from common.mode import Mode, ModeType
 from .image_viewer import ImageViewer
@@ -45,8 +48,17 @@ class MainWindow(QMainWindow):
         # Give the central widget focus so the key presses work
         central_widget.setFocus()
 
+    def gamepad_controller_calibration_dialog(self):
+        self._gamepad_controller_config_window = GameControllerCalibrationDialog()
+        self._gamepad_controller_config_window.show()
+        self._gamepad_controller_config_window.calibration_complete_response = lambda calibration_data: self.gamepad_calibrated(calibration_data)
+
+    def gamepad_calibrated(self, calibration_data):
+        logging.info("CONTROLLER WAS CALIBRATED!")
+        self._gamepad_controller_config_window.close()
+
         if len(inputs.devices.gamepads) > 0:
-            self._game_controller = GameController(inputs.devices.gamepads[0])
+            self._game_controller = GameController(inputs.devices.gamepads[0], calibration_data)
             self._game_controller.add_event_response('ABS_HAT0X', self.gamepad_direction_pad_response)
             self._game_controller.add_event_response('ABS_RZ', self.gamepad_right_trigger_response)
             self._game_controller.add_event_response('BTN_EAST', self.gamepad_b_button_response)
@@ -67,7 +79,7 @@ class MainWindow(QMainWindow):
             self.down_released()
 
     def gamepad_right_trigger_response(self, state):
-        self._vehicle_ctl.set_throttle(state/1023)
+        self._vehicle_ctl.set_throttle(state/self._game_controller.get_calibration().right_trigger_max)
 
     def up_pressed(self):
         self._vehicle_ctl.set_throttle(1.0)
