@@ -55,14 +55,19 @@ class MainWindow(QMainWindow):
 
     def gamepad_calibrated(self, calibration_data):
         logging.info("CONTROLLER WAS CALIBRATED!")
+        print(str(calibration_data.__dict__))
         self._gamepad_controller_config_window.close()
 
         if len(inputs.devices.gamepads) > 0:
             self._game_controller = GameController(inputs.devices.gamepads[0], calibration_data)
             self._game_controller.add_event_response('ABS_HAT0X', self.gamepad_direction_pad_response)
             self._game_controller.add_event_response('ABS_RZ', self.gamepad_right_trigger_response)
+            self._game_controller.add_event_response('ABS_X', self.gamepad_left_stick)
             self._game_controller.add_event_response('BTN_EAST', self.gamepad_b_button_response)
             self._game_controller.start()
+
+    def gamepad_left_stick(self, state):
+        logging.info("GAMEPAD LEFT STICK VALUE: " + str(state))
 
     def gamepad_direction_pad_response(self, state):
         if state == -1:

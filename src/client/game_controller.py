@@ -6,6 +6,7 @@ class GameControllerCalibration():
     def __init__(self):
         self.left_trigger_max = 0
         self.right_trigger_max = 0
+        self.joystick_boundary = 0
 
 class GameController(ThreadableBehavior):
 
