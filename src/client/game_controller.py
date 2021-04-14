@@ -8,6 +8,9 @@ class GameControllerCalibration():
         self.right_trigger_max = 0
         self.joystick_boundary = 0
 
+    def to_json(self):
+        return self.__dict__
+
 class GameController(ThreadableBehavior):
 
     def __init__(self, gamepad_instance, calibration=GameControllerCalibration()):
