@@ -1,4 +1,4 @@
-from common.threadable_behavior import ThreadableBehavior
+from src.common.threadable_behavior import ThreadableBehavior
 
 
 class GameControllerCalibration():
