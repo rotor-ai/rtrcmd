@@ -11,6 +11,14 @@ class GameControllerCalibration():
     def to_json(self):
         return self.__dict__
 
+    def from_json(self, input_json):
+        if input_json.__contains__('left_trigger_max'):
+            self.left_trigger_max = input_json['left_trigger_max']
+        if input_json.__contains__('right_trigger_max'):
+            self.right_trigger_max = input_json['right_trigger_max']
+        if input_json.__contains__('joystick_boundary'):
+            self.joystick_boundary = input_json['joystick_boundary']
+
 class GameController(ThreadableBehavior):
 
     def __init__(self, gamepad_instance, calibration=GameControllerCalibration()):
