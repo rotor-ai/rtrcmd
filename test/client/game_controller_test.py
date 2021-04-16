@@ -1,6 +1,6 @@
 import unittest
 
-from ..src.client.game_controller import GameControllerCalibration
+from src.client.game_controller import GameControllerCalibration
 
 class GameControllerCalibrationTest(unittest.TestCase):
 
