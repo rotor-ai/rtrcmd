@@ -1,0 +1,19 @@
+
+# This file contains all of our immediate dependencies. Each line also contains the license of the respective dependency.
+
+#Client side dependencies
+torch==1.8.1            #BSD 3-Clause
+numpy==1.20.2           #BSD 3-Clause
+Pillow==8.2.0           #HPND license
+torchvision==0.9.1      #BSD 3-Clause
+inputs==0.5             #BSD 3-Clause
+requests==2.25.1        #Apache 2.0
+PySide2==5.15.2         #GNU LGPL
+
+
+#Vehicle side dependencies
+Flask==1.1.2                                #BSD-3-Clause
+gpiozero==1.5.1                             #BSD-3-Clause
+pigpio==1.78                                #The Unlicense
+netifaces==0.10.9                           #MIT
+adafruit-circuitpython-ht16k33==4.1.5       #MIT

@@ -1,11 +1,11 @@
 import unittest
 
+from ..context import src
 from src.client.game_controller import GameControllerCalibration
 
 class GameControllerCalibrationTest(unittest.TestCase):
 
     def test_should_init(self):
-
         subject = GameControllerCalibration()
 
         self.assertEqual(subject.joystick_boundary, 0)
@@ -13,7 +13,6 @@ class GameControllerCalibrationTest(unittest.TestCase):
         self.assertEqual(subject.right_trigger_max, 0)
 
     def test_should_convert_to_json(self):
-
         subject = GameControllerCalibration()
         subject.left_trigger_max = 1
         subject.right_trigger_max = 2
@@ -28,7 +27,6 @@ class GameControllerCalibrationTest(unittest.TestCase):
         self.assertDictEqual(json, expectedJson)
 
     def test_from_json_should_populate_all_fields(self):
-
         inputJson = dict()
         inputJson['left_trigger_max'] = 4
         inputJson['right_trigger_max'] = 5
@@ -42,7 +40,6 @@ class GameControllerCalibrationTest(unittest.TestCase):
         self.assertEqual(6, subject.joystick_boundary)
 
     def test_from_json_should_handle_all_missing_keys(self):
-
         subject = GameControllerCalibration()
         subject.left_trigger_max = 1
         subject.right_trigger_max = 2
@@ -56,7 +53,6 @@ class GameControllerCalibrationTest(unittest.TestCase):
         self.assertEqual(3, subject.joystick_boundary)
 
     def test_from_json_should_handle_individual_missing_keys(self):
-
         subject = GameControllerCalibration()
         subject.left_trigger_max = 1
         subject.right_trigger_max = 2
@@ -72,4 +68,3 @@ class GameControllerCalibrationTest(unittest.TestCase):
         subject.from_json(inputJson)
 
         self.assertEqual(22, subject.right_trigger_max)
-
