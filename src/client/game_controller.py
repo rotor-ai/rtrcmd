@@ -21,10 +21,10 @@ class GameControllerCalibration():
 
 class GameController(ThreadableBehavior):
 
-    def __init__(self, gamepad_instance, calibration=GameControllerCalibration()):
+    def __init__(self, game_controller_instance, calibration=GameControllerCalibration()):
         super().__init__()
         self._calibration = calibration
-        self._controller = gamepad_instance
+        self._controller = game_controller_instance
         self._thread.behave = lambda: self.scan_for_events()
         self._responses = dict()
 

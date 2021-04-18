@@ -10,7 +10,6 @@ from time import sleep
 if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-
     try:
 
         # Create the vehicle manager

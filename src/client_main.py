@@ -6,7 +6,8 @@ from PySide2 import QtWidgets
 
 from client.main_window import MainWindow
 from client.vehicle_ctl import VehicleCtl
-
+from src.client.game_controller import GameControllerCalibration
+from src.common.config_handler import ConfigHandler
 
 if __name__ == "__main__":
 
@@ -23,8 +24,16 @@ if __name__ == "__main__":
     mainWin = MainWindow(vehicle_ctl)
     mainWin.show()
 
-    if len(inputs.devices.gamepads) > 0:
-        mainWin.gamepad_controller_calibration_dialog()
+    calibration_json = ConfigHandler.get_instance().get_config_value_or('game_controller_calibration', {})
+    controllerHasBeenCalibrated = calibration_json != {}
+    controllerIsPluggedIn = len(inputs.devices.gamepads) > 0
+
+    if controllerIsPluggedIn and not controllerHasBeenCalibrated:
+        mainWin.game_controller_calibration_dialog()
+    elif controllerIsPluggedIn and controllerHasBeenCalibrated:
+        game_controller_calibration = GameControllerCalibration()
+        game_controller_calibration.from_json(calibration_json)
+        mainWin.game_controller_calibrated(game_controller_calibration)
 
     res = app.exec_()
 

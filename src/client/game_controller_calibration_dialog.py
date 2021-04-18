@@ -20,10 +20,10 @@ class GameControllerCalibrationDialog(QWidget):
             self)
 
         self._game_controller = GameController(inputs.devices.gamepads[0])
-        self._game_controller.add_event_response('ABS_Z', self.gamepad_left_trigger_response)
-        self._game_controller.add_event_response('ABS_RZ', self.gamepad_right_trigger_response)
-        self._game_controller.add_event_response('ABS_X', self.gamepad_left_stick_x_response)
-        self._game_controller.add_event_response('BTN_SOUTH', self.gamepad_a_button_response)
+        self._game_controller.add_event_response('ABS_Z', self.game_controller_left_trigger_response)
+        self._game_controller.add_event_response('ABS_RZ', self.game_controller_right_trigger_response)
+        self._game_controller.add_event_response('ABS_X', self.game_controller_left_stick_x_response)
+        self._game_controller.add_event_response('BTN_SOUTH', self.game_controller_a_button_response)
 
         self.lbl_left_trigger = QLabel("Left Trigger Max Value: ", self)
         self.lbl_left_trigger_value = QLabel(str(self._controller_calibration.left_trigger_max), self)
@@ -42,20 +42,20 @@ class GameControllerCalibrationDialog(QWidget):
 
         self._game_controller.start()
 
-    def gamepad_left_trigger_response(self, state):
+    def game_controller_left_trigger_response(self, state):
         self._controller_calibration.left_trigger_max = max(state, self._controller_calibration.left_trigger_max)
         self.lbl_left_trigger_value.setText(str(self._controller_calibration.left_trigger_max))
 
-    def gamepad_right_trigger_response(self, state):
+    def game_controller_right_trigger_response(self, state):
         self._controller_calibration.right_trigger_max = max(state, self._controller_calibration.right_trigger_max)
         self.lbl_right_trigger_value.setText(str(self._controller_calibration.right_trigger_max))
 
-    def gamepad_left_stick_x_response(self, state):
+    def game_controller_left_stick_x_response(self, state):
         self._controller_calibration.joystick_boundary = max(abs(state), self._controller_calibration.joystick_boundary)
         self.lbl_left_stick_x_value.setText(str(self._controller_calibration.joystick_boundary))
 
 
-    def gamepad_a_button_response(self, state):
+    def game_controller_a_button_response(self, state):
         if state == 1:
             self._game_controller.stop()
             self.calibration_complete_response(self._controller_calibration)
