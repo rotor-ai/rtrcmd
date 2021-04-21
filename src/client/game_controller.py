@@ -1,5 +1,5 @@
-from src.common.threadable_behavior import ThreadableBehavior
-
+import logging
+import threading
 
 class GameControllerCalibration():
 
@@ -19,14 +19,22 @@ class GameControllerCalibration():
         if input_json.__contains__('joystick_boundary'):
             self.joystick_boundary = input_json['joystick_boundary']
 
-class GameController(ThreadableBehavior):
+
+class GameController:
 
     def __init__(self, game_controller_instance, calibration=GameControllerCalibration()):
         super().__init__()
         self._calibration = calibration
         self._controller = game_controller_instance
-        self._thread.behave = lambda: self.scan_for_events()
+        self._thread = GameControllerThread()
+        self._thread.set_behavior(lambda: self.scan_for_events())
         self._responses = dict()
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._thread.set_behavior(lambda: False)
 
     def add_event_response(self, code, action):
         self._responses[code] = action
@@ -41,3 +49,21 @@ class GameController(ThreadableBehavior):
             response(event.state)
 
         return True
+
+
+class GameControllerThread(threading.Thread):
+
+    def __init__(self):
+        super().__init__()
+        self._should_continue = True
+
+    def set_behavior(self, behavior):
+        self.behave = behavior
+
+    def run(self) -> None:
+        super().run()
+
+        while self._should_continue:
+            self._should_continue = self.behave()
+
+        logging.info("ENDING " + str(self.__class__) + "THREAD")
