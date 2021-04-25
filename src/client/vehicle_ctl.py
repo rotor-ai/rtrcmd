@@ -61,7 +61,7 @@ class VehicleCtl(QObject):
         # This allows us to roll onto the throttle, rather than FLOOR IT when we press the forward button on the client.
         self._target_cmd = Command()
 
-        # Defines the bahavior for our thread loop
+        # Defines the behavior for our thread loop
         self._thread.behave = lambda: self.interpolate_throttle_and_steering()
 
     def interpolate_throttle_and_steering(self):

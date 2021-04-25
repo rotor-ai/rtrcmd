@@ -17,3 +17,7 @@ gpiozero==1.5.1                             #BSD-3-Clause
 pigpio==1.78                                #The Unlicense
 netifaces==0.10.9                           #MIT
 adafruit-circuitpython-ht16k33==4.1.5       #MIT
+
+#Other dependencies:
+#https://github.com/navdeep-G/samplemod                                     #BSD-2-Clause   (used for test context)
+#https://github.com/actions/starter-workflows/blob/main/ci/python-app.yml   #MIT            (GitHub action for doing python CI/CD)
