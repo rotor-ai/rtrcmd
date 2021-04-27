@@ -5,8 +5,8 @@ class Command(object):
     """
 
     def __init__(self, s=0.0, t=0.0):
-        self.steering = s
-        self.throttle = t
+        self.set_steering(s)
+        self.set_throttle(t)
 
     def get_steering(self):
         return self.steering
