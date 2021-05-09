@@ -1,7 +1,7 @@
 import inputs
 from PySide2.QtWidgets import QWidget, QGridLayout, QLabel
 
-from src.client.game_controller import GameController, GameControllerCalibration
+from .game_controller import GameController, GameControllerCalibration
 
 
 class GameControllerCalibrationDialog(QWidget):

@@ -6,8 +6,8 @@ from PySide2 import QtWidgets
 
 from client.main_window import MainWindow
 from client.vehicle_ctl import VehicleCtl
-from src.client.game_controller import GameControllerCalibration
-from src.common.config_handler import ConfigHandler
+from client.game_controller import GameControllerCalibration
+from common.config_handler import ConfigHandler
 
 if __name__ == "__main__":
 
